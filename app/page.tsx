@@ -856,7 +856,7 @@ export default function Portfolio() {
                     {post.excerpt}
                   </p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-<span>{new Date(post.date).toISOString().split('T')[0]}</span>
+<span>{new Date(post.date).toLocaleDateString()}</span>
                     <span>{post.readTime}</span>
                   </div>
                 </CardContent>
