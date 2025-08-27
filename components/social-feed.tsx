@@ -18,7 +18,7 @@ const socialActivity = [
     activity: "Shared article",
     description: "Deep Learning in Web Development: A Practical Guide",
     time: "1 day ago",
-    link: "https://linkedin.com/in/dharaneesh",
+    link: "https://www.linkedin.com/in/dharaneesh-c/",
   },
   {
     platform: "GitHub",

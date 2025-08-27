@@ -49,10 +49,10 @@ function AnimatedCounter({ end, label, icon, suffix = "" }: StatProps) {
 export function StatsWidget() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-      <AnimatedCounter end={3} label="Years Experience" icon="🚀" suffix="+" />
-      <AnimatedCounter end={15} label="Projects Completed" icon="💼" suffix="+" />
-      <AnimatedCounter end={5} label="Happy Clients" icon="😊" suffix="+" />
-      <AnimatedCounter end={2} label="Certifications" icon="🏆" suffix="+" />
+      <AnimatedCounter end={3} label="Years Experience" icon="" suffix="+" />
+      <AnimatedCounter end={15} label="Projects Completed" icon="" suffix="+" />
+      <AnimatedCounter end={5} label="Happy Clients" icon="" suffix="+" />
+      <AnimatedCounter end={2} label="Certifications" icon="" suffix="+" />
     </div>
   )
 }

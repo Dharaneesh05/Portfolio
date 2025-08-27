@@ -11,7 +11,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Dharaneesh C - Full Stack & AI Developer",
+  title: "Dharaneesh Portfolio",
   description:
     "Professional portfolio of Dharaneesh C, a Full Stack Developer and AI/Data Science student specializing in web development and AI solutions using React, Python, and Deep Learning.",
   keywords: "Full Stack Developer, AI Developer, React, Python, Deep Learning, Web Development, Dharaneesh C",
@@ -19,12 +19,11 @@ export const metadata: Metadata = {
   viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
   openGraph: {
-    title: "Dharaneesh C - Full Stack & AI Developer",
+    title: "Dharaneesh Portfolio",
     description: "Building innovative web solutions and AI-powered applications",
     type: "website",
     locale: "en_US",
   },
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({

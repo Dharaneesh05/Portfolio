@@ -23,10 +23,20 @@ export default function Home() {
   const [chatMessages, setChatMessages] = useState([])
   const [chatInput, setChatInput] = useState('')
   const [showChatModal, setShowChatModal] = useState(false)
-  const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0 })
+  const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0, intern: 0, leetcode: 0 })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [showStartupPopup, setShowStartupPopup] = useState(false)
+
+  useEffect(() => {
+    // Check if the user has already seen the startup popup
+    const hasSeenPopup = localStorage.getItem('hasSeenPopup')
+    if (!hasSeenPopup) {
+      setShowStartupPopup(true)
+      localStorage.setItem('hasSeenPopup', 'true')
+    }
+  }, [])
+
   const [experienceFilter, setExperienceFilter] = useState('All')
   const [recentActivities] = useState([
     { 
@@ -109,18 +119,14 @@ export default function Home() {
     
     // Animate stats counter with stagger effect
     const timer = setTimeout(() => {
-      setStats({ projects: 15, years: 3, clients: 12, certifications: 8 })
+      setStats({ projects: 5, years: 3, clients: 10, certifications: 3, intern: 2, leetcode: 250 })
     }, 1500)
 
-    // Show startup popup after 8 seconds
-    const popupTimer = setTimeout(() => {
-      setShowStartupPopup(true)
-    }, 8000)
+    // Remove the old timer for showing the startup popup
 
     return () => {
       window.removeEventListener('scroll', throttledHandleScroll)
       clearTimeout(timer)
-      clearTimeout(popupTimer)
     }
   }, [theme, activeSection])
 
@@ -209,7 +215,7 @@ export default function Home() {
       
       if (response.ok && result.success) {
         toast({
-          title: "🎉 Message sent successfully!",
+          title: "Message sent successfully!",
           description: result.message || "Thank you for reaching out. I'll get back to you within 24 hours!",
         })
         setContactForm({ name: '', email: '', message: '' })
@@ -217,7 +223,7 @@ export default function Home() {
         // Show additional confirmation
         setTimeout(() => {
           toast({
-            title: "📧 Email notification sent",
+            title: "Email notification sent",
             description: "You should receive a confirmation email shortly",
           })
         }, 2000)
@@ -228,7 +234,7 @@ export default function Home() {
     } catch (error) {
       console.error('Contact form error:', error)
       toast({
-        title: "❌ Failed to send message",
+        title: "Failed to send message",
         description: error.message || "Please try again or contact me directly at dharaneeshc2006@gmail.com",
         variant: "destructive",
       })
@@ -244,199 +250,102 @@ export default function Home() {
     setChatMessages(prev => [...prev, { type: 'user', content: userMessage }])
     setChatInput('')
     
-    // AI responses based on common questions
+    // Enhanced AI responses with better natural language processing
     setTimeout(() => {
-      let aiResponse = "Thanks for your question! "
+      const lowerMessage = userMessage.toLowerCase()
+      let aiResponse = ""
       
-      if (userMessage.toLowerCase().includes('project')) {
-        aiResponse += "I have worked on 15+ projects including AI-powered applications, full-stack web apps, and machine learning models. Check out my Projects section for detailed information!"
-      } else if (userMessage.toLowerCase().includes('skill')) {
-        aiResponse += "I specialize in React/Next.js, Python, AI/ML, Node.js, and database technologies. I'm also experienced in cloud deployment and modern web development practices."
-      } else if (userMessage.toLowerCase().includes('contact') || userMessage.toLowerCase().includes('hire')) {
-        aiResponse += "I'm available for freelance projects and full-time opportunities. You can reach me through the contact form below or email me directly at dharaneeshc2006@gmail.com"
-      } else if (userMessage.toLowerCase().includes('experience')) {
-        aiResponse += "I have 3+ years of experience in full-stack development and AI/ML. I've completed internships at tech companies and worked on various client projects."
-      } else {
-        aiResponse += "That's an interesting question! Feel free to explore my portfolio to learn more about my work, or contact me directly for specific inquiries."
+      // Enhanced response logic with more comprehensive coverage
+      if (lowerMessage.includes('project') || lowerMessage.includes('work') || lowerMessage.includes('portfolio')) {
+        aiResponse = "I've developed several innovative projects including: \n• AI Resume Analyzer & Builder with real-time analytics\n• SmartFit AI chatbot for reducing online shopping returns\n• Full-stack portfolio website with integrated AI assistant\n• E-commerce platforms and machine learning models\n\nCheck out my Projects section for detailed case studies and live demos!"
+      } 
+      else if (lowerMessage.includes('skill') || lowerMessage.includes('technology') || lowerMessage.includes('tech stack')) {
+        aiResponse = "My technical expertise includes:\n\nFrontend: React, Next.js, TypeScript, Tailwind CSS, Framer Motion\nBackend: Node.js, Python, Flask, Express.js, REST APIs\nAI/ML: TensorFlow, PyTorch, NLP, Computer Vision, Data Analysis\nDatabases: MongoDB, PostgreSQL, SQL, Database Design\nTools: Git, Docker, AWS, Vercel, Postman\n\nI'm constantly learning and expanding my skill set!"
+      }
+      else if (lowerMessage.includes('experience') || lowerMessage.includes('background') || lowerMessage.includes('career')) {
+        aiResponse = "I have 3+ years of experience in software development with:\n\n• Internships at TechNest (Full Stack) and DevNest (AI Development)\n• Multiple certifications in MongoDB, Oracle APEX, and Java\n• Experience with both startup environments and enterprise projects\n• Strong background in both technical development and problem-solving\n\nMy experience spans from AI/ML research to production-ready web applications."
+      }
+      else if (lowerMessage.includes('contact') || lowerMessage.includes('hire') || lowerMessage.includes('available') || lowerMessage.includes('opportunity')) {
+        aiResponse = "I'm currently available for:\n\n• Full-time software engineering roles\n• Freelance projects and consulting\n• AI/ML development opportunities\n• Full-stack web development projects\n\nYou can reach me via:\n📧 Email: dharaneeshc2006@gmail.com\n📱 Phone: +91 9345450445\n💼 LinkedIn: linkedin.com/in/dharaneesh-c\n\nFeel free to use the contact form below for detailed discussions!"
+      }
+      else if (lowerMessage.includes('education') || lowerMessage.includes('college') || lowerMessage.includes('degree')) {
+        aiResponse = "I'm currently pursuing my studies at Kongu Engineering College, where I'm deepening my knowledge in computer science and artificial intelligence. My academic background provides a strong foundation in both theoretical concepts and practical applications of modern technology."
+      }
+      else if (lowerMessage.includes('resume') || lowerMessage.includes('cv') || lowerMessage.includes('download')) {
+        aiResponse = "You can view and download my resume directly from the website! Look for the 'View Resume' or 'Download Resume' buttons in the hero section. My resume includes detailed information about my education, experience, skills, and projects."
+      }
+      else if (lowerMessage.includes('github') || lowerMessage.includes('code') || lowerMessage.includes('repository')) {
+        aiResponse = "You can explore my code repositories on GitHub: github.com/Dharaneesh05\n\nMy GitHub includes:\n• Complete project source code\n• AI/ML implementations\n• Web development projects\n• Open-source contributions\n• Learning resources and experiments"
+      }
+      else if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+        aiResponse = "Hello! 👋 I'm Dharaneesh's AI assistant. I'm here to help you learn more about his skills, projects, and experience. Feel free to ask me anything about his work or how you can collaborate with him!"
+      }
+      else if (lowerMessage.includes('thank') || lowerMessage.includes('thanks')) {
+        aiResponse = "You're welcome! 😊 I'm glad I could help. If you have any more questions about Dharaneesh's work or if you'd like to discuss potential opportunities, feel free to ask!"
+      }
+      else {
+        aiResponse = "That's an interesting question! While I'm specifically designed to discuss Dharaneesh's professional background, skills, and projects, I'd be happy to help with any related topics. You might want to ask about:\n\n• His technical skills and expertise\n• Previous projects and case studies\n• Professional experience and education\n• How to contact or collaborate with him\n• Viewing his portfolio and GitHub repositories"
       }
       
       setChatMessages(prev => [...prev, { type: 'ai', content: aiResponse }])
-    }, 1000)
+    }, 800) // Slightly faster response time
     
     toast({
-      title: "Message sent to AI",
-      description: "AI is processing your question...",
+      title: "Message received",
+      description: "I'm processing your question...",
     })
   }
 
   const skills = [
     { name: 'React/Next.js', level: 95, color: '#61DAFB' },
-    { name: 'Python', level: 90, color: '#3776AB' },
-    { name: 'AI/Machine Learning', level: 88, color: '#FF6B6B' },
+    { name: 'Python', level: 85, color: '#3776AB' },
+    { name: 'AI/Machine Learning', level: 90, color: '#FF6B6B' },
     { name: 'Node.js', level: 85, color: '#339933' },
-    { name: 'Database Design', level: 87, color: '#336791' },
-    { name: 'Cloud Platforms', level: 82, color: '#4285F4' }
-  ]
+    { name: 'Java', level: 87, color: '#336791' },
+    { name: 'Database Design & Management', level: 80, color: '#4285F4' },
+    { name: 'JavaScript/TypeScript', level: 80, color: '#4285F4' },
+    { name: 'Flutter', level: 75, color: '#4285F4' }
+  ] 
 
   const projects = [
     {
       id: 1,
-      title: 'AI-Powered Analytics Dashboard',
-      description: 'A comprehensive dashboard with AI-driven insights, real-time data visualization, and predictive analytics for business intelligence.',
-      image: '/placeholder.jpg',
-      tags: ['AI', 'React', 'Python', 'TensorFlow', 'Dashboard'],
+      title: 'Resume Analyzer & Builder',
+      description: 'A comprehensive dashboard leveraging AI for resume analysis and building, featuring real-time data visualization, predictive analytics, job suggestions based on user profiles, and integrated job search functionality. Utilizes MongoDB for storing user data and analytics, providing actionable insights for career advancement and business intelligence.',
+      image: 'placeholder.png',
+      tags: ['AI', 'React', 'Python', 'TensorFlow','MongoDB','Dashboard'],
       category: 'AI',
-      demo: 'https://example.com/analytics-demo',
-      github: 'https://github.com/dharaneesh/ai-analytics'
+      demo: 'https://resume-frontend3.vercel.app/',
+      github: 'https://github.com/Dharaneesh05/AI-powered-resume-analyzer-builder.git'
     },
     {
       id: 2,
-      title: 'E-Commerce Platform',
-      description: 'Full-stack e-commerce solution with payment integration, inventory management, and admin dashboard.',
-      image: '/placeholder.jpg',
+      title: 'Personal Portfolio',
+      description: 'A full-stack personal portfolio website showcasing projects and skills, with an integrated AI-powered chatbot for interactive user queries. Includes features like dynamic content rendering, theme switching, and seamless navigation, demonstrating expertise in building responsive and engaging web applications.',
+      image: 'port.png',
       tags: ['Full Stack', 'React', 'Node.js', 'MongoDB', 'Stripe'],
       category: 'Full Stack',
-      demo: 'https://example.com/ecommerce-demo',
-      github: 'https://github.com/dharaneesh/ecommerce'
+      demo: 'https://port2-ochre.vercel.app/',
+      github: 'https://github.com/Dharaneesh05/port2.git'
     },
     {
       id: 3,
-      title: 'Smart Chatbot System',
-      description: 'AI-powered chatbot with natural language processing and machine learning capabilities.',
-      image: '/placeholder.jpg',
-      tags: ['AI', 'Python', 'NLP', 'Flask', 'Machine Learning'],
+      title: 'SmartFit',
+      description: 'An AI-powered chatbot designed to reduce online shopping returns due to loose or tight fits in clothes and footwear. Employs natural language processing for user queries, YOLO for object detection, OpenCV for image processing, and MediaPipe for body measurement analysis, providing personalized recommendations to improve fit accuracy and reduce returns by up to 30%.',
+      image: 'SmartFit.png',
+      tags: ['AI', 'Python', 'NLP', 'Flask', 'Machine Learning','YOLO','OpenCV','MediaPipe'],
       category: 'AI',
-      demo: 'https://example.com/chatbot-demo',
-      github: 'https://github.com/dharaneesh/smart-chatbot'
-    },
-    {
-      id: 4,
-      title: 'Task Management System',
-      description: 'Collaborative task management with real-time updates, team collaboration, and project tracking.',
-      image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Socket.io', 'Express', 'PostgreSQL'],
-      category: 'Full Stack',
-      demo: 'https://example.com/taskmanager-demo',
-      github: 'https://github.com/dharaneesh/task-manager'
-    },
-    {
-      id: 5,
-      title: 'Weather Prediction App',
-      description: 'AI-powered weather prediction with interactive maps, forecasting, and climate analysis.',
-      image: '/placeholder.jpg',
-      tags: ['AI', 'React', 'API', 'Machine Learning', 'Weather'],
-      category: 'AI',
-      demo: 'https://example.com/weather-demo',
-      github: 'https://github.com/dharaneesh/weather-ai'
-    },
-    {
-      id: 6,
-      title: 'Social Media Dashboard',
-      description: 'Analytics dashboard for social media management, content scheduling, and engagement tracking.',
-      image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Analytics', 'API', 'Dashboard'],
-      category: 'Full Stack',
-      demo: 'https://example.com/social-demo',
-      github: 'https://github.com/dharaneesh/social-dashboard'
-    },
-    {
-      id: 7,
-      title: 'Image Recognition System',
-      description: 'Deep learning model for image classification and object detection with web interface.',
-      image: '/placeholder.jpg',
-      tags: ['AI', 'Python', 'TensorFlow', 'Computer Vision', 'Deep Learning'],
-      category: 'AI',
-      demo: 'https://example.com/image-recognition-demo',
-      github: 'https://github.com/dharaneesh/image-recognition'
-    },
-    {
-      id: 8,
-      title: 'Real Estate Platform',
-      description: 'Full-stack real estate platform with property listings, search filters, and virtual tours.',
-      image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Node.js', 'MongoDB', 'Maps API'],
-      category: 'Full Stack',
-      demo: 'https://example.com/realestate-demo',
-      github: 'https://github.com/dharaneesh/real-estate'
-    },
-    {
-      id: 9,
-      title: 'Stock Price Predictor',
-      description: 'Machine learning model for stock price prediction with interactive charts and analysis.',
-      image: '/placeholder.jpg',
-      tags: ['AI', 'Python', 'Machine Learning', 'Financial', 'Data Science'],
-      category: 'AI',
-      demo: 'https://example.com/stock-demo',
-      github: 'https://github.com/dharaneesh/stock-predictor'
-    },
-    {
-      id: 10,
-      title: 'Learning Management System',
-      description: 'Educational platform with course management, video streaming, and progress tracking.',
-      image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Node.js', 'Video Streaming', 'Education'],
-      category: 'Full Stack',
-      demo: 'https://example.com/lms-demo',
-      github: 'https://github.com/dharaneesh/lms'
-    },
-    {
-      id: 11,
-      title: 'Healthcare Management System',
-      description: 'Digital healthcare platform with appointment scheduling, patient records, and telemedicine.',
-      image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Node.js', 'Healthcare', 'Database'],
-      category: 'Full Stack',
-      demo: 'https://example.com/healthcare-demo',
-      github: 'https://github.com/dharaneesh/healthcare'
-    },
-    {
-      id: 12,
-      title: 'Smart Home IoT System',
-      description: 'IoT-based smart home automation with mobile app and AI-powered energy optimization.',
-      image: '/placeholder.jpg',
-      tags: ['IoT', 'React Native', 'Python', 'AI', 'Automation'],
-      category: 'IoT',
-      demo: 'https://example.com/smarthome-demo',
-      github: 'https://github.com/dharaneesh/smart-home'
-    },
-    {
-      id: 13,
-      title: 'Blockchain Voting System',
-      description: 'Decentralized voting platform using blockchain technology for secure and transparent elections.',
-      image: '/placeholder.jpg',
-      tags: ['Blockchain', 'React', 'Web3', 'Smart Contracts', 'Security'],
-      category: 'Blockchain',
-      demo: 'https://example.com/voting-demo',
-      github: 'https://github.com/dharaneesh/blockchain-voting'
-    },
-    {
-      id: 14,
-      title: 'Music Streaming Platform',
-      description: 'Full-featured music streaming app with playlists, recommendations, and social features.',
-      image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Node.js', 'Audio Streaming', 'Social'],
-      category: 'Full Stack',
-      demo: 'https://example.com/music-demo',
-      github: 'https://github.com/dharaneesh/music-platform'
-    },
-    {
-      id: 15,
-      title: 'Virtual Reality Training',
-      description: 'VR-based training platform for professional development with immersive learning experiences.',
-      image: '/placeholder.jpg',
-      tags: ['VR', 'Unity', 'C#', 'Education', 'Immersive'],
-      category: 'VR',
-      demo: 'https://example.com/vr-demo',
-      github: 'https://github.com/dharaneesh/vr-training'
+      demo: 'https://smartfitdeploy2-1.onrender.com/',
+      github: 'https://github.com/Dharaneesh05/smartfitdeploy2.git'
     }
   ]
 
   const experienceData = [
     {
       id: 1,
-      company: 'Tech Innovators Inc.',
+      company: 'TechNest',
       role: 'Full Stack Developer Intern',
-      duration: 'Jun 2023 - Aug 2023',
+      duration: 'Jan 2024 - Apr 2024',
       type: 'internship',
       description: 'Developed web applications using React and Node.js, collaborated with senior developers on enterprise projects, and implemented RESTful APIs.',
       certificate: '/resume.pdf',
@@ -444,63 +353,52 @@ export default function Home() {
     },
     {
       id: 2,
-      company: 'AI Solutions Ltd.',
+      company: 'DevNest',
       role: 'AI Developer Intern',
-      duration: 'Jan 2023 - Mar 2023',
+      duration: 'Aug 2025 - Sep 2025',
       type: 'internship',
       description: 'Worked on machine learning projects, implemented AI models for data analysis and prediction, and contributed to research initiatives.',
       certificate: '/resume.pdf',
       skills: ['Python', 'TensorFlow', 'Machine Learning', 'Data Analysis']
     },
     {
-      id: 3,
-      company: 'FreeCodeCamp',
-      role: 'Full Stack Web Development',
-      duration: '2023',
-      type: 'certification',
-      description: 'Comprehensive certification covering HTML, CSS, JavaScript, React, Node.js, and database technologies.',
-      certificate: '/resume.pdf',
-      skills: ['HTML', 'CSS', 'JavaScript', 'React', 'Node.js']
-    },
-    {
-      id: 4,
-      company: 'Stanford University',
-      role: 'Machine Learning Specialization',
-      duration: '2023',
-      type: 'certification',
-      description: 'Advanced machine learning concepts including supervised and unsupervised learning, neural networks, and deep learning.',
-      certificate: '/resume.pdf',
-      skills: ['Machine Learning', 'Python', 'Neural Networks', 'Deep Learning']
-    },
-    {
-      id: 5,
-      company: 'Meta',
-      role: 'React Developer Certification',
-      duration: '2022',
-      type: 'certification',
-      description: 'Professional certification in React development covering hooks, state management, and advanced React patterns.',
-      certificate: '/resume.pdf',
-      skills: ['React', 'JavaScript', 'State Management', 'Hooks']
-    },
-    {
-      id: 6,
-      company: 'Google Cloud',
-      role: 'Cloud Architect Certification',
-      duration: '2023',
-      type: 'certification',
-      description: 'Professional certification in Google Cloud Platform covering architecture, deployment, and cloud security.',
-      certificate: '/resume.pdf',
-      skills: ['Google Cloud', 'Cloud Architecture', 'DevOps', 'Security']
-    }
+  id: 4,
+  company: 'MongoDB',
+  role: 'MongoDB Associate Developer',
+  duration: '2025',
+  type: 'certification',
+  description: 'Certification focused on MongoDB fundamentals, including data modeling, querying, and integration with web applications.',
+  certificate: '/certificates/mongodb-associate.pdf',
+  skills: ['MongoDB', 'Data Modeling', 'Query Optimization']
+},
+{
+  id: 5,
+  company: 'Oracle',
+  role: 'Apex Cloud Developer',
+  duration: '2025',
+  type: 'certification',
+  description: 'Certification covering Oracle APEX for cloud-based application development, including database management and UI design.',
+  certificate: '/certificates/oracle-apex.pdf',
+  skills: ['Oracle APEX', 'Cloud Development', 'Database Management']
+},
+{
+  id: 6,
+  company: 'Oracle',
+  role: 'Java Software Development Engineer',
+  duration: '2025',
+  type: 'certification',
+  description: 'Certification in Java development focusing on object-oriented programming, APIs, and software engineering principles.',
+  certificate: '/certificates/java-sde.pdf',
+  skills: ['Java', 'OOP', 'API Development']
+}
   ]
 
   const technologies = [
     'React', 'Python', 'Node.js', 'AI', 'Machine Learning', 'MongoDB', 'PostgreSQL', 
-    'TensorFlow', 'Flask', 'Express', 'Socket.io', 'API', 'Dashboard', 'Blockchain', 
-    'IoT', 'VR', 'Unity', 'C#', 'Web3', 'Smart Contracts'
+    'TensorFlow', 'Flask', 'Express', 'API', 'Dashboard'
   ]
 
-  const categories = ['All', 'AI', 'Full Stack', 'IoT', 'Blockchain', 'VR']
+  const categories = ['All', 'AI', 'Full Stack']
 
   const filteredProjects = projects.filter(project => {
     const categoryMatch = activeFilter === 'All' || project.category === activeFilter
@@ -701,7 +599,7 @@ export default function Home() {
                     })
                   }}
                 >
-                  <span className="mr-2">💼</span>
+                  <span className="mr-2"></span>
                   Hire Me
                 </Button>
               </motion.div>
@@ -718,7 +616,7 @@ export default function Home() {
                   }`}
                 >
                   <span className="text-xl">
-                    {theme === 'dark' ? '☀️' : '🌙'}
+                    {theme === 'dark' ? '🔆' : '🌙'}
                   </span>
                 </Button>
               </motion.div>
@@ -814,7 +712,7 @@ export default function Home() {
           ? 'bg-gradient-to-br from-black via-gray-900 to-indigo-900' 
           : 'bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50'
       }`}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-10">
           {/* Left Content with Enhanced Animations */}
           <motion.div
             className="text-center lg:text-left"
@@ -830,7 +728,7 @@ export default function Home() {
               className="relative mb-4"
             >
               <motion.p
-                className="text-purple-500 text-lg md:text-xl mb-2 font-medium"
+                className="text-purple-500 text-lg md:text-xl mb-2 mt-12 font-medium"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.6 }}
@@ -950,7 +848,7 @@ export default function Home() {
                   size="sm"
                   className="hover-glow flex items-center gap-2"
                   onClick={() => {
-                    window.open('https://github.com/dharaneesh', '_blank')
+                    window.open('https://github.com/Dharaneesh05', '_blank')
                     toast({
                       title: "Opening GitHub",
                       description: "Check out my code repositories",
@@ -970,7 +868,7 @@ export default function Home() {
                   size="sm"
                   className="hover-glow flex items-center gap-2"
                   onClick={() => {
-                    window.open('https://linkedin.com/in/dharaneesh', '_blank')
+                    window.open('https://www.linkedin.com/in/dharaneesh-c/', '_blank')
                     toast({
                       title: "Opening LinkedIn",
                       description: "Let's connect professionally",
@@ -994,9 +892,9 @@ export default function Home() {
             >
               {[
                 { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600' },
-                { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600' },
-                { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600' },
-                { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600' }
+                { label: 'Certifications', value: stats.certifications, color: 'from-green-500 to-green-600' },
+                { label: 'Internships', value: stats.intern, color: 'from-purple-500 to-purple-600' },
+                { label: 'Leetcode Problems solved', value: stats.leetcode, color: 'from-orange-500 to-orange-600' }
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -1110,12 +1008,12 @@ export default function Home() {
                 <p className={`text-lg md:text-xl mb-6 leading-relaxed ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
-                  I'm a passionate Full Stack and AI Developer with expertise in modern web technologies and artificial intelligence. I love creating innovative solutions that bridge the gap between complex technical challenges and user-friendly experiences.
+                  I am a passionate Full Stack and AI Developer, skilled in crafting innovative, user-friendly solutions using modern web technologies and AI. With expertise in frontend and backend development, I build scalable applications with impactful features. Currently, I am studying at Kongu Engineering College, enhancing my skills through academic projects and hands-on experience.
                 </p>
                 <p className={`text-lg md:text-xl mb-8 leading-relaxed ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
-                  With a strong foundation in both frontend and backend development, I specialize in building scalable web applications and implementing AI-powered features that drive business value.
+                 With a strong foundation in both frontend and backend development, I specialize in building scalable web applications and implementing AI-powered features that drive business value.
                 </p>
               </motion.div>
               
@@ -1227,7 +1125,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Explore my collection of {projects.length} innovative projects spanning AI, Full Stack, IoT, Blockchain, and VR
+              Explore my collection of {projects.length} innovative projects spanning AI, Full Stack
             </motion.p>
             
             {/* Filter Section */}
@@ -1758,7 +1656,7 @@ export default function Home() {
                           onClick={handleChatSubmit}
                           disabled={!chatInput.trim()}
                         >
-                          <span className="mr-1">📨</span>
+                          <span className="mr-1"></span>
                           Send
                         </Button>
                       </motion.div>
@@ -1767,10 +1665,10 @@ export default function Home() {
                     {/* Enhanced Quick question buttons */}
                     <div className="flex flex-wrap gap-2">
                       {[
-                        { text: 'Tell me about projects', icon: '💼' },
-                        { text: 'What are your skills?', icon: '🛠️' },
-                        { text: 'How can I hire you?', icon: '📞' },
-                        { text: 'Show experience', icon: '📜' }
+                        { text: 'Tell me about projects', icon: '' },
+                        { text: 'What are your skills?', icon: '' },  
+                        { text: 'How can I hire you?', icon: '' },
+                        { text: 'Show experience', icon: '' }
                       ].map((question, index) => (
                         <motion.div
                           key={question.text}
@@ -1972,7 +1870,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center">
                       <div className="w-4 h-4 bg-blue-500 rounded-full mr-4"></div>
-                      <span className="text-lg">+91 XXXXX XXXXX</span>
+                      <span className="text-lg">+91 9345450445</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-4 h-4 bg-purple-500 rounded-full mr-4"></div>
@@ -2097,7 +1995,7 @@ export default function Home() {
                     size="lg"
                     className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 hover:shadow-xl transition-all duration-300 p-4"
                     onClick={() => {
-                      window.open('https://github.com/dharaneesh', '_blank')
+                      window.open('https://github.com/Dharaneesh05', '_blank')
                       toast({
                         title: "Opening GitHub",
                         description: "Check out my code repositories",
@@ -2116,7 +2014,7 @@ export default function Home() {
                     size="lg"
                     className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-500 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 p-4"
                     onClick={() => {
-                      window.open('https://linkedin.com/in/dharaneesh', '_blank')
+                      window.open('hthttps://www.linkedin.com/in/dharaneesh-c/', '_blank')
                       toast({
                         title: "Opening LinkedIn",
                         description: "Let's connect professionally",
@@ -2205,10 +2103,9 @@ export default function Home() {
               </div>
               <div className="space-y-4">
                 {[
-                  { icon: '📧', text: 'dharaneeshc2006@gmail.com', type: 'email' },
-                  { icon: '🌍', text: 'Available Worldwide', type: 'location' },
-                  { icon: '💼', text: 'Open for Opportunities', type: 'work' },
-                  { icon: '⚡', text: '24hr Response Time', type: 'response' }
+                  { icon: '', text: 'dharaneeshc2006@gmail.com', type: 'email' },
+                  { icon: '', text: 'Open for Opportunities', type: 'work' },
+                  { icon: '', text: '24hr Response Time', type: 'response' }
                 ].map((item, index) => (
                   <motion.div 
                     key={item.type}
@@ -2245,7 +2142,7 @@ export default function Home() {
                     })
                   }}
                 >
-                  <span className="mr-2">🚀</span>
+                  <span className="mr-2"></span>
                   Start a Project
                 </Button>
               </motion.div>
@@ -2262,10 +2159,10 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
               <div className="text-center lg:text-left space-y-2">
                 <p className="text-gray-400 text-sm">
-                  © 2025 Dharaneesh C. All rights reserved.
+                  © Dharaneesh C 2025. All rights reserved.
                 </p>
                 <p className="text-gray-500 text-xs">
-                  Crafted with ❤️ using React, Next.js, Tailwind CSS & Framer Motion
+                  Created using React, Next.js, Tailwind CSS & Framer Motion
                 </p>
               </div>
               
@@ -2275,20 +2172,21 @@ export default function Home() {
                   whileHover={{ scale: 1.05 }}
                 >
                   <span className="animate-pulse">🇮🇳</span>
-                  Made in India
+                  Developed by Dharaneesh
                 </motion.span>
                 <motion.span 
                   className="flex items-center gap-2 hover:text-green-500 transition-colors cursor-pointer"
                   whileHover={{ scale: 1.05 }}
                 >
-                  <span className="animate-bounce">🌱</span>
-                  Eco-friendly Hosting
+                  <span className="animate-bounce"></span>
+                  Hosted on vercel
                 </motion.span>
               </div>
             </div>
 
-            {/* Tech Stack Icons */}
-            <motion.div 
+
+
+            {/* <motion.div 
               className="flex justify-center items-center gap-6 mt-8 pt-8 border-t border-gray-800/50"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -2316,7 +2214,7 @@ export default function Home() {
                   </motion.span>
                 ))}
               </div>
-            </motion.div>
+            </motion.div> */}
           </motion.div>
         </div>
       </footer>

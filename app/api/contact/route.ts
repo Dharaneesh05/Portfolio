@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import emailjs from '@emailjs/browser'
 
-// You can use services like EmailJS, SendGrid, or Resend for production
-// For now, this simulates email sending
 export async function POST(request: NextRequest) {
   try {
     const { name, email, message } = await request.json()
@@ -24,12 +23,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Log the contact form submission
-    console.log('📧 New Contact Form Submission:')
+    console.log('New Contact Form Submission:')
     console.log('==========================================')
-    console.log(`👤 Name: ${name}`)
-    console.log(`📧 Email: ${email}`)
-    console.log(`💬 Message: ${message}`)
-    console.log(`⏰ Time: ${new Date().toISOString()}`)
+    console.log(`Name: ${name}`)
+    console.log(`Email: ${email}`)
+    console.log(`Message: ${message}`)
+    console.log(`Time: ${new Date().toISOString()}`)
     console.log('==========================================')
 
     // Here you would integrate with an email service:
@@ -87,7 +86,7 @@ export async function POST(request: NextRequest) {
       message: `Thank you ${name}! Your message has been sent successfully. I'll get back to you at ${email} within 24 hours.`
     })
   } catch (error) {
-    console.error('❌ Contact form error:', error)
+    console.error('Contact form error:', error)
     return NextResponse.json({
       success: false,
       message: 'There was an error sending your message. Please try again or contact me directly at dharaneeshc2006@gmail.com'
