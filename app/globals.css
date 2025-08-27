@@ -83,6 +83,8 @@
   --light-green: #e8f5e8;
   --light-purple: #f3e8ff;
   --light-cyan: #e0f7fa;
+  --light-pink: #fce7f3;
+  --light-indigo: #e0e7ff;
 }
 
 .dark {
@@ -267,6 +269,32 @@ body {
   }
 }
 
+/* Pulse animation for stats */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Bounce animation for icons */
+@keyframes bounce-subtle {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
 /* Animation classes */
 .animate-fade-in-up {
   animation: fade-in-up 0.6s ease-out forwards;
@@ -328,6 +356,14 @@ body {
   @apply animate-pulse-glow;
 }
 
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s infinite;
+}
+
 /* Stagger animations */
 .stagger-1 { animation-delay: 0.1s; }
 .stagger-2 { animation-delay: 0.2s; }
@@ -375,7 +411,7 @@ body {
   box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
 }
 
-/* Navigation styles */
+/* Navigation styles with enhanced animations */
 .nav-link {
   @apply relative transition-all duration-300 hover:text-orange-500;
 }
@@ -400,7 +436,7 @@ body {
   width: 100%;
 }
 
-/* Profile image enhancement */
+/* Profile image enhancement with hover rotate */
 .profile-image {
   transition: all 0.5s ease;
 }
@@ -414,7 +450,7 @@ body {
   @apply text-orange-500 font-bold text-2xl;
 }
 
-/* Skill progress bars */
+/* Skill progress bars with enhanced fill animation */
 .skill-progress {
   @apply bg-gray-700 rounded-full h-3 overflow-hidden;
 }
@@ -423,7 +459,7 @@ body {
   @apply bg-gradient-to-r from-orange-500 to-orange-400 h-full rounded-full transition-all duration-1000 ease-out;
 }
 
-/* Project cards */
+/* Project cards with enhanced hover effects */
 .project-card {
   @apply transition-all duration-300 hover:scale-105;
 }
@@ -432,13 +468,14 @@ body {
   box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
 }
 
-/* Form inputs */
+/* Form inputs with focus glow */
 .form-input {
   @apply border-gray-600 bg-gray-800 text-white rounded-lg px-4 py-2 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-all duration-300;
 }
 
 .form-input:focus {
   box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+  outline: 2px solid #ff4500;
 }
 
 /* Responsive utilities */
@@ -453,6 +490,11 @@ body {
   
   .mobile-full {
     @apply w-full;
+  }
+
+  /* Scale down profile photo on mobile */
+  .profile-image {
+    @apply w-48 h-48;
   }
 }
 

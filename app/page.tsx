@@ -2,7 +2,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useMemo } from "react"
 import {
   Github,
@@ -25,6 +24,8 @@ import {
   Sparkles,
   BookOpen,
   Zap,
+  Sun,
+  Moon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -50,6 +51,7 @@ export default function Portfolio() {
   const [chatMessage, setChatMessage] = useState("")
   const [chatResponse, setChatResponse] = useState("")
   const [showResumeModal, setShowResumeModal] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -123,7 +125,7 @@ export default function Portfolio() {
     link.click()
 
     toast({
-      title: "Resume Downloaded! 📄",
+      title: "Resume Downloaded!",
       description: "Thank you for your interest. The resume has been downloaded.",
     })
   }
@@ -131,7 +133,7 @@ export default function Portfolio() {
   const viewResume = () => {
     setShowResumeModal(true)
     toast({
-      title: "Resume Opened! 👀",
+      title: "Resume Opened!",
       description: "Resume opened for viewing.",
     })
   }
@@ -153,13 +155,13 @@ export default function Portfolio() {
 
       setFormSubmitted(true)
       toast({
-        title: "Message Sent Successfully! 🚀",
+        title: "Message Sent Successfully!",
         description: "Thank you for reaching out. I'll get back to you soon.",
       })
       ;(e.target as HTMLFormElement).reset()
     } catch (error) {
       toast({
-        title: "Error ❌",
+        title: "Error",
         description: "Failed to send message. Please try again.",
         variant: "destructive",
       })
@@ -186,12 +188,12 @@ export default function Portfolio() {
   }
 
   const skills = [
-    { name: "React/Next.js", level: 95, icon: "⚛️", color: "from-indigo-500 to-indigo-600" },
-    { name: "TypeScript", level: 90, icon: "📘", color: "from-blue-500 to-blue-600" },
-    { name: "Node.js", level: 85, icon: "🟢", color: "from-emerald-500 to-emerald-600" },
-    { name: "Python", level: 90, icon: "🐍", color: "from-gray-500 to-gray-600" },
-    { name: "MongoDB", level: 85, icon: "🍃", color: "from-green-500 to-green-600" },
-    { name: "Deep Learning", level: 80, icon: "🧠", color: "from-purple-500 to-purple-600" },
+    { name: "React/Next.js", level: 95, color: "from-blue-400 to-blue-500" },
+    { name: "TypeScript", level: 90, color: "from-cyan-400 to-cyan-500" },
+    { name: "Node.js", level: 85, color: "from-emerald-400 to-emerald-500" },
+    { name: "Python", level: 90, color: "from-indigo-400 to-indigo-500" },
+    { name: "MongoDB", level: 85, color: "from-green-400 to-green-500" },
+    { name: "Deep Learning", level: 80, color: "from-purple-400 to-purple-500" },
   ]
 
   const projects = [
@@ -264,15 +266,13 @@ export default function Portfolio() {
       title: "MongoDB Associate Developer",
       issuer: "MongoDB University",
       date: "2025",
-      icon: "🍃",
-      color: "from-green-500 to-green-600",
+      color: "from-green-400 to-green-500",
     },
     {
       title: "Oracle APEX Cloud Developer",
       issuer: "Oracle",
       date: "2025",
-      icon: "🔶",
-      color: "from-orange-500 to-orange-600",
+      color: "from-orange-400 to-orange-500",
     },
   ]
 
@@ -317,6 +317,10 @@ export default function Portfolio() {
     setTechnologyFilters([])
   }
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode)
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Resume Modal */}
@@ -352,14 +356,14 @@ export default function Portfolio() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-12 h-12 gradient-primary hover:from-primary/80 hover:to-accent/80 rounded-full flex items-center justify-center z-50 transition-all duration-300 hover:scale-110 shadow-lg animate-bounce-in"
+          className="fixed bottom-8 right-8 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center z-50 transition-all duration-300 hover:scale-110 shadow-lg animate-bounce-in"
           aria-label="Back to top"
         >
-          <ArrowUp className="w-6 h-6 text-primary-foreground" />
+          <ArrowUp className="w-6 h-6 text-white" />
         </button>
       )}
 
-      {/* Navigation */}
+      {/* Navigation - Fixed at top with black background and orange accents */}
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-500 ${
           isScrolled ? "bg-black/95 backdrop-blur-md shadow-lg border-b border-orange-500/20" : "bg-black"
@@ -367,6 +371,7 @@ export default function Portfolio() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
+            {/* Left - Logo */}
             <div className="text-2xl md:text-3xl font-bold animate-slide-in-left">
               <button 
                 onClick={() => scrollToSection("home")}
@@ -377,7 +382,7 @@ export default function Portfolio() {
               </button>
             </div>
 
-            {/* Desktop Navigation */}
+            {/* Center - Navigation Links */}
             <div className="hidden md:flex space-x-8 animate-slide-in-down">
               {["Home", "About", "Skills", "Projects", "Certifications", "Demo", "Contact"].map(
                 (item, index) => {
@@ -397,6 +402,7 @@ export default function Portfolio() {
               )}
             </div>
 
+            {/* Right - Hire Me button, Dark Mode Toggle, and Social Icons */}
             <div className="flex items-center space-x-4">
               <Button
                 onClick={() => scrollToSection("contact")}
@@ -405,7 +411,16 @@ export default function Portfolio() {
                 Hire Me
               </Button>
 
-              {/* Social Icons in Navbar */}
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="hidden md:flex text-white hover:text-orange-500 transition-all duration-300 hover:scale-105 text-xl md:text-2xl"
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+              </button>
+
+              {/* Social Icons */}
               <div className="hidden md:flex items-center space-x-2">
                 <a
                   href="https://linkedin.com/in/dharaneesh"
@@ -427,7 +442,7 @@ export default function Portfolio() {
 
               {/* Mobile Menu Button */}
               <button
-                className="md:hidden text-foreground transition-transform duration-300 hover:scale-110"
+                className="md:hidden text-white transition-transform duration-300 hover:scale-110"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -437,7 +452,7 @@ export default function Portfolio() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Slide-in from right with fade */}
         <div
           className={`md:hidden transition-all duration-500 overflow-hidden ${
             isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
@@ -459,6 +474,13 @@ export default function Portfolio() {
             })}
             {/* Mobile Social Icons */}
             <div className="flex items-center space-x-4 pt-4 border-t border-orange-500/20">
+              <button
+                onClick={toggleDarkMode}
+                className="text-white hover:text-orange-500 transition-all duration-300 hover:scale-105"
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+              </button>
               <a
                 href="https://linkedin.com/in/dharaneesh"
                 target="_blank"
@@ -480,32 +502,30 @@ export default function Portfolio() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero Section - Full-screen height with black background and subtle gradient */}
       <section
         id="home"
-        className="min-h-screen flex items-center px-4 sm:px-6 lg:px-8 pt-20 bg-gradient-to-br from-black to-gray-900 relative overflow-hidden"
+        className="min-h-screen flex items-center px-4 sm:px-6 lg:px-8 pt-20 bg-gradient-to-br from-black to-gray-800 relative overflow-hidden"
       >
         <div className="max-w-7xl mx-auto w-full relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="flex flex-col md:flex-row items-center justify-between">
             {/* Left Content */}
-            <div className="space-y-8 fade-in">
+            <div className="flex-1 space-y-8 fade-in">
               <div className="space-y-6">
                 <div
                   className="flex items-center space-x-2 text-sm md:text-base text-purple-500 animate-fade-in-up opacity-0"
                   style={{ animationDelay: "0.2s" }}
                 >
                   <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
-                  <span>Hi, I am</span>
+                  <span>Hi, I am Dharaneesh C</span>
                 </div>
                 <h1
                   className="text-4xl md:text-6xl font-bold leading-tight animate-fade-in-up opacity-0 uppercase"
                   style={{ animationDelay: "0.4s", fontFamily: 'Poppins, sans-serif' }}
                 >
                   <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 cursor-pointer inline-block">
-                    Dharaneesh C
+                    Full Stack & AI Developer
                   </span>
-                  <br />
-                  <span className="text-white">Full Stack & AI Developer</span>
                 </h1>
                 <p
                   className="text-base md:text-lg text-white leading-relaxed max-w-lg animate-fade-in-up opacity-0"
@@ -528,23 +548,20 @@ export default function Portfolio() {
                   <Eye className="w-5 h-5 mr-2" />
                   View Projects
                 </Button>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={downloadResume}
-                    variant="outline"
-                    className="border-2 border-orange-500 text-orange-500 hover:bg-orange-100 hover:text-orange-600 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 bg-transparent"
-                  >
-                    <Download className="w-5 h-5 mr-2" />
-                    Download Resume
-                  </Button>
-                  <Button
-                    onClick={viewResume}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/30 btn-orange"
-                  >
-                    <Eye className="w-5 h-5 mr-2" />
-                    View Resume
-                  </Button>
-                </div>
+                <Button
+                  onClick={downloadResume}
+                  className="border-2 border-orange-500 text-orange-500 hover:bg-orange-100 hover:text-orange-600 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 bg-transparent"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Download Resume
+                </Button>
+                <Button
+                  onClick={viewResume}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/30 btn-orange"
+                >
+                  <Eye className="w-5 h-5 mr-2" />
+                  View Resume
+                </Button>
               </div>
 
               {/* Social Links in Hero */}
@@ -556,7 +573,7 @@ export default function Portfolio() {
                   className="flex items-center space-x-2 text-blue-600 hover:text-blue-500 transition-all duration-300 hover:scale-105 group"
                 >
                   <Linkedin className="w-6 h-6 group-hover:animate-pulse" />
-                  <span className="text-white group-hover:text-blue-500">LinkedIn</span>
+                  <span className="text-white group-hover:text-blue-500">View LinkedIn</span>
                 </a>
                 <a
                   href="https://github.com/Dharaneesh05"
@@ -565,51 +582,49 @@ export default function Portfolio() {
                   className="flex items-center space-x-2 text-white hover:text-gray-300 transition-all duration-300 hover:scale-105 group"
                 >
                   <Github className="w-6 h-6 group-hover:animate-pulse" />
-                  <span className="group-hover:text-gray-300">GitHub</span>
+                  <span className="group-hover:text-gray-300">View GitHub</span>
                 </a>
               </div>
 
-              {/* Stats Widget */}
+              {/* Stats Widget at Bottom */}
               <div className="pt-8 animate-fade-in-up opacity-0" style={{ animationDelay: "1.2s" }}>
-                <StatsWidget />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-500">10+</div>
+                    <div className="text-sm text-gray-400">Projects</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-500">2+</div>
+                    <div className="text-sm text-gray-400">Years</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-500">5+</div>
+                    <div className="text-sm text-gray-400">Clients</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-500">3+</div>
+                    <div className="text-sm text-gray-400">Certifications</div>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Right Content - Profile Image */}
             <div
-              className="flex justify-center lg:justify-end fade-in animate-fade-in-right opacity-0"
+              className="flex-1 flex justify-center lg:justify-end fade-in animate-fade-in-right opacity-0 mt-8 md:mt-0"
               style={{ animationDelay: "0.8s" }}
             >
               <div className="relative group">
-                <div className="w-80 h-80 lg:w-96 lg:h-96 relative">
-                  {/* Animated rings */}
-                  <div className="absolute inset-0 gradient-card rounded-full animate-spin-slow"></div>
-                  <div className="absolute inset-4 gradient-card rounded-full animate-pulse"></div>
-                  <div className="absolute inset-8 gradient-card rounded-full animate-ping"></div>
-
-                  <div className="absolute inset-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 p-1">
+                <div className="w-64 h-64 md:w-80 md:h-80 relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full p-1">
                     <Image
                       src="/placeholder.svg?height=400&width=400&text=Dharaneesh+C"
                       alt="Dharaneesh C - Full Stack & AI Developer"
                       width={400}
                       height={400}
-                      className="w-full h-full object-cover rounded-full profile-image"
+                      className="w-full h-full object-cover rounded-full profile-image border-4 border-orange-500 hover:rotate-3 transition-transform duration-500"
                       priority
                     />
-                  </div>
-
-                  {/* Enhanced floating elements */}
-                  <div className="absolute -top-6 -right-6 w-12 h-12 gradient-primary rounded-full animate-float shadow-xl shadow-primary/30 flex items-center justify-center animate-glow">
-                    <Code className="w-6 h-6 text-primary-foreground animate-pulse" />
-                  </div>
-                  <div className="absolute -bottom-6 -left-6 w-10 h-10 gradient-primary rounded-full animate-float-delayed shadow-xl shadow-accent/30 flex items-center justify-center animate-glow">
-                    <Brain className="w-5 h-5 text-primary-foreground animate-pulse" />
-                  </div>
-                  <div className="absolute top-1/4 -left-10 w-8 h-8 gradient-primary rounded-full animate-float shadow-xl shadow-primary/20 flex items-center justify-center animate-glow">
-                    <Zap className="w-4 h-4 text-primary-foreground animate-pulse" />
-                  </div>
-                  <div className="absolute bottom-1/4 -right-8 w-6 h-6 gradient-primary rounded-full animate-float-delayed shadow-lg shadow-accent/20 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-primary-foreground animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -619,46 +634,43 @@ export default function Portfolio() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 px-4 md:px-8 bg-gray-700">
+      <section id="about" className="py-16 px-4 md:px-8" style={{ backgroundColor: '#4B5563' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 fade-in">
             <h2 className="text-3xl md:text-4xl font-bold text-orange-500 mb-4 underline">About Me</h2>
             <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 fade-in">
+          <div className="flex flex-col md:flex-row gap-8 items-center">
+            <div className="flex-1 space-y-6 fade-in">
               <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Passionate Developer & AI Enthusiast</h3>
-              <p className="text-white leading-relaxed max-w-2xl">
+              <p className="text-white leading-relaxed max-w-2xl mx-auto text-base md:text-lg">
                 I'm Dharaneesh, a Full Stack Developer and AI/Data Science student at Kongu Engineering College,
                 specializing in web development and AI solutions using React, Python, and Deep Learning. I'm passionate
                 about creating innovative solutions that bridge the gap between technology and user experience.
               </p>
-              <p className="text-white leading-relaxed max-w-2xl">
+              <p className="text-white leading-relaxed max-w-2xl mx-auto text-base md:text-lg">
                 When not coding, I explore machine learning models and contribute to open-source projects. I believe in
                 continuous learning and staying updated with the latest technologies to deliver cutting-edge solutions.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button
-                  onClick={downloadResume}
-                  className="gradient-primary hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-8 py-3 text-lg rounded-full transition-all duration-500 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 hover-glow group animate-glow"
-                >
-                  <Download className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-                  Download Resume
-                </Button>
-                <Button
-                  onClick={viewResume}
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 group bg-transparent"
-                >
-                  <Eye className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-                  View Resume
-                </Button>
-              </div>
+              <ul className="space-y-4 text-white">
+                <li className="flex items-center space-x-3">
+                  <Code className="w-5 h-5 text-orange-500" />
+                  <span>Full Stack Web Development</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Brain className="w-5 h-5 text-orange-500" />
+                  <span>Artificial Intelligence & Machine Learning</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <BookOpen className="w-5 h-5 text-orange-500" />
+                  <span>Continuous Learning & Innovation</span>
+                </li>
+              </ul>
             </div>
 
-            <div className="relative fade-in">
+            <div className="flex-1 relative fade-in">
               <Card className="hover:shadow-2xl transition-all duration-500 hover:scale-105 fade-in border-border group card-hover hover-glow gradient-card">
                 <CardContent className="p-0">
                   <Image
@@ -686,7 +698,7 @@ export default function Portfolio() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {skills.map((skill, index) => (
               <Card
                 key={index}
@@ -695,14 +707,11 @@ export default function Portfolio() {
               >
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    <span className="text-3xl mr-3 group-hover:scale-125 transition-transform duration-300">
-                      {skill.icon}
-                    </span>
-                    <h3 className="text-foreground font-semibold group-hover:text-primary transition-colors">
+                    <h3 className="text-white font-semibold group-hover:text-orange-500 transition-colors">
                       {skill.name}
                     </h3>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
                     <div
                       className={`bg-gradient-to-r ${skill.color} h-3 rounded-full transition-all duration-1000 ease-out animate-skill-bar shadow-sm`}
                       style={{ width: `${skill.level}%` }}
@@ -721,31 +730,35 @@ export default function Portfolio() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8 gradient-section">
+      <section id="projects" className="py-16 px-4 md:px-8 bg-black">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">My Projects</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-orange-500 mb-4">My Projects</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
+            <p className="text-white mt-4 max-w-2xl mx-auto">
               Recent projects that showcase my skills and expertise
             </p>
           </div>
 
-          {/* Enhanced Project Filter */}
-          <div className="mb-12 fade-in">
-            <ProjectFilter
-              categories={categories}
-              technologies={allTechnologies}
-              onCategoryFilter={handleCategoryFilter}
-              onTechnologyFilter={handleTechnologyFilter}
-              onClearFilters={handleClearFilters}
-              activeCategory={projectFilter}
-              activeTechnologies={technologyFilters}
-            />
+          {/* Project Filter Buttons */}
+          <div className="flex flex-wrap justify-center gap-4 mb-12 fade-in">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                onClick={() => handleCategoryFilter(category)}
+                className={`px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 ${
+                  projectFilter === category 
+                    ? "bg-orange-500 text-white" 
+                    : "bg-gray-700 text-white hover:bg-orange-500"
+                }`}
+              >
+                {category}
+              </Button>
+            ))}
           </div>
 
           {/* Projects Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.length > 0 ? (
               filteredProjects.map((project, index) => (
                 <Card
@@ -764,17 +777,17 @@ export default function Portfolio() {
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute top-4 right-4">
                       <Badge
-                        className={`bg-gradient-to-r ${project.gradient} text-primary-foreground border-none shadow-lg`}
+                        className={`bg-gradient-to-r ${project.gradient} text-white border-none shadow-lg`}
                       >
                         {project.category}
                       </Badge>
                     </div>
                   </div>
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-orange-500 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-muted-foreground mb-4 group-hover:text-foreground transition-colors">
+                    <p className="text-gray-300 mb-4 group-hover:text-white transition-colors">
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
@@ -782,12 +795,7 @@ export default function Portfolio() {
                         <Badge
                           key={idx}
                           variant="secondary"
-                          className={`text-xs transition-colors cursor-pointer ${
-                            technologyFilters.includes(tech)
-                              ? "bg-secondary text-secondary-foreground"
-                              : "bg-muted text-muted-foreground hover:bg-secondary/20 hover:text-secondary"
-                          }`}
-                          onClick={() => handleTechnologyFilter(tech)}
+                          className="text-xs bg-gray-600 text-gray-200 hover:bg-gray-500"
                         >
                           {tech}
                         </Badge>
@@ -796,12 +804,12 @@ export default function Portfolio() {
                     <div className="flex gap-4">
                       <Button
                         size="sm"
-                        className="gradient-primary hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-8 py-3 text-lg rounded-full transition-all duration-500 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 hover-glow group animate-glow"
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 group"
                       >
                         <ExternalLink className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                         Live Demo
                       </Button>
-                      <Button size="sm" variant="outline" className="border-border bg-transparent group">
+                      <Button size="sm" variant="outline" className="border-gray-600 bg-transparent text-white group">
                         <Github className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                         GitHub
                       </Button>
@@ -812,40 +820,31 @@ export default function Portfolio() {
             ) : (
               <div className="col-span-full text-center py-12">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">No projects found</h3>
-                <p className="text-muted-foreground mb-4">Try adjusting your filters to see more projects.</p>
+                <h3 className="text-xl font-semibold text-white mb-2">No projects found</h3>
+                <p className="text-gray-300 mb-4">Try adjusting your filters to see more projects.</p>
                 <Button
                   onClick={handleClearFilters}
                   variant="outline"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-transparent"
+                  className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white bg-transparent"
                 >
                   Clear All Filters
                 </Button>
               </div>
             )}
           </div>
-
-          {/* Project Count */}
-          {filteredProjects.length > 0 && (
-            <div className="text-center mt-8 fade-in">
-              <p className="text-muted-foreground">
-                Showing {filteredProjects.length} of {projects.length} projects
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
       {/* Certifications Section */}
-      <section id="certifications" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="certifications" className="py-16 px-4 md:px-8" style={{ backgroundColor: '#4B5563' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Certifications</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">Professional certifications and achievements</p>
+            <h2 className="text-3xl font-bold text-orange-500 mb-4">Certifications</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
+            <p className="text-white mt-4 max-w-2xl mx-auto">Professional certifications and achievements</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="flex flex-col gap-6">
             {certifications.map((cert, index) => (
               <Card
                 key={index}
@@ -855,18 +854,18 @@ export default function Portfolio() {
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
                     <div
-                      className={`w-16 h-16 gradient-card rounded-full flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                      className={`w-16 h-16 bg-gradient-to-r ${cert.color} rounded-full flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}
                     >
-                      {cert.icon}
+                      <BookOpen className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-orange-500 transition-colors">
                         {cert.title}
                       </h3>
-                      <p className="text-muted-foreground mb-2 group-hover:text-foreground transition-colors">
+                      <p className="text-gray-300 mb-2 group-hover:text-white transition-colors">
                         {cert.issuer}
                       </p>
-                      <div className="flex items-center text-muted-foreground text-sm">
+                      <div className="flex items-center text-gray-300 text-sm">
                         <Calendar className="w-4 h-4 mr-2" />
                         {cert.date}
                       </div>
@@ -880,20 +879,20 @@ export default function Portfolio() {
       </section>
 
       {/* Interactive AI Demo Section */}
-      <section id="demo" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="demo" className="py-16 px-4 md:px-8 bg-black">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Interactive AI Demo</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-orange-500 mb-4">Interactive AI Demo</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
+            <p className="text-white mt-4 max-w-2xl mx-auto">
               Try out my AI assistant! Ask questions about my projects, skills, or anything else.
             </p>
           </div>
 
           <Card className="hover:shadow-2xl transition-all duration-500 hover:scale-105 fade-in border-border group card-hover hover-glow gradient-card">
             <CardHeader>
-              <CardTitle className="flex items-center text-foreground">
-                <Brain className="w-6 h-6 mr-2 text-primary" />
+              <CardTitle className="flex items-center text-white">
+                <Brain className="w-6 h-6 mr-2 text-orange-500" />
                 AI Assistant Demo
               </CardTitle>
             </CardHeader>
@@ -903,12 +902,12 @@ export default function Portfolio() {
                   value={chatMessage}
                   onChange={(e) => setChatMessage(e.target.value)}
                   placeholder="Ask me anything about Dharaneesh's work..."
-                  className="flex-1 border-border focus:border-primary"
+                  className="flex-1 border-gray-600 bg-gray-800 text-white focus:border-orange-500"
                   onKeyPress={(e) => e.key === "Enter" && handleChatSubmit()}
                 />
                 <Button
                   onClick={handleChatSubmit}
-                  className="gradient-primary hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-8 py-3 text-lg rounded-full transition-all duration-500 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 hover-glow group animate-glow"
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 group"
                 >
                   <MessageSquare className="w-4 h-4 mr-2 group-hover:animate-pulse" />
                   Ask AI
@@ -916,13 +915,13 @@ export default function Portfolio() {
               </div>
 
               {chatResponse && (
-                <Card className="bg-muted/50 border-border animate-fade-in-up">
+                <Card className="bg-gray-800 border-gray-700 animate-fade-in-up">
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
-                      <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center flex-shrink-0">
-                        <Brain className="w-4 h-4 text-primary-foreground" />
+                      <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Brain className="w-4 h-4 text-white" />
                       </div>
-                      <p className="text-foreground">{chatResponse}</p>
+                      <p className="text-white">{chatResponse}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -933,108 +932,109 @@ export default function Portfolio() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="contact" className="py-16 px-4 md:px-8" style={{ backgroundColor: '#4B5563' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Get In Touch</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-orange-500 mb-4">Get In Touch</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
+            <p className="text-white mt-4 max-w-2xl mx-auto">
               Ready to start your next project? Let's discuss how I can help bring your ideas to life.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Contact Info */}
             <div className="space-y-8 fade-in">
               <div>
-                <h3 className="text-2xl font-bold gradient-text mb-6">Let's create something amazing together</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-2xl font-bold text-orange-500 mb-6">Let's create something amazing together</h3>
+                <p className="text-white leading-relaxed">
                   I'm always interested in new opportunities and exciting projects. Whether you have a question or just
                   want to say hi, I'll try my best to get back to you!
                 </p>
               </div>
 
               <div className="space-y-6">
-                {[
-                  {
-                    icon: Mail,
-                    label: "Email",
-                    value: "dharaneeshc2006@gmail.com",
-                    color: "from-red-500 to-pink-500",
-                  },
-                  {
-                    icon: Phone,
-                    label: "Phone",
-                    value: "+91 (555) 123-4567",
-                    color: "from-green-500 to-emerald-500",
-                  },
-                  {
-                    icon: MapPin,
-                    label: "Location",
-                    value: "Coimbatore, India",
-                    color: "from-blue-500 to-cyan-500",
-                  },
-                ].map((contact, index) => (
-                  <div key={index} className="flex items-center space-x-4 group">
-                    <div
-                      className={`w-12 h-12 gradient-card rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <contact.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground text-sm">{contact.label}</div>
-                      <div className="text-foreground font-semibold group-hover:text-primary transition-colors">
-                        {contact.value}
-                      </div>
+                <div className="flex items-center space-x-4 group">
+                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-sm">Email</div>
+                    <div className="text-white font-semibold group-hover:text-orange-500 transition-colors">
+                      dharaneeshc2006@gmail.com
                     </div>
                   </div>
-                ))}
+                </div>
+
+                <div className="flex items-center space-x-4 group">
+                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Phone className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-sm">Phone</div>
+                    <div className="text-white font-semibold group-hover:text-orange-500 transition-colors">
+                      +91 (555) 123-4567
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4 group">
+                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-sm">Location</div>
+                    <div className="text-white font-semibold group-hover:text-orange-500 transition-colors">
+                      Coimbatore, India
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Social Links */}
               <div className="flex space-x-4">
-                {[
-                  { icon: Linkedin, href: "https://linkedin.com/in/dharaneesh", color: "hover:bg-blue-600" },
-                  {
-                    icon: Github,
-                    href: "https://github.com/Dharaneesh05",
-                    color: "hover:bg-gray-800 dark:hover:bg-gray-600",
-                  },
-                  { icon: Twitter, href: "#", color: "hover:bg-blue-400" },
-                ].map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`w-12 h-12 bg-card border border-border ${social.color} rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:text-white shadow-lg group`}
-                  >
-                    <social.icon className="w-5 h-5 group-hover:animate-pulse" />
-                  </a>
-                ))}
-              </div>
-
-              {/* Social Feed */}
-              <div className="mt-8">
-                <SocialFeed />
+                <a
+                  href="https://linkedin.com/in/dharaneesh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:text-white shadow-lg group"
+                >
+                  <Linkedin className="w-5 h-5 text-white group-hover:animate-pulse" />
+                </a>
+                <a
+                  href="https://github.com/Dharaneesh05"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-gray-800 hover:bg-gray-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:text-white shadow-lg group"
+                >
+                  <Github className="w-5 h-5 text-white group-hover:animate-pulse" />
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 bg-blue-400 hover:bg-blue-300 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:text-white shadow-lg group"
+                >
+                  <Twitter className="w-5 h-5 text-white group-hover:animate-pulse" />
+                </a>
               </div>
             </div>
 
             {/* Contact Form */}
-            <div className="lg:col-span-2">
+            <div>
               <Card className="hover:shadow-2xl transition-all duration-500 hover:scale-105 fade-in border-border group card-hover hover-glow gradient-card">
                 <CardContent className="p-8">
                   {formSubmitted ? (
                     <div className="text-center py-12 animate-fade-in-up">
-                      <div className="w-16 h-16 gradient-card rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Send className="w-8 h-8 text-white" />
                       </div>
-                      <h3 className="text-2xl font-bold text-foreground mb-2">Message Sent Successfully!</h3>
-                      <p className="text-muted-foreground">Thank you for reaching out. I'll get back to you soon.</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">Message Sent Successfully!</h3>
+                      <p className="text-gray-300">Thank you for reaching out. I'll get back to you soon.</p>
                       <Button
                         onClick={() => setFormSubmitted(false)}
                         variant="outline"
-                        className="mt-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                        className="mt-4 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
                       >
                         Send Another Message
                       </Button>
@@ -1043,42 +1043,42 @@ export default function Portfolio() {
                     <form onSubmit={handleContactSubmit} className="space-y-6">
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-foreground text-sm font-semibold mb-2">Name</label>
+                          <label className="block text-white text-sm font-semibold mb-2">Name</label>
                           <Input
                             name="name"
                             required
-                            className="border-border focus:border-primary focus:ring-primary transition-all duration-300"
+                            className="border-gray-600 bg-gray-800 text-white focus:border-orange-500 focus:ring-orange-500 transition-all duration-300"
                             placeholder="Your name"
                           />
                         </div>
                         <div>
-                          <label className="block text-foreground text-sm font-semibold mb-2">Email</label>
+                          <label className="block text-white text-sm font-semibold mb-2">Email</label>
                           <Input
                             name="email"
                             type="email"
                             required
-                            className="border-border focus:border-primary focus:ring-primary transition-all duration-300"
+                            className="border-gray-600 bg-gray-800 text-white focus:border-orange-500 focus:ring-orange-500 transition-all duration-300"
                             placeholder="your.email@example.com"
                           />
                         </div>
                       </div>
                       <div>
-                        <label className="block text-foreground text-sm font-semibold mb-2">Message</label>
+                        <label className="block text-white text-sm font-semibold mb-2">Message</label>
                         <Textarea
                           name="message"
                           required
-                          className="border-border focus:border-primary focus:ring-primary min-h-[120px] transition-all duration-300"
+                          className="border-gray-600 bg-gray-800 text-white focus:border-orange-500 focus:ring-orange-500 min-h-[120px] transition-all duration-300"
                           placeholder="Tell me about your project..."
                         />
                       </div>
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className="gradient-primary hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-8 py-3 text-lg rounded-full transition-all duration-500 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 hover-glow group animate-glow"
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg group"
                       >
                         {isLoading ? (
                           <div className="flex items-center">
-                            <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2"></div>
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                             Sending...
                           </div>
                         ) : (
@@ -1098,71 +1098,44 @@ export default function Portfolio() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-8 gradient-section border-t border-border">
+      <footer className="py-8 px-4 md:px-8 bg-black border-t border-gray-700">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
             {/* Brand */}
-            <div className="md:col-span-2">
+            <div className="mb-4 md:mb-0">
               <h3 className="text-2xl font-bold mb-2">
-                <span className="gradient-text">Dharaneesh C</span>
+                <span className="text-orange-500">Dharaneesh C</span>
               </h3>
-              <p className="text-muted-foreground mb-4">Full Stack & AI Developer</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Building innovative web solutions and AI-powered applications with modern technologies and creative
-                problem-solving.
-              </p>
+              <p className="text-gray-400 mb-2">Full Stack & AI Developer</p>
             </div>
 
             {/* Navigation */}
-            <div>
-              <h4 className="text-lg font-semibold mb-4 text-foreground">Quick Links</h4>
-              <div className="space-y-2">
-                {["Home", "About", "Projects", "Contact"].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => scrollToSection(item.toLowerCase())}
-                    className="block text-muted-foreground hover:text-primary transition-colors duration-300"
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
+            <div className="flex space-x-6 mb-4 md:mb-0">
+              {["Home", "About", "Projects", "Contact"].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => scrollToSection(item.toLowerCase())}
+                  className="text-gray-400 hover:text-orange-500 transition-colors duration-300"
+                >
+                  {item}
+                </button>
+              ))}
             </div>
 
-            {/* Social */}
-            <div>
-              <h4 className="text-lg font-semibold mb-4 text-foreground">Connect</h4>
-              <div className="flex space-x-4 mb-4">
-                {[
-                  { icon: Linkedin, href: "https://linkedin.com/in/dharaneesh" },
-                  { icon: Github, href: "https://github.com/Dharaneesh05" },
-                  { icon: Twitter, href: "#" },
-                ].map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-card border border-border hover:bg-primary hover:border-primary rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-                  >
-                    <social.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
-                  </a>
-                ))}
-              </div>
-              <Button
-                onClick={scrollToTop}
-                variant="outline"
-                size="sm"
-                className="border-border hover:bg-accent group bg-transparent"
-              >
-                <ArrowUp className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-                Back to Top
-              </Button>
-            </div>
+            {/* Back to Top */}
+            <Button
+              onClick={scrollToTop}
+              variant="outline"
+              size="sm"
+              className="border-gray-600 hover:bg-orange-500 hover:border-orange-500 group bg-transparent text-white"
+            >
+              <ArrowUp className="w-4 h-4 mr-2 group-hover:animate-bounce" />
+              Back to Top
+            </Button>
           </div>
 
-          <div className="border-t border-border mt-8 pt-8 text-center">
-            <p className="text-muted-foreground">© 2025 Dharaneesh C. All rights reserved.</p>
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center">
+            <p className="text-gray-500">© 2025 Dharaneesh C. All rights reserved.</p>
           </div>
         </div>
       </footer>
