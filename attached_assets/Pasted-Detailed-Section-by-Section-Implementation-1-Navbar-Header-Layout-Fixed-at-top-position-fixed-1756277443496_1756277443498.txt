@@ -1,0 +1,111 @@
+Detailed Section-by-Section Implementation
+1. Navbar (Header)
+
+Layout: Fixed at top (position: fixed, top-0, w-full, z-50), black background (#000000), orange accents.
+Content:
+
+Left: Logo "Dharaneesh C" (clickable to #home, Poppins bold, text-2xl md:text-3xl, text-orange-500).
+Center: Navigation links (Home, About, Skills, Projects, Certifications, Blog, Demo, Contact) with smooth scrolling (react-scroll or Next.js Link with hash).
+Right: "Hire Me" button (bg-orange-500, rounded-lg, px-4 py-2, hover:bg-orange-600), dark mode toggle (sun/moon icon from react-icons/fa, text-xl md:text-2xl), LinkedIn (FaLinkedin, text-blue-600), GitHub (FaGithub, text-white) icons with hover glow (transition, scale-105).
+
+
+Mobile: Hamburger menu (hidden md:flex, slide-in from right with fade, use framer-motion for animation).
+Styling: Padding py-4, flex justify-between items-center, text-white.
+Animation: Fade-in on load (initial: opacity 0, animate: opacity 1, transition: 0.5s), hover scale-105 on links/buttons, bounce on icons (keyframe animation for subtle y-movement).
+Responsive: Stack vertically on mobile (flex-col), hide non-essential on sm: (e.g., md:flex for icons).
+
+2. Hero Section
+
+Layout: Full-screen height (min-h-screen), black background with subtle gradient (to #1A1A1A), centered content.
+Content:
+
+Left: Greeting "Hi, I am Dharaneesh C" (text-purple-500, text-sm md:text-base), heading "Full Stack & AI Developer" (bg-gradient-to-r from-orange-500 to-orange-400, text-transparent bg-clip-text, text-4xl md:text-6xl, Poppins uppercase bold), subtitle "Building innovative web solutions and AI-powered applications with modern technologies and creative problem-solving." (text-white, text-base md:text-lg).
+Buttons: "View Projects" (bg-orange-500, rounded-lg, px-6 py-3, hover:bg-orange-600), "Download Resume" (border-2 border-orange-500, rounded-lg, px-6 py-3, hover:bg-orange-100, downloads resume.pdf), "View Resume" (bg-orange-500, opens modal).
+Right: Circular profile photo (w-64 h-64 md:w-80 md:h-80, rounded-full, border-4 border-orange-500, object-cover, hover:rotate-3).
+Bottom: Stat cards (4: rocket for 10+ Projects, briefcase for 2+ Years, smile for 5+ Clients, trophy for 3+ Certifications; grid grid-cols-2 md:grid-cols-4 gap-4, count-up animation with framer-motion).
+
+
+Styling: Padding px-4 md:px-8, flex flex-col md:flex-row items-center justify-between.
+Animation: Enhanced fade-up on load (initial: opacity 0, y 50, animate: opacity 1, y 0, transition: 0.5s ease), pulse on stats (keyframe scale 1 to 1.05), hover scale-105 and rotate on photo, stagger fade for buttons.
+Responsive: Stack on mobile (flex-col), photo scales down (w-48 h-48 on sm:).
+
+3. About Section
+
+Layout: ID "about", py-16, background #4B5563.
+Content: Heading "About Me" (text-center, text-orange-500, text-3xl md:text-4xl, underline), bio paragraph (text-white, max-w-2xl mx-auto, text-base md:text-lg), achievement list (ul with icons from react-icons, text-white).
+Styling: Padding px-4 md:px-8, flex flex-col md:flex-row gap-8.
+Animation: Slide-in from left on scroll (initial: x-100, animate: x-0, transition: 0.5s), stagger for bullet points (delay per item), hover bounce on icons.
+Responsive: Stack on mobile, max-w-full on sm:.
+
+4. Skills Section
+
+Layout: ID "skills", grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8.
+Content: Heading "Skills" (text-center, text-orange-500, text-3xl), skill items (progress bars or icons with levels, e.g., React 95%, Python 90%, orange fill), radar chart (Recharts, max-w-xs md:max-w-sm).
+Styling: Padding py-16 px-4 md:px-8, bg-#000000.
+Animation: Bars fill on scroll (use framer-motion variants), icons bounce on hover (scale-110, transition: 0.3s), radar chart rotate-in (initial: rotate-45, opacity 0, animate: rotate-0, opacity 1), stagger for grid items.
+Responsive: Adjust columns (md:grid-cols-2 on tablet).
+
+5. Projects Section
+
+Layout: ID "projects", card grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6.
+Content: Heading "Projects" (text-center, text-orange-500, text-3xl), 6-8 cards (image next/image, title, description, buttons "Live Demo", "GitHub"), filter buttons (AI, Full Stack, etc., bg-gray-700 hover:bg-orange-500).
+Styling: Padding py-16 px-4 md:px-8, bg-#000000.
+Animation: Cards fade-in stagger on load (staggerChildren: 0.1), hover scale-105 with shadow pulse, slide-in for filters on load.
+Responsive: Single column on mobile, adjust gap on sm:.
+
+6. Certifications Section
+
+Layout: ID "certifications", list view flex flex-col gap-6.
+Content: Heading "Certifications" (text-center, text-orange-500, text-3xl), 3-5 cards (issuer logo, title, date, link).
+Styling: Padding py-16 px-4 md:px-8, bg-#4B5563.
+Animation: Fade-in on scroll with stagger for cards, hover scale-105 and bounce.
+Responsive: Stack on all screens.
+
+7. Blog Section
+
+Layout: ID "blog", card grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6.
+Content: Heading "Blog Posts" (text-center, text-orange-500, text-3xl), 4-6 teasers (title, excerpt, "Read More" link).
+Styling: Padding py-16 px-4 md:px-8, bg-#000000.
+Animation: Hover shadow lift (box-shadow: 0 0 10px rgba(255,69,0,0.5)), fade-in stagger for cards, pulse on "Read More" button.
+Responsive: Adjust columns on md:.
+
+8. Interactive AI Demo Section
+
+Layout: ID "demo", py-16.
+Content: Heading "Interactive AI Demo" (text-center, text-orange-500, text-3xl), chatbot UI (input, message history, floating chat icon bottom-right).
+Styling: Padding px-4 md:px-8, bg-#000000.
+Animation: Messages slide-in (x-100 to x-0), pulse on chat icon, fade-in for responses with stagger.
+Responsive: Modal max-w-md on mobile.
+
+9. Contact Section
+
+Layout: ID "contact", py-16.
+Content: Heading "Get in Touch" (text-center, text-orange-500, text-3xl), form (Name, Email, Message, submit button bg-orange-500), phone/email display, social icons.
+Styling: Padding px-4 md:px-8, bg-#4B5563, grid grid-cols-1 md:grid-cols-2 gap-8.
+Animation: Form fields focus glow (outline-orange-500), submit button pulse on hover, slide-in for section on scroll.
+Responsive: Stack on mobile.
+
+10. Footer
+
+Layout: Black background, centered, py-8.
+Content: Copyright "© 2025 Dharaneesh C" (text-gray-500), quick links, social icons, newsletter signup (Mailchimp embed).
+Styling: Padding px-4 md:px-8, flex flex-col md:flex-row justify-between.
+Animation: Up arrow (to top, smooth scroll) with hover scale and bounce, fade-in for links.
+Responsive: Stack on mobile.
+
+Backend Features
+
+API Routes:
+
+/api/chat.js: OpenAI integration (env var OPENAI_API_KEY), POST endpoint for chatbot.
+/api/contact.js: Nodemailer for email (env vars EMAIL_USER, EMAIL_PASS).
+
+
+Resume Handling: Public/resume.pdf, modal with react-modal and iframe.
+Extras: PWA (next-pwa), analytics (Vercel/Google), GitHub API fetch for activity.
+
+Styling & Animations
+
+CSS: Tailwind in globals.css, extend with custom colors.
+Animations: Framer Motion variants (e.g., initial: { opacity: 0, y: 50 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, ease: "easeOut" }); add more like keyframes for pulse (@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }).
+Responsive: Use relative units (%, vw), test with Chrome DevTools.
