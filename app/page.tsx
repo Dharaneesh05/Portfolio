@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -31,7 +32,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
-import { TestimonialSlider } from "@/components/testimonial-slider"
 import { StatsWidget } from "@/components/stats-widget"
 import { CTAPopup } from "@/components/cta-popup"
 import { SocialFeed } from "@/components/social-feed"
@@ -49,6 +49,7 @@ export default function Portfolio() {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [chatMessage, setChatMessage] = useState("")
   const [chatResponse, setChatResponse] = useState("")
+  const [showResumeModal, setShowResumeModal] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -63,9 +64,7 @@ export default function Portfolio() {
         "skills",
         "projects",
         "certifications",
-        "blog",
         "demo",
-        "testimonials",
         "contact",
       ]
       const current = sections.find((section) => {
@@ -130,10 +129,10 @@ export default function Portfolio() {
   }
 
   const viewResume = () => {
-    window.open("/resume.pdf", "_blank")
+    setShowResumeModal(true)
     toast({
       title: "Resume Opened! 👀",
-      description: "Resume opened in a new tab for viewing.",
+      description: "Resume opened for viewing.",
     })
   }
 
@@ -277,33 +276,6 @@ export default function Portfolio() {
     },
   ]
 
-  const blogPosts = [
-    {
-      title: "Introduction to Deep Learning with Python",
-      excerpt: "A comprehensive guide to getting started with deep learning using Python and TensorFlow.",
-      date: "2024-12-15",
-      readTime: "8 min read",
-      category: "AI/ML",
-      image: "deep learning neural network visualization",
-    },
-    {
-      title: "Building Responsive Websites with Next.js",
-      excerpt: "Learn how to create modern, responsive web applications using Next.js and Tailwind CSS.",
-      date: "2024-12-10",
-      readTime: "6 min read",
-      category: "Web Development",
-      image: "responsive web design mockup",
-    },
-    {
-      title: "AI in Web Development: The Future is Here",
-      excerpt: "Exploring how artificial intelligence is revolutionizing web development and user experiences.",
-      date: "2024-12-05",
-      readTime: "10 min read",
-      category: "Technology",
-      image: "AI and web development concept",
-    },
-  ]
-
   // Enhanced filtering logic
   const categories = ["All", "Full Stack", "AI", "Frontend"]
   const allTechnologies = useMemo(() => {
@@ -347,6 +319,32 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {/* Resume Modal */}
+      {showResumeModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[90vh] relative">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-xl font-bold text-gray-900">Resume - Dharaneesh C</h2>
+              <Button
+                onClick={() => setShowResumeModal(false)}
+                variant="ghost"
+                size="sm"
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="p-4 h-[calc(100%-80px)]">
+              <iframe
+                src="/resume.pdf"
+                className="w-full h-full border-0 rounded"
+                title="Dharaneesh C Resume"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* CTA Popup */}
       <CTAPopup onContactClick={() => scrollToSection("contact")} />
 
@@ -381,7 +379,7 @@ export default function Portfolio() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-8 animate-slide-in-down">
-              {["Home", "About", "Skills", "Projects", "Certifications", "Blog", "Demo", "Contact"].map(
+              {["Home", "About", "Skills", "Projects", "Certifications", "Demo", "Contact"].map(
                 (item, index) => {
                   const sectionId = item.toLowerCase()
                   return (
@@ -407,6 +405,26 @@ export default function Portfolio() {
                 Hire Me
               </Button>
 
+              {/* Social Icons in Navbar */}
+              <div className="hidden md:flex items-center space-x-2">
+                <a
+                  href="https://linkedin.com/in/dharaneesh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-500 transition-all duration-300 hover:scale-105"
+                >
+                  <Linkedin className="w-6 h-6" />
+                </a>
+                <a
+                  href="https://github.com/Dharaneesh05"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white hover:text-gray-300 transition-all duration-300 hover:scale-105"
+                >
+                  <Github className="w-6 h-6" />
+                </a>
+              </div>
+
               {/* Mobile Menu Button */}
               <button
                 className="md:hidden text-foreground transition-transform duration-300 hover:scale-110"
@@ -426,7 +444,7 @@ export default function Portfolio() {
           }`}
         >
           <div className="bg-black/95 backdrop-blur-md px-4 py-4 space-y-4 border-t border-orange-500/20">
-            {["Home", "About", "Skills", "Projects", "Certifications", "Blog", "Demo", "Contact"].map((item, index) => {
+            {["Home", "About", "Skills", "Projects", "Certifications", "Demo", "Contact"].map((item, index) => {
               const sectionId = item.toLowerCase()
               return (
                 <button
@@ -439,6 +457,25 @@ export default function Portfolio() {
                 </button>
               )
             })}
+            {/* Mobile Social Icons */}
+            <div className="flex items-center space-x-4 pt-4 border-t border-orange-500/20">
+              <a
+                href="https://linkedin.com/in/dharaneesh"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-500 transition-all duration-300 hover:scale-105"
+              >
+                <Linkedin className="w-6 h-6" />
+              </a>
+              <a
+                href="https://github.com/Dharaneesh05"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-gray-300 transition-all duration-300 hover:scale-105"
+              >
+                <Github className="w-6 h-6" />
+              </a>
+            </div>
           </div>
         </div>
       </nav>
@@ -448,8 +485,6 @@ export default function Portfolio() {
         id="home"
         className="min-h-screen flex items-center px-4 sm:px-6 lg:px-8 pt-20 bg-gradient-to-br from-black to-gray-900 relative overflow-hidden"
       >
-        {/* Remove all the animated background elements with gradients */}
-
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
@@ -512,8 +547,30 @@ export default function Portfolio() {
                 </div>
               </div>
 
+              {/* Social Links in Hero */}
+              <div className="flex items-center space-x-6 pt-4 animate-fade-in-up opacity-0" style={{ animationDelay: "1s" }}>
+                <a
+                  href="https://linkedin.com/in/dharaneesh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 text-blue-600 hover:text-blue-500 transition-all duration-300 hover:scale-105 group"
+                >
+                  <Linkedin className="w-6 h-6 group-hover:animate-pulse" />
+                  <span className="text-white group-hover:text-blue-500">LinkedIn</span>
+                </a>
+                <a
+                  href="https://github.com/Dharaneesh05"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 text-white hover:text-gray-300 transition-all duration-300 hover:scale-105 group"
+                >
+                  <Github className="w-6 h-6 group-hover:animate-pulse" />
+                  <span className="group-hover:text-gray-300">GitHub</span>
+                </a>
+              </div>
+
               {/* Stats Widget */}
-              <div className="pt-8 animate-fade-in-up opacity-0" style={{ animationDelay: "1s" }}>
+              <div className="pt-8 animate-fade-in-up opacity-0" style={{ animationDelay: "1.2s" }}>
                 <StatsWidget />
               </div>
             </div>
@@ -822,64 +879,6 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* Blog Section */}
-      <section id="blog" className="py-20 px-4 sm:px-6 lg:px-8 gradient-section">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Latest Blog Posts</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Sharing knowledge and insights about web development, AI, and technology
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <Card
-                key={index}
-                className="hover:shadow-2xl transition-all duration-500 hover:scale-105 fade-in border-border group card-hover hover-glow gradient-card cursor-pointer"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="relative overflow-hidden">
-                  <Image
-                    src={`/placeholder.svg?height=200&width=400&text=${post.image}`}
-                    alt={post.title}
-                    width={400}
-                    height={200}
-                    className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-primary text-primary-foreground">{post.category}</Badge>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 text-sm line-clamp-3 group-hover:text-foreground transition-colors">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-<span>{new Date(post.date).toLocaleDateString()}</span>
-                    <span>{post.readTime}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12 fade-in">
-            <Button
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-3 rounded-full transition-all duration-300 hover:scale-105 group bg-transparent"
-            >
-              <BookOpen className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-              View All Posts
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Interactive AI Demo Section */}
       <section id="demo" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -930,23 +929,6 @@ export default function Portfolio() {
               )}
             </CardContent>
           </Card>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 gradient-section">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">What People Say</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Testimonials from colleagues, professors, and collaborators
-            </p>
-          </div>
-
-          <div className="fade-in">
-            <TestimonialSlider />
-          </div>
         </div>
       </section>
 
@@ -1135,7 +1117,7 @@ export default function Portfolio() {
             <div>
               <h4 className="text-lg font-semibold mb-4 text-foreground">Quick Links</h4>
               <div className="space-y-2">
-                {["Home", "About", "Projects", "Blog", "Contact"].map((item) => (
+                {["Home", "About", "Projects", "Contact"].map((item) => (
                   <button
                     key={item}
                     onClick={() => scrollToSection(item.toLowerCase())}

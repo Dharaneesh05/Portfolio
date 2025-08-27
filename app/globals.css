@@ -72,13 +72,17 @@
 /* Enhanced Custom Animations & Styles based on requirements */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-/* Orange color scheme as per requirements */
+/* Orange color scheme with light accent colors */
 :root {
   --orange-500: #ff4500;
   --orange-400: #ff6b35;
   --orange-600: #e03d00;
   --gray-700: #374151;
   --gray-500: #6b7280;
+  --light-blue: #e0f2fe;
+  --light-green: #e8f5e8;
+  --light-purple: #f3e8ff;
+  --light-cyan: #e0f7fa;
 }
 
 .dark {
@@ -96,17 +100,17 @@ body {
   @apply bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent;
 }
 
-/* Enhanced gradient backgrounds for orange theme */
+/* Enhanced gradient backgrounds for orange theme with light colors */
 .gradient-primary {
   @apply bg-gradient-to-r from-orange-500 to-orange-600;
 }
 
 .gradient-card {
-  @apply bg-gradient-to-br from-card to-card/90 backdrop-blur-lg;
+  @apply bg-gradient-to-br from-card to-slate-50/90 backdrop-blur-lg;
 }
 
 .gradient-section {
-  @apply bg-gradient-to-b from-background via-background/95 to-muted/30;
+  @apply bg-gradient-to-b from-background via-slate-50/95 to-blue-50/30;
 }
 
 /* Enhanced animations matching requirements */
