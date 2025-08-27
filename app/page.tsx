@@ -71,43 +71,58 @@ export default function Home() {
   useEffect(() => {
     document.documentElement.className = theme
     
+    // Enhanced smooth scrolling
+    document.documentElement.style.scrollBehavior = 'smooth'
+    
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400)
       
-      // Update active section based on scroll position
+      // Update active section based on scroll position with improved logic
       const sections = ['home', 'about', 'skills', 'projects', 'experience', 'demo', 'contact']
       const currentSection = sections.find(section => {
         const element = document.getElementById(section)
         if (element) {
           const rect = element.getBoundingClientRect()
-          return rect.top <= 100 && rect.bottom >= 100
+          return rect.top <= 150 && rect.bottom >= 150
         }
         return false
       })
       
-      if (currentSection) {
+      if (currentSection && currentSection !== activeSection) {
         setActiveSection(currentSection)
       }
     }
     
-    window.addEventListener('scroll', handleScroll)
+    // Throttle scroll events for better performance
+    let ticking = false
+    const throttledHandleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+    
+    window.addEventListener('scroll', throttledHandleScroll, { passive: true })
     
     // Animate stats counter with stagger effect
     const timer = setTimeout(() => {
       setStats({ projects: 15, years: 3, clients: 12, certifications: 8 })
     }, 1500)
 
-    // Show startup popup after 5 seconds
+    // Show startup popup after 8 seconds
     const popupTimer = setTimeout(() => {
       setShowStartupPopup(true)
-    }, 5000)
+    }, 8000)
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('scroll', throttledHandleScroll)
       clearTimeout(timer)
       clearTimeout(popupTimer)
     }
-  }, [theme])
+  }, [theme, activeSection])
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
@@ -128,36 +143,93 @@ export default function Home() {
 
   const handleContactSubmit = async (e) => {
     e.preventDefault()
-    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+    
+    // Enhanced validation
+    if (!contactForm.name.trim()) {
       toast({
-        title: "Please fill all fields",
-        description: "All fields are required to send a message",
+        title: "Name required",
+        description: "Please enter your name",
+        variant: "destructive",
+      })
+      return
+    }
+    
+    if (!contactForm.email.trim()) {
+      toast({
+        title: "Email required", 
+        description: "Please enter your email address",
+        variant: "destructive",
+      })
+      return
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(contactForm.email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      })
+      return
+    }
+    
+    if (!contactForm.message.trim()) {
+      toast({
+        title: "Message required",
+        description: "Please enter your message",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (contactForm.message.trim().length < 10) {
+      toast({
+        title: "Message too short",
+        description: "Please write a more detailed message (at least 10 characters)",
         variant: "destructive",
       })
       return
     }
 
     setIsSubmitting(true)
+    
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactForm)
+        body: JSON.stringify({
+          name: contactForm.name.trim(),
+          email: contactForm.email.trim(),
+          message: contactForm.message.trim()
+        })
       })
       
-      if (response.ok) {
+      const result = await response.json()
+      
+      if (response.ok && result.success) {
         toast({
-          title: "Message sent successfully!",
-          description: "Thank you for reaching out. I'll get back to you soon!",
+          title: "🎉 Message sent successfully!",
+          description: result.message || "Thank you for reaching out. I'll get back to you within 24 hours!",
         })
         setContactForm({ name: '', email: '', message: '' })
+        
+        // Show additional confirmation
+        setTimeout(() => {
+          toast({
+            title: "📧 Email notification sent",
+            description: "You should receive a confirmation email shortly",
+          })
+        }, 2000)
+        
       } else {
-        throw new Error('Failed to send message')
+        throw new Error(result.message || 'Failed to send message')
       }
     } catch (error) {
+      console.error('Contact form error:', error)
       toast({
-        title: "Failed to send message",
-        description: "Please try again or contact me directly at dharaneeshc2006@gmail.com",
+        title: "❌ Failed to send message",
+        description: error.message || "Please try again or contact me directly at dharaneeshc2006@gmail.com",
         variant: "destructive",
       })
     } finally {
@@ -558,10 +630,10 @@ export default function Home() {
       </Dialog>
       
       {/* Enhanced Navbar */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
         theme === 'dark' 
-          ? 'bg-black/90 backdrop-blur-md border-b border-gray-800' 
-          : 'bg-white/90 backdrop-blur-md border-b border-gray-200'
+          ? 'bg-black/95 backdrop-blur-xl border-b border-gray-800/50 shadow-lg shadow-black/10' 
+          : 'bg-white/95 backdrop-blur-xl border-b border-gray-200/50 shadow-lg shadow-gray-900/10'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
@@ -570,6 +642,13 @@ export default function Home() {
               className="text-2xl md:text-3xl font-bold font-sans"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              onClick={(e) => {
+                e.preventDefault()
+                document.getElementById('home')?.scrollIntoView({ 
+                  behavior: 'smooth',
+                  block: 'start'
+                })
+              }}
             >
               <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
                 Dharaneesh C
@@ -577,20 +656,29 @@ export default function Home() {
             </motion.a>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-8">
               {navigation.map((item, index) => (
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className={`nav-link transition-colors duration-300 ${
+                  className={`nav-link transition-all duration-300 px-3 py-2 rounded-lg font-medium ${
                     activeSection === item.href.substring(1) 
-                      ? 'text-orange-500 font-semibold' 
-                      : 'hover:text-orange-500'
+                      ? 'text-orange-500 font-semibold bg-orange-500/10 shadow-sm' 
+                      : theme === 'dark' 
+                        ? 'text-gray-300 hover:text-orange-500 hover:bg-gray-800/50' 
+                        : 'text-gray-700 hover:text-orange-500 hover:bg-orange-50'
                   }`}
-                  whileHover={{ y: -2 }}
+                  whileHover={{ y: -2, scale: 1.05 }}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    document.getElementById(item.href.substring(1))?.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    })
+                  }}
                 >
                   {item.name}
                 </motion.a>
@@ -599,61 +687,122 @@ export default function Home() {
 
             {/* Right side items */}
             <div className="flex items-center space-x-3">
-              <Button 
-                className="btn-primary hidden sm:inline-flex"
-                onClick={() => {
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
-                  toast({
-                    title: "Let's connect!",
-                    description: "Scrolling to contact section",
-                  })
-                }}
-              >
-                Hire Me
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  className="btn-primary hidden sm:inline-flex shadow-lg"
+                  onClick={() => {
+                    document.getElementById('contact')?.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    })
+                    toast({
+                      title: "Let's connect!",
+                      description: "Scrolling to contact section",
+                    })
+                  }}
+                >
+                  <span className="mr-2">💼</span>
+                  Hire Me
+                </Button>
+              </motion.div>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className="p-2 rounded-full hover:scale-105 transition-transform duration-300"
-              >
-                {theme === 'dark' ? '☀️' : '🌙'}
-              </Button>
+              <motion.div whileHover={{ scale: 1.1, rotate: 180 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTheme}
+                  className={`p-3 rounded-full transition-all duration-300 ${
+                    theme === 'dark' 
+                      ? 'hover:bg-yellow-500/20 hover:shadow-lg hover:shadow-yellow-500/20' 
+                      : 'hover:bg-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/20'
+                  }`}
+                >
+                  <span className="text-xl">
+                    {theme === 'dark' ? '☀️' : '🌙'}
+                  </span>
+                </Button>
+              </motion.div>
 
               {/* Mobile menu button */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="md:hidden p-2"
+                className="md:hidden p-2 hover:scale-110 transition-transform"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                {mobileMenuOpen ? '✕' : '☰'}
+                <motion.span
+                  animate={{ rotate: mobileMenuOpen ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-xl"
+                >
+                  {mobileMenuOpen ? '✕' : '☰'}
+                </motion.span>
               </Button>
             </div>
           </div>
 
-          {/* Mobile Navigation */}
+          {/* Enhanced Mobile Navigation */}
           <motion.div
-            className={`md:hidden overflow-hidden ${mobileMenuOpen ? 'max-h-screen' : 'max-h-0'}`}
-            animate={{ maxHeight: mobileMenuOpen ? 500 : 0 }}
-            transition={{ duration: 0.3 }}
+            className={`md:hidden overflow-hidden ${
+              theme === 'dark' ? 'bg-gray-900/95' : 'bg-white/95'
+            } backdrop-blur-xl rounded-2xl mx-4 mb-4 ${mobileMenuOpen ? 'shadow-2xl' : ''}`}
+            animate={{ 
+              maxHeight: mobileMenuOpen ? 500 : 0,
+              opacity: mobileMenuOpen ? 1 : 0
+            }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
           >
             <div className="py-4 space-y-2">
-              {navigation.map((item) => (
-                <a
+              {navigation.map((item, index) => (
+                <motion.a
                   key={item.name}
                   href={item.href}
-                  className={`block py-2 px-4 rounded-lg transition-colors duration-200 ${
+                  className={`block py-3 px-4 rounded-lg transition-all duration-300 font-medium ${
                     activeSection === item.href.substring(1) 
-                      ? 'text-orange-500 font-semibold bg-orange-500/10' 
-                      : theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                      ? 'text-orange-500 font-semibold bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-l-4 border-orange-500' 
+                      : theme === 'dark' 
+                        ? 'text-gray-300 hover:bg-gray-800 hover:text-orange-500' 
+                        : 'text-gray-700 hover:bg-orange-50 hover:text-orange-500'
                   }`}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setMobileMenuOpen(false)
+                    setTimeout(() => {
+                      document.getElementById(item.href.substring(1))?.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                      })
+                    }, 300)
+                  }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: mobileMenuOpen ? 1 : 0, x: mobileMenuOpen ? 0 : -20 }}
+                  transition={{ delay: index * 0.1 }}
                 >
                   {item.name}
-                </a>
+                </motion.a>
               ))}
+              <motion.div
+                className="pt-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: mobileMenuOpen ? 1 : 0 }}
+                transition={{ delay: navigation.length * 0.1 }}
+              >
+                <Button 
+                  className="btn-primary w-full"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setTimeout(() => {
+                      document.getElementById('contact')?.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                      })
+                    }, 300)
+                  }}
+                >
+                  <span className="mr-2">💼</span>
+                  Hire Me
+                </Button>
+              </motion.div>
             </div>
           </motion.div>
         </div>
@@ -1438,91 +1587,214 @@ export default function Home() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md h-[80vh] flex flex-col">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center text-blue-500">
-                    AI Assistant - Ask me anything!
+                <DialogHeader className={`pb-4 border-b ${
+                  theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+                }`}>
+                  <DialogTitle className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg font-bold">AI</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+                        AI Assistant
+                      </h3>
+                      <p className="text-sm text-gray-500">Ask me anything about Dharaneesh!</p>
+                    </div>
                   </DialogTitle>
                 </DialogHeader>
                 <div className="flex-1 flex flex-col">
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div className={`flex-1 overflow-y-auto p-4 space-y-4 rounded-lg custom-scrollbar ${
+                    theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50/80'
+                  }`}>
                     {chatMessages.length === 0 ? (
-                      <div className="text-center text-gray-500">
-                        <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-white text-2xl">AI</span>
-                        </div>
-                        <p className="text-lg font-medium mb-2">Hi! I'm Dharaneesh's AI Assistant</p>
-                        <p className="text-sm">Ask me about:</p>
-                        <div className="flex flex-wrap gap-2 mt-2 justify-center">
-                          <Badge className="bg-blue-100 text-blue-800">Projects</Badge>
-                          <Badge className="bg-green-100 text-green-800">Skills</Badge>
-                          <Badge className="bg-purple-100 text-purple-800">Experience</Badge>
-                          <Badge className="bg-orange-100 text-orange-800">Contact</Badge>
-                        </div>
-                      </div>
-                    ) : (
-                      chatMessages.map((message, index) => (
-                        <motion.div
-                          key={index}
-                          className={`flex ${
-                            message.type === 'user' ? 'justify-end' : 'justify-start'
-                          }`}
-                          initial={{ opacity: 0, x: message.type === 'user' ? 30 : -30 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3 }}
+                      <motion.div 
+                        className="text-center"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <motion.div 
+                          className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
+                          animate={{ 
+                            scale: [1, 1.05, 1],
+                            boxShadow: [
+                              '0 10px 30px rgba(59, 130, 246, 0.3)',
+                              '0 15px 40px rgba(139, 92, 246, 0.4)',
+                              '0 10px 30px rgba(59, 130, 246, 0.3)'
+                            ]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity }}
                         >
-                          <div
-                            className={`max-w-xs px-4 py-3 rounded-lg shadow-md ${
-                              message.type === 'user'
-                                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
-                                : theme === 'dark'
-                                ? 'bg-gray-700 text-white border border-gray-600'
-                                : 'bg-white text-gray-800 border border-gray-200'
-                            }`}
-                          >
-                            <p className="text-sm leading-relaxed">{message.content}</p>
-                          </div>
+                          <span className="text-white text-2xl font-bold">AI</span>
                         </motion.div>
-                      ))
+                        <motion.p 
+                          className="text-lg font-semibold mb-3"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.3 }}
+                        >
+                          Hi! I'm Dharaneesh's AI Assistant
+                        </motion.p>
+                        <motion.p 
+                          className={`text-sm mb-4 ${
+                            theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                          }`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5 }}
+                        >
+                          I can help you learn about his projects, skills, and experience
+                        </motion.p>
+                        <motion.div 
+                          className="flex flex-wrap gap-2 justify-center"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.7 }}
+                        >
+                          <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:scale-105 transition-transform cursor-pointer">Projects</Badge>
+                          <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white hover:scale-105 transition-transform cursor-pointer">Skills</Badge>
+                          <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:scale-105 transition-transform cursor-pointer">Experience</Badge>
+                          <Badge className="bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:scale-105 transition-transform cursor-pointer">Contact</Badge>
+                        </motion.div>
+                      </motion.div>
+                    ) : (
+                      <>
+                        {chatMessages.map((message, index) => (
+                          <motion.div
+                            key={index}
+                            className={`flex ${
+                              message.type === 'user' ? 'justify-end' : 'justify-start'
+                            }`}
+                            initial={{ opacity: 0, x: message.type === 'user' ? 30 : -30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.4, delay: index * 0.1 }}
+                          >
+                            <div className={`flex items-start gap-2 max-w-[80%] ${
+                              message.type === 'user' ? 'flex-row-reverse' : 'flex-row'
+                            }`}>
+                              {message.type === 'ai' && (
+                                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <span className="text-white text-xs font-bold">AI</span>
+                                </div>
+                              )}
+                              <div
+                                className={`px-4 py-3 rounded-2xl shadow-md backdrop-blur-sm ${
+                                  message.type === 'user'
+                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
+                                    : theme === 'dark'
+                                    ? 'bg-gray-700/80 text-white border border-gray-600/50'
+                                    : 'bg-white/90 text-gray-800 border border-gray-200/50 shadow-sm'
+                                }`}
+                              >
+                                <p className="text-sm leading-relaxed">{message.content}</p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                        {/* Typing indicator when AI is responding */}
+                        {chatMessages.length > 0 && chatMessages[chatMessages.length - 1].type === 'user' && (
+                          <motion.div
+                            className="flex justify-start"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">AI</span>
+                              </div>
+                              <div className={`px-4 py-3 rounded-2xl ${
+                                theme === 'dark' ? 'bg-gray-700' : 'bg-white border border-gray-200'
+                              }`}>
+                                <div className="flex gap-1">
+                                  <motion.div 
+                                    className="w-2 h-2 bg-blue-500 rounded-full"
+                                    animate={{ scale: [1, 1.2, 1] }}
+                                    transition={{ duration: 0.8, repeat: Infinity, delay: 0 }}
+                                  />
+                                  <motion.div 
+                                    className="w-2 h-2 bg-purple-500 rounded-full"
+                                    animate={{ scale: [1, 1.2, 1] }}
+                                    transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
+                                  />
+                                  <motion.div 
+                                    className="w-2 h-2 bg-blue-500 rounded-full"
+                                    animate={{ scale: [1, 1.2, 1] }}
+                                    transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </>
                     )}
                   </div>
                   
-                  <div className="border-t p-4">
-                    <div className="flex gap-2">
+                  <div className={`border-t p-4 ${
+                    theme === 'dark' ? 'border-gray-700 bg-gray-800/30' : 'border-gray-200 bg-gray-50/50'
+                  }`}>
+                    <div className="flex gap-2 mb-3">
                       <Input
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
-                        placeholder="Ask about my projects, skills, experience..."
-                        className="form-input flex-1"
+                        placeholder="Type your question here..."
+                        className={`form-input flex-1 ${
+                          theme === 'dark' 
+                            ? 'bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400' 
+                            : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-500'
+                        }`}
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault()
                             handleChatSubmit()
                           }
                         }}
+                        autoFocus
                       />
-                      <Button
-                        className="btn-primary px-4"
-                        onClick={handleChatSubmit}
-                        disabled={!chatInput.trim()}
-                      >
-                        Send
-                      </Button>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                        <Button
+                          className="btn-primary px-4 py-2 shadow-lg"
+                          onClick={handleChatSubmit}
+                          disabled={!chatInput.trim()}
+                        >
+                          <span className="mr-1">📨</span>
+                          Send
+                        </Button>
+                      </motion.div>
                     </div>
                     
-                    {/* Quick question buttons */}
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {['Tell me about your projects', 'What are your skills?', 'How can I hire you?'].map((question) => (
-                        <Button
-                          key={question}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => {
-                            setChatInput(question)
-                            setTimeout(handleChatSubmit, 100)
-                          }}
+                    {/* Enhanced Quick question buttons */}
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { text: 'Tell me about projects', icon: '💼' },
+                        { text: 'What are your skills?', icon: '🛠️' },
+                        { text: 'How can I hire you?', icon: '📞' },
+                        { text: 'Show experience', icon: '📜' }
+                      ].map((question, index) => (
+                        <motion.div
+                          key={question.text}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
                         >
-                          {question}
-                        </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={`text-xs hover:scale-105 transition-all duration-200 ${
+                              theme === 'dark' 
+                                ? 'border-gray-600 hover:border-orange-500 hover:bg-orange-500/10' 
+                                : 'border-gray-300 hover:border-orange-500 hover:bg-orange-50'
+                            }`}
+                            onClick={() => {
+                              setChatInput(question.text)
+                              setTimeout(() => handleChatSubmit(), 100)
+                            }}
+                          >
+                            <span className="mr-1">{question.icon}</span>
+                            {question.text}
+                          </Button>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
@@ -1770,130 +2042,281 @@ export default function Home() {
       </AnimatedSection>
 
       {/* Enhanced Footer */}
-      <footer className={`py-16 px-4 md:px-8 ${
+      <footer className={`relative py-20 px-4 md:px-8 overflow-hidden ${
         theme === 'dark' 
-          ? 'bg-gradient-to-r from-gray-900 via-black to-gray-800' 
-          : 'bg-gradient-to-r from-gray-800 to-gray-900'
-      } text-white`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          ? 'bg-gradient-to-br from-gray-900 via-black to-gray-800' 
+          : 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700'
+      }`}>
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 animate-pulse" 
+               style={{ 
+                 backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(249, 115, 22, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)',
+               }} 
+          />
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto">
+          {/* Main Footer Content */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             {/* Brand Section */}
-            <div className="lg:col-span-2">
-              <motion.h3 
-                className="text-3xl font-bold mb-4"
-                initial={{ opacity: 0, y: 20 }}
+            <div className="lg:col-span-2 space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
               >
-                <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
-                  Dharaneesh C
-                </span>
-              </motion.h3>
+                <h3 className="text-4xl font-bold mb-4">
+                  <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
+                    Dharaneesh C
+                  </span>
+                </h3>
+                <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full mb-6"></div>
+              </motion.div>
+              
               <motion.p 
-                className="text-gray-300 mb-6 text-lg leading-relaxed max-w-md"
+                className="text-gray-300 text-lg leading-relaxed max-w-lg mb-8"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
               >
-                Full Stack & AI Developer passionate about creating innovative solutions that make a difference. 
-                Transforming ideas into powerful digital experiences.
+                Passionate Full Stack & AI Developer crafting innovative digital solutions. 
+                Transforming complex challenges into elegant, user-friendly experiences with cutting-edge technology.
               </motion.p>
               
-              {/* Social Links */}
+              {/* Enhanced Social Links */}
               <motion.div 
                 className="flex gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
               >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-orange-500 transition-colors p-2"
-                  onClick={() => window.open('https://github.com/dharaneesh', '_blank')}
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-blue-500 transition-colors p-2"
-                  onClick={() => window.open('https://linkedin.com/in/dharaneesh', '_blank')}
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                </Button>
+                <motion.div whileHover={{ scale: 1.1, y: -3 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 hover:shadow-xl transition-all duration-300 p-4"
+                    onClick={() => {
+                      window.open('https://github.com/dharaneesh', '_blank')
+                      toast({
+                        title: "Opening GitHub",
+                        description: "Check out my code repositories",
+                      })
+                    }}
+                  >
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                  </Button>
+                </motion.div>
+                
+                <motion.div whileHover={{ scale: 1.1, y: -3 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-500 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 p-4"
+                    onClick={() => {
+                      window.open('https://linkedin.com/in/dharaneesh', '_blank')
+                      toast({
+                        title: "Opening LinkedIn",
+                        description: "Let's connect professionally",
+                      })
+                    }}
+                  >
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.1, y: -3 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-green-600 hover:to-green-500 hover:shadow-xl hover:shadow-green-500/20 transition-all duration-300 p-4"
+                    onClick={() => {
+                      window.location.href = 'mailto:dharaneeshc2006@gmail.com'
+                      toast({
+                        title: "Opening Email",
+                        description: "Let's get in touch!",
+                      })
+                    }}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </Button>
+                </motion.div>
               </motion.div>
             </div>
             
             {/* Quick Links */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="space-y-6"
             >
-              <h4 className="text-lg font-semibold mb-6 text-orange-500">Quick Links</h4>
-              <ul className="space-y-3">
-                {navigation.map((item) => (
-                  <li key={item.name}>
+              <div>
+                <h4 className="text-xl font-bold mb-4 bg-gradient-to-r from-orange-500 to-purple-500 text-transparent bg-clip-text">
+                  Quick Links
+                </h4>
+                <div className="w-12 h-1 bg-gradient-to-r from-orange-500 to-purple-500 rounded-full mb-6"></div>
+              </div>
+              <ul className="space-y-4">
+                {navigation.map((item, index) => (
+                  <motion.li 
+                    key={item.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
                     <a
                       href={item.href}
-                      className="text-gray-400 hover:text-orange-500 transition-colors duration-300 text-sm"
+                      className="text-gray-400 hover:text-orange-500 transition-all duration-300 text-sm flex items-center group"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        document.getElementById(item.href.substring(1))?.scrollIntoView({ 
+                          behavior: 'smooth',
+                          block: 'start'
+                        })
+                      }}
                     >
+                      <span className="w-2 h-2 bg-gray-600 rounded-full mr-3 group-hover:bg-orange-500 transition-colors"></span>
                       {item.name}
                     </a>
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
             </motion.div>
             
             {/* Contact Info */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="space-y-6"
             >
-              <h4 className="text-lg font-semibold mb-6 text-blue-500">Contact</h4>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400">dharaneeshc2006@gmail.com</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400">Available Worldwide</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400">Open to Opportunities</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400">Quick Response</span>
-                </div>
+              <div>
+                <h4 className="text-xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-teal-500 text-transparent bg-clip-text">
+                  Get In Touch
+                </h4>
+                <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full mb-6"></div>
               </div>
+              <div className="space-y-4">
+                {[
+                  { icon: '📧', text: 'dharaneeshc2006@gmail.com', type: 'email' },
+                  { icon: '🌍', text: 'Available Worldwide', type: 'location' },
+                  { icon: '💼', text: 'Open for Opportunities', type: 'work' },
+                  { icon: '⚡', text: '24hr Response Time', type: 'response' }
+                ].map((item, index) => (
+                  <motion.div 
+                    key={item.type}
+                    className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors duration-300 group cursor-pointer"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ x: 5 }}
+                    onClick={() => {
+                      if (item.type === 'email') {
+                        window.location.href = 'mailto:dharaneeshc2006@gmail.com'
+                      }
+                    }}
+                  >
+                    <span className="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
+                    <span className="text-sm font-medium">{item.text}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* CTA Button */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                className="pt-4"
+              >
+                <Button 
+                  className="btn-primary w-full shadow-xl hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300"
+                  onClick={() => {
+                    document.getElementById('contact')?.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    })
+                  }}
+                >
+                  <span className="mr-2">🚀</span>
+                  Start a Project
+                </Button>
+              </motion.div>
             </motion.div>
           </div>
           
-          {/* Bottom Section */}
+          {/* Enhanced Bottom Section */}
           <motion.div 
-            className="border-t border-gray-700 pt-8"
-            initial={{ opacity: 0, y: 20 }}
+            className="border-t border-gradient-to-r from-transparent via-gray-700 to-transparent pt-12"
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
           >
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="text-center md:text-left">
-                <p className="text-gray-400 mb-2">
-                  © 2025 Dharaneesh C. All rights reserved. Built with React & Next.js
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
+              <div className="text-center lg:text-left space-y-2">
+                <p className="text-gray-400 text-sm">
+                  © 2025 Dharaneesh C. All rights reserved.
                 </p>
-                <p className="text-gray-500 text-sm">
-                  Crafted with React, Next.js, Tailwind CSS & Framer Motion
+                <p className="text-gray-500 text-xs">
+                  Crafted with ❤️ using React, Next.js, Tailwind CSS & Framer Motion
                 </p>
               </div>
               
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>Made with ❤️ in India</span>
+              <div className="flex items-center gap-6 text-xs text-gray-500">
+                <motion.span 
+                  className="flex items-center gap-2 hover:text-orange-500 transition-colors cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <span className="animate-pulse">🇮🇳</span>
+                  Made in India
+                </motion.span>
+                <motion.span 
+                  className="flex items-center gap-2 hover:text-green-500 transition-colors cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <span className="animate-bounce">🌱</span>
+                  Eco-friendly Hosting
+                </motion.span>
               </div>
             </div>
+
+            {/* Tech Stack Icons */}
+            <motion.div 
+              className="flex justify-center items-center gap-6 mt-8 pt-8 border-t border-gray-800/50"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+              <p className="text-xs text-gray-500 mb-4 text-center">Built with modern technologies</p>
+              <div className="flex gap-4">
+                {['⚛️', '🔥', '🎨', '⚡'].map((icon, index) => (
+                  <motion.span
+                    key={index}
+                    className="text-2xl opacity-30 hover:opacity-100 transition-opacity cursor-pointer"
+                    animate={{ 
+                      y: [0, -5, 0],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      delay: index * 0.2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    whileHover={{ scale: 1.2 }}
+                  >
+                    {icon}
+                  </motion.span>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </footer>
