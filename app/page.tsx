@@ -363,14 +363,20 @@ export default function Portfolio() {
 
       {/* Navigation */}
       <nav
-        className={`fixed top-0 w-full z-40 transition-all duration-500 ${
-          isScrolled ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border" : "bg-transparent"
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+          isScrolled ? "bg-black/95 backdrop-blur-md shadow-lg border-b border-orange-500/20" : "bg-black"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="text-2xl font-bold animate-slide-in-left">
-              <span className="gradient-text">Dharaneesh C</span>
+            <div className="text-2xl md:text-3xl font-bold animate-slide-in-left">
+              <button 
+                onClick={() => scrollToSection("home")}
+                className="text-orange-500 hover:text-orange-400 transition-colors duration-300"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                Dharaneesh C
+              </button>
             </div>
 
             {/* Desktop Navigation */}
@@ -382,12 +388,11 @@ export default function Portfolio() {
                     <button
                       key={item}
                       onClick={() => scrollToSection(sectionId)}
-                      className={`relative transition-all duration-500 hover:text-primary font-medium hover:scale-110 stagger-${index + 1} animate-fade-in-down opacity-0 ${
-                        activeSection === sectionId ? "text-primary" : "text-muted-foreground"
+                      className={`relative transition-all duration-500 hover:text-orange-500 font-medium hover:scale-105 stagger-${index + 1} animate-fade-in-down opacity-0 nav-link ${
+                        activeSection === sectionId ? "text-orange-500 active" : "text-white"
                       }`}
                     >
                       {item}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 gradient-primary transition-all duration-500 hover:w-full animate-glow"></span>
                     </button>
                   )
                 },
@@ -397,7 +402,7 @@ export default function Portfolio() {
             <div className="flex items-center space-x-4">
               <Button
                 onClick={() => scrollToSection("contact")}
-                className="gradient-primary hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-8 py-3 text-lg rounded-full transition-all duration-500 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 hover-glow group animate-glow"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/30 btn-orange"
               >
                 Hire Me
               </Button>
@@ -420,14 +425,14 @@ export default function Portfolio() {
             isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="bg-background/95 backdrop-blur-md px-4 py-4 space-y-4 border-t border-border">
+          <div className="bg-black/95 backdrop-blur-md px-4 py-4 space-y-4 border-t border-orange-500/20">
             {["Home", "About", "Skills", "Projects", "Certifications", "Blog", "Demo", "Contact"].map((item, index) => {
               const sectionId = item.toLowerCase()
               return (
                 <button
                   key={item}
                   onClick={() => scrollToSection(sectionId)}
-                  className="block w-full text-left text-muted-foreground hover:text-primary transition-all duration-300 py-2 font-medium animate-slide-in-left"
+                  className="block w-full text-left text-white hover:text-orange-500 transition-all duration-300 py-2 font-medium animate-slide-in-left nav-link"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   {item}
@@ -441,7 +446,7 @@ export default function Portfolio() {
       {/* Hero Section */}
       <section
         id="home"
-        className="min-h-screen flex items-center px-4 sm:px-6 lg:px-8 pt-20 bg-white dark:bg-black relative overflow-hidden"
+        className="min-h-screen flex items-center px-4 sm:px-6 lg:px-8 pt-20 bg-gradient-to-br from-black to-gray-900 relative overflow-hidden"
       >
         {/* Remove all the animated background elements with gradients */}
 
@@ -451,24 +456,24 @@ export default function Portfolio() {
             <div className="space-y-8 fade-in">
               <div className="space-y-6">
                 <div
-                  className="flex items-center space-x-2 text-lg text-muted-foreground animate-fade-in-up opacity-0"
+                  className="flex items-center space-x-2 text-sm md:text-base text-purple-500 animate-fade-in-up opacity-0"
                   style={{ animationDelay: "0.2s" }}
                 >
-                  <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+                  <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
                   <span>Hi, I am</span>
                 </div>
                 <h1
-                  className="text-4xl lg:text-6xl font-bold leading-tight animate-fade-in-up opacity-0"
-                  style={{ animationDelay: "0.4s" }}
+                  className="text-4xl md:text-6xl font-bold leading-tight animate-fade-in-up opacity-0 uppercase"
+                  style={{ animationDelay: "0.4s", fontFamily: 'Poppins, sans-serif' }}
                 >
-                  <span className="gradient-text hover:scale-105 transition-transform duration-300 cursor-pointer inline-block">
+                  <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 cursor-pointer inline-block">
                     Dharaneesh C
                   </span>
                   <br />
-                  <span className="text-foreground/80">Full Stack & AI Developer</span>
+                  <span className="text-white">Full Stack & AI Developer</span>
                 </h1>
                 <p
-                  className="text-xl text-muted-foreground leading-relaxed max-w-lg animate-fade-in-up opacity-0"
+                  className="text-base md:text-lg text-white leading-relaxed max-w-lg animate-fade-in-up opacity-0"
                   style={{ animationDelay: "0.6s" }}
                 >
                   Building innovative web solutions and AI-powered applications with modern technologies and creative
@@ -483,26 +488,25 @@ export default function Portfolio() {
               >
                 <Button
                   onClick={() => scrollToSection("projects")}
-                  className="gradient-primary hover:from-primary/90 hover:to-accent/90 text-primary-foreground px-8 py-3 text-lg rounded-full transition-all duration-500 hover:scale-110 hover:shadow-xl hover:shadow-primary/30 hover-glow group animate-glow"
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/30 btn-orange"
                 >
-                  <Eye className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                  <Eye className="w-5 h-5 mr-2" />
                   View Projects
                 </Button>
                 <div className="flex gap-2">
                   <Button
                     onClick={downloadResume}
                     variant="outline"
-                    className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-6 py-3 text-lg rounded-full transition-all duration-300 hover:scale-105 bg-transparent group"
+                    className="border-2 border-orange-500 text-orange-500 hover:bg-orange-100 hover:text-orange-600 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 bg-transparent"
                   >
-                    <Download className="w-5 h-5 mr-2 group-hover:animate-bounce" />
-                    Download
+                    <Download className="w-5 h-5 mr-2" />
+                    Download Resume
                   </Button>
                   <Button
                     onClick={viewResume}
-                    variant="outline"
-                    className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground px-6 py-3 text-lg rounded-full transition-all duration-300 hover:scale-105 bg-transparent group"
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/30 btn-orange"
                   >
-                    <Eye className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                    <Eye className="w-5 h-5 mr-2" />
                     View Resume
                   </Button>
                 </div>
@@ -526,13 +530,13 @@ export default function Portfolio() {
                   <div className="absolute inset-4 gradient-card rounded-full animate-pulse"></div>
                   <div className="absolute inset-8 gradient-card rounded-full animate-ping"></div>
 
-                  <div className="absolute inset-12 rounded-full gradient-card backdrop-blur-sm border border-primary/20">
+                  <div className="absolute inset-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 p-1">
                     <Image
                       src="/placeholder.svg?height=400&width=400&text=Dharaneesh+C"
                       alt="Dharaneesh C - Full Stack & AI Developer"
                       width={400}
                       height={400}
-                      className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-all duration-500"
+                      className="w-full h-full object-cover rounded-full profile-image"
                       priority
                     />
                   </div>
@@ -558,22 +562,22 @@ export default function Portfolio() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 gradient-section">
+      <section id="about" className="py-16 px-4 md:px-8 bg-gray-700">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">About Me</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
+            <h2 className="text-3xl md:text-4xl font-bold text-orange-500 mb-4 underline">About Me</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 fade-in">
-              <h3 className="text-2xl font-bold gradient-text">Passionate Developer & AI Enthusiast</h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Passionate Developer & AI Enthusiast</h3>
+              <p className="text-white leading-relaxed max-w-2xl">
                 I'm Dharaneesh, a Full Stack Developer and AI/Data Science student at Kongu Engineering College,
                 specializing in web development and AI solutions using React, Python, and Deep Learning. I'm passionate
                 about creating innovative solutions that bridge the gap between technology and user experience.
               </p>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-white leading-relaxed max-w-2xl">
                 When not coding, I explore machine learning models and contribute to open-source projects. I believe in
                 continuous learning and staying updated with the latest technologies to deliver cutting-edge solutions.
               </p>
@@ -615,12 +619,12 @@ export default function Portfolio() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="skills" className="py-16 px-4 md:px-8 bg-black">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">My Skills</h2>
-            <div className="w-24 h-1 gradient-primary mx-auto rounded-full animate-expand shadow-lg shadow-primary/30 animate-glow"></div>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-orange-500 mb-4">Skills</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
+            <p className="text-white mt-4 max-w-2xl mx-auto">
               Technologies and tools I use to bring ideas to life
             </p>
           </div>
