@@ -25,6 +25,12 @@ export default function Home() {
   const [showChatModal, setShowChatModal] = useState(false)
   const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0 })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [recentActivities] = useState([
+    { action: 'Updated Portfolio', time: '2 hours ago', type: 'update' },
+    { action: 'Completed AI Project', time: '1 day ago', type: 'project' },
+    { action: 'New Certification Added', time: '3 days ago', type: 'achievement' },
+    { action: 'Client Project Delivered', time: '1 week ago', type: 'client' }
+  ])
   
   const { toast } = useToast()
 
@@ -86,7 +92,7 @@ export default function Home() {
       
       if (response.ok) {
         toast({
-          title: "Message sent successfully! 🎉",
+          title: "Message sent successfully!",
           description: "Thank you for reaching out. I'll get back to you soon!",
         })
         setContactForm({ name: '', email: '', message: '' })
@@ -306,7 +312,7 @@ export default function Home() {
       duration: 'Jun 2023 - Aug 2023',
       type: 'internship',
       description: 'Developed web applications using React and Node.js, collaborated with senior developers on enterprise projects, and implemented RESTful APIs.',
-      certificate: '/certificates/internship1.pdf',
+      certificate: '/resume.pdf',
       skills: ['React', 'Node.js', 'MongoDB', 'API Development']
     },
     {
@@ -316,7 +322,7 @@ export default function Home() {
       duration: 'Jan 2023 - Mar 2023',
       type: 'internship',
       description: 'Worked on machine learning projects, implemented AI models for data analysis and prediction, and contributed to research initiatives.',
-      certificate: '/certificates/internship2.pdf',
+      certificate: '/resume.pdf',
       skills: ['Python', 'TensorFlow', 'Machine Learning', 'Data Analysis']
     },
     {
@@ -326,7 +332,7 @@ export default function Home() {
       duration: '2023',
       type: 'certification',
       description: 'Comprehensive certification covering HTML, CSS, JavaScript, React, Node.js, and database technologies.',
-      certificate: '/certificates/fullstack.pdf',
+      certificate: '/resume.pdf',
       skills: ['HTML', 'CSS', 'JavaScript', 'React', 'Node.js']
     },
     {
@@ -336,7 +342,7 @@ export default function Home() {
       duration: '2023',
       type: 'certification',
       description: 'Advanced machine learning concepts including supervised and unsupervised learning, neural networks, and deep learning.',
-      certificate: '/certificates/ml.pdf',
+      certificate: '/resume.pdf',
       skills: ['Machine Learning', 'Python', 'Neural Networks', 'Deep Learning']
     },
     {
@@ -346,7 +352,7 @@ export default function Home() {
       duration: '2022',
       type: 'certification',
       description: 'Professional certification in React development covering hooks, state management, and advanced React patterns.',
-      certificate: '/certificates/react.pdf',
+      certificate: '/resume.pdf',
       skills: ['React', 'JavaScript', 'State Management', 'Hooks']
     },
     {
@@ -356,7 +362,7 @@ export default function Home() {
       duration: '2023',
       type: 'certification',
       description: 'Professional certification in Google Cloud Platform covering architecture, deployment, and cloud security.',
-      certificate: '/certificates/gcp.pdf',
+      certificate: '/resume.pdf',
       skills: ['Google Cloud', 'Cloud Architecture', 'DevOps', 'Security']
     }
   ]
@@ -451,7 +457,7 @@ export default function Home() {
     }`}>
       <Toaster />
       
-      {/* Enhanced Navbar */}
+      {/* Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         theme === 'dark' 
           ? 'bg-black/90 backdrop-blur-md border-b border-gray-800' 
@@ -547,7 +553,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Enhanced Hero Section */}
+      {/* Hero Section */}
       <section id="home" className={`min-h-screen flex items-center justify-center px-4 md:px-8 ${
         theme === 'dark' 
           ? 'bg-gradient-to-br from-black via-gray-900 to-indigo-900' 
@@ -658,7 +664,7 @@ export default function Home() {
 
             {/* Social Links */}
             <motion.div
-              className="flex gap-4 justify-center md:justify-start"
+              className="flex gap-4 justify-center md:justify-start mb-8"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
@@ -692,6 +698,33 @@ export default function Home() {
                 <span className="text-blue-600">LinkedIn</span>
               </Button>
             </motion.div>
+
+            {/* Stats Cards under social links */}
+            <motion.div
+              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              {[
+                { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600' },
+                { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600' },
+                { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600' },
+                { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600' }
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  className={`card-professional p-4 text-center bg-gradient-to-r ${stat.color} text-white`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.9 + index * 0.05 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                >
+                  <div className="text-2xl font-bold mb-1">{stat.value}+</div>
+                  <p className="text-sm opacity-90">{stat.label}</p>
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
 
           {/* Right Content - Profile Image */}
@@ -718,36 +751,6 @@ export default function Home() {
             </motion.div>
           </motion.div>
         </div>
-
-        {/* Enhanced Stats Cards */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600', icon: '🚀' },
-              { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600', icon: '⭐' },
-              { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600', icon: '😊' },
-              { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600', icon: '🏆' }
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                className={`card-professional p-4 text-center bg-gradient-to-r ${stat.color} text-white`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.9 + index * 0.05 }}
-                whileHover={{ scale: 1.02, y: -2 }}
-              >
-                <div className="text-2xl mb-2">{stat.icon}</div>
-                <div className="text-2xl font-bold mb-1">{stat.value}+</div>
-                <p className="text-sm opacity-90">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
       </section>
 
       {/* About Section */}
@@ -792,14 +795,14 @@ export default function Home() {
               >
                 <ul className="space-y-4">
                   {[
-                    { text: 'Full Stack Web Development', icon: '🚀' },
-                    { text: 'AI/ML Model Development', icon: '🤖' },
-                    { text: 'API Design & Integration', icon: '🔗' },
-                    { text: 'Database Architecture', icon: '🗄️' },
-                    { text: 'Cloud Deployment', icon: '☁️' }
+                    'Full Stack Web Development',
+                    'AI/ML Model Development',
+                    'API Design & Integration',
+                    'Database Architecture',
+                    'Cloud Deployment'
                   ].map((item, index) => (
                     <motion.li
-                      key={item.text}
+                      key={item}
                       className={`flex items-center text-lg ${
                         theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                       }`}
@@ -807,8 +810,8 @@ export default function Home() {
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <span className="text-2xl mr-3">{item.icon}</span>
-                      {item.text}
+                      <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                      {item}
                     </motion.li>
                   ))}
                 </ul>
@@ -818,7 +821,7 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Skills Section */}
+      {/* Enhanced Skills Section */}
       <AnimatedSection>
         <section id="skills" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-black' : 'bg-white'
@@ -839,13 +842,13 @@ export default function Home() {
               {skills.map((skill, index) => (
                 <motion.div
                   key={skill.name}
-                  className={`card-professional p-6 ${
+                  className={`card-professional p-6 animate-pulse-glow ${
                     theme === 'dark' ? 'bg-gray-800' : 'bg-slate-50'
                   }`}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileHover={{ scale: 1.02, y: -5 }}
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div>
@@ -858,7 +861,7 @@ export default function Home() {
                       className="skill-progress"
                       initial={{ width: 0 }}
                       whileInView={{ width: `${skill.level}%` }}
-                      transition={{ duration: 1.5, delay: index * 0.2 }}
+                      transition={{ duration: 2, delay: index * 0.2, ease: "easeOut" }}
                     />
                   </div>
                 </motion.div>
@@ -868,7 +871,7 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Enhanced Projects Section */}
+      {/* Projects Section */}
       <AnimatedSection>
         <section id="projects" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
@@ -896,7 +899,7 @@ export default function Home() {
               Explore my collection of {projects.length} innovative projects spanning AI, Full Stack, IoT, Blockchain, and VR
             </motion.p>
             
-            {/* Enhanced Filter Section */}
+            {/* Filter Section */}
             <motion.div
               className="space-y-6 mb-12"
               initial={{ opacity: 0, y: 15 }}
@@ -936,7 +939,7 @@ export default function Home() {
                     }
                   }}
                 >
-                  🔧 Technology Filters
+                  Technology Filters
                 </Button>
                 
                 <div id="tech-filters" style={{ display: 'none' }} className="space-y-4">
@@ -1032,7 +1035,7 @@ export default function Home() {
                           handleProjectAction('Opened', project.title)
                         }}
                       >
-                        🚀 Live Demo
+                        Live Demo
                       </Button>
                       <Button 
                         size="sm" 
@@ -1043,7 +1046,7 @@ export default function Home() {
                           handleProjectAction('Viewed', project.title)
                         }}
                       >
-                        📱 GitHub
+                        GitHub
                       </Button>
                     </div>
                   </div>
@@ -1067,7 +1070,7 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Combined Experience Section (Internships + Certifications) */}
+      {/* Experience Section */}
       <AnimatedSection>
         <section id="experience" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-800' : 'bg-slate-100'
@@ -1149,7 +1152,7 @@ export default function Home() {
                           ? 'bg-blue-100 text-blue-800' 
                           : 'bg-orange-100 text-orange-800'
                       }>
-                        {item.type === 'internship' ? '💼 Internship' : '🎓 Certificate'}
+                        {item.type === 'internship' ? 'Internship' : 'Certificate'}
                       </Badge>
                       <span className={`text-sm px-3 py-1 rounded-full ${
                         theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
@@ -1185,7 +1188,7 @@ export default function Home() {
                           })
                         }}
                       >
-                        📜 View Certificate
+                        View Certificate
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl h-[80vh]">
@@ -1206,7 +1209,7 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Enhanced AI Demo Section */}
+      {/* AI Demo Section */}
       <AnimatedSection>
         <section id="demo" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
@@ -1246,13 +1249,13 @@ export default function Home() {
                     })
                   }}
                 >
-                  🤖 Launch AI Assistant
+                  Launch AI Assistant
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md h-[80vh] flex flex-col">
                 <DialogHeader>
                   <DialogTitle className="flex items-center text-blue-500">
-                    🤖 AI Assistant - Ask me anything!
+                    AI Assistant - Ask me anything!
                   </DialogTitle>
                 </DialogHeader>
                 <div className="flex-1 flex flex-col">
@@ -1260,7 +1263,7 @@ export default function Home() {
                     {chatMessages.length === 0 ? (
                       <div className="text-center text-gray-500">
                         <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-white text-2xl">🤖</span>
+                          <span className="text-white text-2xl">AI</span>
                         </div>
                         <p className="text-lg font-medium mb-2">Hi! I'm Dharaneesh's AI Assistant</p>
                         <p className="text-sm">Ask me about:</p>
@@ -1345,10 +1348,60 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Enhanced Contact Section */}
+      {/* Recent Activity Section */}
+      <AnimatedSection>
+        <section className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          <div className="max-w-4xl mx-auto">
+            <motion.h2
+              className="text-4xl md:text-5xl font-bold text-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text">
+                Recent Activity
+              </span>
+            </motion.h2>
+
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => (
+                <motion.div
+                  key={index}
+                  className={`card-professional p-4 flex items-center justify-between hover-lift ${
+                    theme === 'dark' ? 'bg-gray-700' : 'bg-slate-50'
+                  }`}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="flex items-center">
+                    <div className={`w-3 h-3 rounded-full mr-4 ${
+                      activity.type === 'update' ? 'bg-blue-500' :
+                      activity.type === 'project' ? 'bg-green-500' :
+                      activity.type === 'achievement' ? 'bg-orange-500' :
+                      'bg-purple-500'
+                    }`}></div>
+                    <div>
+                      <p className="font-medium">{activity.action}</p>
+                      <p className="text-sm text-gray-500">{activity.time}</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    {activity.type}
+                  </Badge>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </AnimatedSection>
+
+      {/* Contact Section */}
       <AnimatedSection>
         <section id="contact" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-800' : 'bg-slate-100'
+          theme === 'dark' ? 'bg-gray-900' : 'bg-slate-100'
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
@@ -1409,7 +1462,7 @@ export default function Home() {
                     className="btn-primary w-full" 
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? '📤 Sending...' : '📨 Send Message'}
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>
               </motion.div>
@@ -1426,15 +1479,15 @@ export default function Home() {
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <div className="w-4 h-4 bg-green-500 rounded-full mr-4"></div>
-                      <span className="text-lg">📧 dharaneeshc2006@gmail.com</span>
+                      <span className="text-lg">dharaneeshc2006@gmail.com</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-4 h-4 bg-blue-500 rounded-full mr-4"></div>
-                      <span className="text-lg">📱 +91 XXXXX XXXXX</span>
+                      <span className="text-lg">+91 XXXXX XXXXX</span>
                     </div>
                     <div className="flex items-center">
                       <div className="w-4 h-4 bg-purple-500 rounded-full mr-4"></div>
-                      <span className="text-lg">📍 Available for Remote Work</span>
+                      <span className="text-lg">Available for Remote Work</span>
                     </div>
                   </div>
                 </div>
@@ -1453,7 +1506,7 @@ export default function Home() {
                         })
                       }}
                     >
-                      <span className="text-gray-800 dark:text-white">🔗 GitHub</span>
+                      <span className="text-gray-800 dark:text-white">GitHub</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -1466,7 +1519,7 @@ export default function Home() {
                         })
                       }}
                     >
-                      <span className="text-blue-600">💼 LinkedIn</span>
+                      <span className="text-blue-600">LinkedIn</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -1480,13 +1533,13 @@ export default function Home() {
                         })
                       }}
                     >
-                      <span className="text-green-600">✉️ Email</span>
+                      <span className="text-green-600">Email</span>
                     </Button>
                   </div>
                 </div>
 
                 <div className="mt-8 p-6 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl text-white">
-                  <h4 className="text-xl font-semibold mb-2">🚀 Ready to Start Your Project?</h4>
+                  <h4 className="text-xl font-semibold mb-2">Ready to Start Your Project?</h4>
                   <p className="mb-4">Let's discuss how I can help bring your ideas to life with cutting-edge technology and creative solutions.</p>
                   <Button 
                     className="bg-white text-orange-500 hover:bg-gray-100"
@@ -1507,7 +1560,7 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Enhanced Footer */}
+      {/* Footer */}
       <footer className={`py-12 px-4 md:px-8 ${
         theme === 'dark' 
           ? 'bg-gradient-to-r from-gray-900 via-black to-gray-800' 
@@ -1561,9 +1614,9 @@ export default function Home() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Contact</h4>
               <div className="space-y-2 text-gray-400">
-                <p>📧 dharaneeshc2006@gmail.com</p>
-                <p>🌐 Available for Remote Work</p>
-                <p>🚀 Open to New Opportunities</p>
+                <p>dharaneeshc2006@gmail.com</p>
+                <p>Available for Remote Work</p>
+                <p>Open to New Opportunities</p>
               </div>
             </div>
           </div>
@@ -1574,7 +1627,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
             >
-              © 2025 Dharaneesh C. All rights reserved. Built with ❤️ and ☕
+              © 2025 Dharaneesh C. All rights reserved. Built with React & Next.js
             </motion.p>
             
             <motion.p
