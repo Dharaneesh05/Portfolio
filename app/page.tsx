@@ -25,11 +25,43 @@ export default function Home() {
   const [showChatModal, setShowChatModal] = useState(false)
   const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0 })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [activeSection, setActiveSection] = useState('home')
   const [recentActivities] = useState([
-    { action: 'Updated Portfolio', time: '2 hours ago', type: 'update' },
-    { action: 'Completed AI Project', time: '1 day ago', type: 'project' },
-    { action: 'New Certification Added', time: '3 days ago', type: 'achievement' },
-    { action: 'Client Project Delivered', time: '1 week ago', type: 'client' }
+    { 
+      action: 'Launched AI-Powered Portfolio Website', 
+      time: '2 hours ago', 
+      type: 'project',
+      icon: '🚀',
+      description: 'Deployed new portfolio with advanced AI features and responsive design'
+    },
+    { 
+      action: 'Completed Machine Learning Certification', 
+      time: '1 day ago', 
+      type: 'achievement',
+      icon: '🏆',
+      description: 'Advanced AI/ML certification from Stanford University completed with distinction'
+    },
+    { 
+      action: 'Client Project Delivered', 
+      time: '3 days ago', 
+      type: 'client',
+      icon: '✅',
+      description: 'Successfully delivered e-commerce platform with 99.9% uptime'
+    },
+    { 
+      action: 'Open Source Contribution', 
+      time: '1 week ago', 
+      type: 'github',
+      icon: '💻',
+      description: 'Contributed to React ecosystem with new animation library'
+    },
+    { 
+      action: 'Speaking at Tech Conference', 
+      time: '2 weeks ago', 
+      type: 'event',
+      icon: '🎤',
+      description: 'Presented "Future of AI in Web Development" at TechCon 2024'
+    }
   ])
   
   const { toast } = useToast()
@@ -39,14 +71,29 @@ export default function Home() {
     
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400)
+      
+      // Update active section based on scroll position
+      const sections = ['home', 'about', 'skills', 'projects', 'experience', 'demo', 'contact']
+      const currentSection = sections.find(section => {
+        const element = document.getElementById(section)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          return rect.top <= 100 && rect.bottom >= 100
+        }
+        return false
+      })
+      
+      if (currentSection) {
+        setActiveSection(currentSection)
+      }
     }
     
     window.addEventListener('scroll', handleScroll)
     
-    // Animate stats counter
+    // Animate stats counter with stagger effect
     const timer = setTimeout(() => {
       setStats({ projects: 15, years: 3, clients: 12, certifications: 8 })
-    }, 1000)
+    }, 1500)
 
     return () => {
       window.removeEventListener('scroll', handleScroll)
@@ -457,7 +504,7 @@ export default function Home() {
     }`}>
       <Toaster />
       
-      {/* Navbar */}
+      {/* Enhanced Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         theme === 'dark' 
           ? 'bg-black/90 backdrop-blur-md border-b border-gray-800' 
@@ -467,7 +514,7 @@ export default function Home() {
           <div className="flex justify-between items-center py-4">
             <motion.a
               href="#home"
-              className="text-3xl md:text-4xl font-bold font-sans"
+              className="text-2xl md:text-3xl font-bold font-sans"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -477,12 +524,16 @@ export default function Home() {
             </motion.a>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-6">
               {navigation.map((item, index) => (
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="nav-link hover:text-orange-500 transition-colors duration-300"
+                  className={`nav-link transition-colors duration-300 ${
+                    activeSection === item.href.substring(1) 
+                      ? 'text-orange-500 font-semibold' 
+                      : 'hover:text-orange-500'
+                  }`}
                   whileHover={{ y: -2 }}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -494,9 +545,9 @@ export default function Home() {
             </div>
 
             {/* Right side items */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <Button 
-                className="btn-primary"
+                className="btn-primary hidden sm:inline-flex"
                 onClick={() => {
                   document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
                   toast({
@@ -541,7 +592,9 @@ export default function Home() {
                   key={item.name}
                   href={item.href}
                   className={`block py-2 px-4 rounded-lg transition-colors duration-200 ${
-                    theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                    activeSection === item.href.substring(1) 
+                      ? 'text-orange-500 font-semibold bg-orange-500/10' 
+                      : theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -553,84 +606,161 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section with Animations */}
       <section id="home" className={`min-h-screen flex items-center justify-center px-4 md:px-8 ${
         theme === 'dark' 
           ? 'bg-gradient-to-br from-black via-gray-900 to-indigo-900' 
           : 'bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50'
       }`}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content with Enhanced Animations */}
           <motion.div
-            className="text-center md:text-left"
-            initial={{ opacity: 0, x: -30 }}
+            className="text-center lg:text-left"
+            initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <motion.p
-              className="text-purple-500 text-lg md:text-xl mb-4 font-medium"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              Hi, I am
-            </motion.p>
-            
-            <motion.h1
-              className="text-5xl md:text-7xl font-bold mb-4 font-sans leading-tight"
-              initial={{ opacity: 0, y: 20 }}
+            {/* Animated Welcome Text */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="relative mb-4"
             >
-              <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
+              <motion.p
+                className="text-purple-500 text-lg md:text-xl mb-2 font-medium"
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  color: ['#a855f7', '#3b82f6', '#a855f7']
+                }}
+                transition={{ 
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                Hi, I am
+              </motion.p>
+              
+              {/* Floating particles animation */}
+              <motion.div 
+                className="absolute -top-4 -left-4 w-2 h-2 bg-orange-500 rounded-full"
+                animate={{
+                  y: [0, -10, 0],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div 
+                className="absolute -top-2 right-8 w-1 h-1 bg-blue-500 rounded-full"
+                animate={{
+                  y: [0, -15, 0],
+                  opacity: [0.7, 1, 0.7]
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              />
+            </motion.div>
+            
+            {/* Animated Name with Typewriter Effect */}
+            <motion.h1
+              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 font-sans leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+              <motion.span 
+                className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text"
+                animate={{ 
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
                 Dharaneesh C
-              </span>
+              </motion.span>
             </motion.h1>
 
+            {/* Animated Subtitle */}
             <motion.h2
-              className="text-2xl md:text-3xl font-semibold mb-6 text-gray-600 dark:text-gray-300"
-              initial={{ opacity: 0, y: 15 }}
+              className="text-xl md:text-2xl lg:text-3xl font-semibold mb-6 text-gray-600 dark:text-gray-300"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
             >
-              Full Stack & AI Developer
+              <motion.span
+                animate={{ 
+                  backgroundImage: [
+                    'linear-gradient(45deg, #f97316, #3b82f6)',
+                    'linear-gradient(45deg, #3b82f6, #8b5cf6)',
+                    'linear-gradient(45deg, #8b5cf6, #f97316)'
+                  ]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="bg-gradient-to-r from-orange-500 to-blue-500 text-transparent bg-clip-text"
+              >
+                Full Stack & AI Developer
+              </motion.span>
             </motion.h2>
             
+            {/* Animated Description */}
             <motion.p
               className={`text-lg md:text-xl mb-8 max-w-2xl leading-relaxed ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
             >
               Building innovative web solutions and AI-powered applications with modern technologies and creative problem-solving.
             </motion.p>
             
+            {/* Enhanced Action Buttons with Icons */}
             <motion.div
-              className="flex flex-wrap gap-4 justify-center md:justify-start mb-8"
-              initial={{ opacity: 0, y: 15 }}
+              className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 1, duration: 0.6 }}
             >
-              <Button 
-                className="btn-primary"
-                onClick={() => {
-                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
-                  toast({
-                    title: "Viewing Projects",
-                    description: "Check out my latest work!",
-                  })
-                }}
-              >
-                View Projects
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  className="btn-primary"
+                  onClick={() => {
+                    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
+                    toast({
+                      title: "Viewing Projects",
+                      description: "Check out my latest work!",
+                    })
+                  }}
+                >
+                  <span className="mr-2">🚀</span>
+                  View Projects
+                </Button>
+              </motion.div>
               
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="btn-secondary">
-                    View Resume
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button className="btn-secondary">
+                      <span className="mr-2">📄</span>
+                      View Resume
+                    </Button>
+                  </motion.div>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl h-[80vh]">
                   <DialogHeader>
@@ -644,102 +774,169 @@ export default function Home() {
                 </DialogContent>
               </Dialog>
 
-              <Button 
-                variant="outline" 
-                className="btn-outline"
-                onClick={() => {
-                  const link = document.createElement('a')
-                  link.href = '/resume.pdf'
-                  link.download = 'Dharaneesh_Resume.pdf'
-                  link.click()
-                  toast({
-                    title: "Resume Downloaded",
-                    description: "Thank you for your interest!",
-                  })
-                }}
-              >
-                Download Resume
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  variant="outline" 
+                  className="btn-outline"
+                  onClick={() => {
+                    const link = document.createElement('a')
+                    link.href = '/resume.pdf'
+                    link.download = 'Dharaneesh_Resume.pdf'
+                    link.click()
+                    toast({
+                      title: "Resume Downloaded",
+                      description: "Thank you for your interest!",
+                    })
+                  }}
+                >
+                  <span className="mr-2">⬇️</span>
+                  Download Resume
+                </Button>
+              </motion.div>
             </motion.div>
 
-            {/* Social Links */}
+            {/* Enhanced Social Links with Icons */}
             <motion.div
-              className="flex gap-4 justify-center md:justify-start mb-8"
-              initial={{ opacity: 0, y: 15 }}
+              className="flex gap-4 justify-center lg:justify-start mb-8"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
             >
-              <Button
-                variant="outline"
-                size="sm"
-                className="hover-glow"
-                onClick={() => {
-                  window.open('https://github.com/dharaneesh', '_blank')
-                  toast({
-                    title: "Opening GitHub",
-                    description: "Check out my code repositories",
-                  })
-                }}
-              >
-                <span className="text-gray-800 dark:text-white">GitHub</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="hover-glow"
-                onClick={() => {
-                  window.open('https://linkedin.com/in/dharaneesh', '_blank')
-                  toast({
-                    title: "Opening LinkedIn",
-                    description: "Let's connect professionally",
-                  })
-                }}
-              >
-                <span className="text-blue-600">LinkedIn</span>
-              </Button>
+              <motion.div whileHover={{ scale: 1.1, y: -2 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hover-glow flex items-center gap-2"
+                  onClick={() => {
+                    window.open('https://github.com/dharaneesh', '_blank')
+                    toast({
+                      title: "Opening GitHub",
+                      description: "Check out my code repositories",
+                    })
+                  }}
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  <span className="text-gray-800 dark:text-white">GitHub</span>
+                </Button>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.1, y: -2 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hover-glow flex items-center gap-2"
+                  onClick={() => {
+                    window.open('https://linkedin.com/in/dharaneesh', '_blank')
+                    toast({
+                      title: "Opening LinkedIn",
+                      description: "Let's connect professionally",
+                    })
+                  }}
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                  <span className="text-blue-600">LinkedIn</span>
+                </Button>
+              </motion.div>
             </motion.div>
 
-            {/* Stats Cards under social links */}
+            {/* Enhanced Animated Stats Cards */}
             <motion.div
               className="grid grid-cols-2 md:grid-cols-4 gap-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
+              transition={{ delay: 1.4, duration: 0.6 }}
             >
               {[
-                { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600' },
-                { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600' },
-                { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600' },
-                { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600' }
+                { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600', icon: '🚀' },
+                { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600', icon: '⭐' },
+                { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600', icon: '😊' },
+                { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600', icon: '🏆' }
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
-                  className={`card-professional p-4 text-center bg-gradient-to-r ${stat.color} text-white`}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  className={`card-professional p-4 text-center bg-gradient-to-r ${stat.color} text-white relative overflow-hidden`}
+                  initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.9 + index * 0.05 }}
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  transition={{ delay: 1.6 + index * 0.1, duration: 0.5 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
                 >
-                  <div className="text-2xl font-bold mb-1">{stat.value}+</div>
-                  <p className="text-sm opacity-90">{stat.label}</p>
+                  {/* Background Animation */}
+                  <motion.div
+                    className="absolute inset-0 bg-white/10"
+                    animate={{
+                      x: ['-100%', '100%'],
+                      opacity: [0, 0.5, 0]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: index * 0.5
+                    }}
+                  />
+                  
+                  <div className="relative z-10">
+                    <div className="text-2xl mb-2">{stat.icon}</div>
+                    <motion.div 
+                      className="text-2xl font-bold mb-1"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 2 + index * 0.1 }}
+                    >
+                      {stat.value}+
+                    </motion.div>
+                    <p className="text-sm opacity-90">{stat.label}</p>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Right Content - Profile Image */}
+          {/* Right Content - Enhanced Profile Image */}
           <motion.div
             className="flex justify-center"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
+            initial={{ opacity: 0, scale: 0.8, x: 50 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
           >
             <motion.div
-              className="relative animate-float"
+              className="relative"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-gradient-to-r from-orange-500 via-purple-500 to-blue-500 shadow-2xl">
+              {/* Animated Background Elements */}
+              <motion.div
+                className="absolute -inset-4 bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 rounded-full opacity-20"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              />
+              
+              <motion.div
+                className="absolute -inset-2 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 rounded-full opacity-30"
+                animate={{ rotate: -360 }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+              />
+              
+              {/* Profile Image Container */}
+              <motion.div
+                className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-gradient-to-r from-orange-500 via-purple-500 to-blue-500 shadow-2xl"
+                animate={{ 
+                  y: [0, -10, 0],
+                  boxShadow: [
+                    '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    '0 25px 50px -12px rgba(249, 115, 22, 0.4)',
+                    '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                  ]
+                }}
+                transition={{ 
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
                 <Image
                   src="/placeholder-user.jpg"
                   alt="Dharaneesh C"
@@ -747,7 +944,43 @@ export default function Home() {
                   height={320}
                   className="w-full h-full object-cover"
                 />
-              </div>
+                
+                {/* Overlay Effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-transparent to-blue-500/20"
+                  animate={{ opacity: [0, 0.3, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+              </motion.div>
+
+              {/* Floating Elements */}
+              <motion.div
+                className="absolute top-4 right-4 w-4 h-4 bg-orange-500 rounded-full"
+                animate={{
+                  y: [0, -20, 0],
+                  opacity: [0.7, 1, 0.7]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              
+              <motion.div
+                className="absolute bottom-8 left-8 w-6 h-6 bg-blue-500 rounded-full"
+                animate={{
+                  y: [0, -15, 0],
+                  x: [0, 10, 0],
+                  opacity: [0.5, 1, 0.5]
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1
+                }}
+              />
             </motion.div>
           </motion.div>
         </div>
@@ -1070,7 +1303,7 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Experience Section */}
+      {/* Enhanced Experience Section with Certificate Viewer */}
       <AnimatedSection>
         <section id="experience" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-800' : 'bg-slate-100'
@@ -1176,11 +1409,12 @@ export default function Home() {
                     ))}
                   </div>
                   
+                  {/* Enhanced Certificate Viewer */}
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button 
                         size="sm" 
-                        className="btn-accent"
+                        className="btn-accent flex items-center gap-2"
                         onClick={() => {
                           toast({
                             title: "Opening Certificate",
@@ -1188,18 +1422,24 @@ export default function Home() {
                           })
                         }}
                       >
+                        <span>📄</span>
                         View Certificate
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl h-[80vh]">
-                      <DialogHeader>
-                        <DialogTitle>{item.type === 'internship' ? 'Internship' : 'Certification'} - {item.company}</DialogTitle>
+                    <DialogContent className="max-w-5xl h-[90vh] p-0">
+                      <DialogHeader className="p-6 pb-0">
+                        <DialogTitle className="flex items-center gap-2">
+                          <span>{item.type === 'internship' ? '💼' : '🎓'}</span>
+                          {item.type === 'internship' ? 'Internship' : 'Certification'} - {item.company}
+                        </DialogTitle>
                       </DialogHeader>
-                      <iframe
-                        src={item.certificate}
-                        className="w-full h-full rounded-lg"
-                        title={`Certificate - ${item.company}`}
-                      />
+                      <div className="flex-1 p-6 pt-0">
+                        <iframe
+                          src={item.certificate}
+                          className="w-full h-full rounded-lg border"
+                          title={`Certificate - ${item.company}`}
+                        />
+                      </div>
                     </DialogContent>
                   </Dialog>
                 </motion.div>
@@ -1348,7 +1588,7 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Recent Activity Section */}
+      {/* Enhanced Recent Activity Section */}
       <AnimatedSection>
         <section className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-800' : 'bg-white'
@@ -1369,31 +1609,64 @@ export default function Home() {
               {recentActivities.map((activity, index) => (
                 <motion.div
                   key={index}
-                  className={`card-professional p-4 flex items-center justify-between hover-lift ${
+                  className={`card-professional p-6 hover-lift ${
                     theme === 'dark' ? 'bg-gray-700' : 'bg-slate-50'
                   }`}
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
                 >
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full mr-4 ${
-                      activity.type === 'update' ? 'bg-blue-500' :
-                      activity.type === 'project' ? 'bg-green-500' :
-                      activity.type === 'achievement' ? 'bg-orange-500' :
-                      'bg-purple-500'
-                    }`}></div>
-                    <div>
-                      <p className="font-medium">{activity.action}</p>
-                      <p className="text-sm text-gray-500">{activity.time}</p>
+                  <div className="flex items-start gap-4">
+                    <div className={`text-2xl p-2 rounded-full ${
+                      activity.type === 'project' ? 'bg-blue-100 dark:bg-blue-900' :
+                      activity.type === 'achievement' ? 'bg-orange-100 dark:bg-orange-900' :
+                      activity.type === 'client' ? 'bg-green-100 dark:bg-green-900' :
+                      activity.type === 'github' ? 'bg-purple-100 dark:bg-purple-900' :
+                      'bg-pink-100 dark:bg-pink-900'
+                    }`}>
+                      {activity.icon}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <h3 className="font-semibold text-lg">{activity.action}</h3>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {activity.type}
+                          </Badge>
+                          <span className="text-sm text-gray-500">{activity.time}</span>
+                        </div>
+                      </div>
+                      <p className={`mt-2 text-sm ${
+                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      }`}>
+                        {activity.description}
+                      </p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-xs">
-                    {activity.type}
-                  </Badge>
                 </motion.div>
               ))}
             </div>
+
+            <motion.div
+              className="text-center mt-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Button
+                variant="outline"
+                onClick={() => {
+                  toast({
+                    title: "Stay Updated",
+                    description: "Follow me on GitHub and LinkedIn for the latest updates!",
+                  })
+                }}
+              >
+                View All Activity
+              </Button>
+            </motion.div>
           </div>
         </section>
       </AnimatedSection>
@@ -1415,7 +1688,7 @@ export default function Home() {
               </span>
             </motion.h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Contact Form */}
               <motion.div
                 className={`card-professional p-8 ${
@@ -1506,6 +1779,9 @@ export default function Home() {
                         })
                       }}
                     >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                      </svg>
                       <span className="text-gray-800 dark:text-white">GitHub</span>
                     </Button>
                     <Button
@@ -1519,6 +1795,9 @@ export default function Home() {
                         })
                       }}
                     >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </svg>
                       <span className="text-blue-600">LinkedIn</span>
                     </Button>
                     <Button
@@ -1533,6 +1812,7 @@ export default function Home() {
                         })
                       }}
                     >
+                      <span>📧</span>
                       <span className="text-green-600">Email</span>
                     </Button>
                   </div>
@@ -1560,85 +1840,146 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Footer */}
-      <footer className={`py-12 px-4 md:px-8 ${
+      {/* Enhanced Footer */}
+      <footer className={`py-16 px-4 md:px-8 ${
         theme === 'dark' 
           ? 'bg-gradient-to-r from-gray-900 via-black to-gray-800' 
           : 'bg-gradient-to-r from-gray-800 to-gray-900'
       } text-white`}>
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-orange-500 to-purple-500 text-transparent bg-clip-text">
-                Dharaneesh C
-              </h3>
-              <p className="text-gray-300 mb-4">
-                Full Stack & AI Developer passionate about creating innovative solutions
-              </p>
-              <div className="flex gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {/* Brand Section */}
+            <div className="lg:col-span-2">
+              <motion.h3 
+                className="text-3xl font-bold mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+              >
+                <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
+                  Dharaneesh C
+                </span>
+              </motion.h3>
+              <motion.p 
+                className="text-gray-300 mb-6 text-lg leading-relaxed max-w-md"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                Full Stack & AI Developer passionate about creating innovative solutions that make a difference. 
+                Transforming ideas into powerful digital experiences.
+              </motion.p>
+              
+              {/* Social Links */}
+              <motion.div 
+                className="flex gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-400 hover:text-orange-500"
+                  className="text-gray-400 hover:text-orange-500 transition-colors p-2"
                   onClick={() => window.open('https://github.com/dharaneesh', '_blank')}
                 >
-                  GitHub
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                  </svg>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-400 hover:text-blue-500"
+                  className="text-gray-400 hover:text-blue-500 transition-colors p-2"
                   onClick={() => window.open('https://linkedin.com/in/dharaneesh', '_blank')}
                 >
-                  LinkedIn
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
                 </Button>
-              </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-green-500 transition-colors p-2"
+                  onClick={() => window.location.href = 'mailto:dharaneeshc2006@gmail.com'}
+                >
+                  <span className="text-lg">📧</span>
+                </Button>
+              </motion.div>
             </div>
             
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
+            {/* Quick Links */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h4 className="text-lg font-semibold mb-6 text-orange-500">Quick Links</h4>
+              <ul className="space-y-3">
                 {navigation.map((item) => (
                   <li key={item.name}>
                     <a
                       href={item.href}
-                      className="text-gray-400 hover:text-orange-500 transition-colors duration-300"
+                      className="text-gray-400 hover:text-orange-500 transition-colors duration-300 text-sm"
                     >
                       {item.name}
                     </a>
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
             
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact</h4>
-              <div className="space-y-2 text-gray-400">
-                <p>dharaneeshc2006@gmail.com</p>
-                <p>Available for Remote Work</p>
-                <p>Open to New Opportunities</p>
+            {/* Contact Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h4 className="text-lg font-semibold mb-6 text-blue-500">Contact</h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-2">
+                  <span>📧</span>
+                  <span className="text-gray-400">dharaneeshc2006@gmail.com</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>🌍</span>
+                  <span className="text-gray-400">Available Worldwide</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>💼</span>
+                  <span className="text-gray-400">Open to Opportunities</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>⚡</span>
+                  <span className="text-gray-400">Quick Response</span>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </div>
           
-          <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <motion.p
-              className="text-gray-400 mb-4 md:mb-0"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-            >
-              © 2025 Dharaneesh C. All rights reserved. Built with React & Next.js
-            </motion.p>
-            
-            <motion.p
-              className="text-gray-500 text-sm"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              Crafted with React, Next.js & Tailwind CSS
-            </motion.p>
-          </div>
+          {/* Bottom Section */}
+          <motion.div 
+            className="border-t border-gray-700 pt-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="text-center md:text-left">
+                <p className="text-gray-400 mb-2">
+                  © 2025 Dharaneesh C. All rights reserved. Built with React & Next.js
+                </p>
+                <p className="text-gray-500 text-sm">
+                  Crafted with React, Next.js, Tailwind CSS & Framer Motion
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>Made with</span>
+                <span className="text-red-500 animate-pulse">❤️</span>
+                <span>in India</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </footer>
 
