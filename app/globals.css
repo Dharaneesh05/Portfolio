@@ -533,7 +533,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .skill-progress {
-  @apply bg-gradient-to-r from-orange-500 to-orange-400 h-full rounded-full transition-all duration-[2000ms] ease-out relative;
+  @apply bg-gradient-to-r from-orange-500 to-orange-400 h-full rounded-full transition-all duration-2000 ease-out relative;
 }
 
 .skill-progress::after {
