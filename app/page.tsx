@@ -3,33 +3,6 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, useInView, useAnimation } from 'framer-motion'
-import { 
-  FaSun, 
-  FaMoon, 
-  FaRocket, 
-  FaBriefcase, 
-  FaSmile, 
-  FaTrophy,
-  FaReact,
-  FaPython,
-  FaNodeJs,
-  FaDatabase,
-  FaGithub,
-  FaLinkedin,
-  FaExternalLinkAlt,
-  FaDownload,
-  FaEnvelope,
-  FaPhone,
-  FaBars,
-  FaTimes,
-  FaArrowUp,
-  FaCertificate,
-  FaBuilding,
-  FaBlog,
-  FaRobot,
-  FaPaperPlane,
-  FaEye
-} from 'react-icons/fa'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -47,7 +20,6 @@ export default function Home() {
   const [chatMessages, setChatMessages] = useState([])
   const [chatInput, setChatInput] = useState('')
   const [showChatModal, setShowChatModal] = useState(false)
-  const [selectedCertificate, setSelectedCertificate] = useState(null)
   const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0 })
 
   useEffect(() => {
@@ -99,10 +71,10 @@ export default function Home() {
   }
 
   const skills = [
-    { name: 'React/Next.js', level: 95, icon: FaReact, color: '#61DAFB' },
-    { name: 'Python', level: 90, icon: FaPython, color: '#3776AB' },
-    { name: 'Node.js', level: 85, icon: FaNodeJs, color: '#339933' },
-    { name: 'Database', level: 88, icon: FaDatabase, color: '#336791' }
+    { name: 'React/Next.js', level: 95, color: '#61DAFB' },
+    { name: 'Python', level: 90, color: '#3776AB' },
+    { name: 'Node.js', level: 85, color: '#339933' },
+    { name: 'Database', level: 88, color: '#336791' }
   ]
 
   const projects = [
@@ -113,8 +85,8 @@ export default function Home() {
       image: '/placeholder.jpg',
       tags: ['AI', 'React', 'Python'],
       category: 'AI',
-      demo: '#',
-      github: '#'
+      demo: 'https://example.com/demo',
+      github: 'https://github.com/dharaneesh'
     },
     {
       id: 2,
@@ -123,8 +95,8 @@ export default function Home() {
       image: '/placeholder.jpg',
       tags: ['Full Stack', 'React', 'Node.js'],
       category: 'Full Stack',
-      demo: '#',
-      github: '#'
+      demo: 'https://example.com/demo',
+      github: 'https://github.com/dharaneesh'
     },
     {
       id: 3,
@@ -133,8 +105,8 @@ export default function Home() {
       image: '/placeholder.jpg',
       tags: ['AI', 'Python', 'TensorFlow'],
       category: 'AI',
-      demo: '#',
-      github: '#'
+      demo: 'https://example.com/demo',
+      github: 'https://github.com/dharaneesh'
     },
     {
       id: 4,
@@ -143,8 +115,8 @@ export default function Home() {
       image: '/placeholder.jpg',
       tags: ['Full Stack', 'React', 'Socket.io'],
       category: 'Full Stack',
-      demo: '#',
-      github: '#'
+      demo: 'https://example.com/demo',
+      github: 'https://github.com/dharaneesh'
     },
     {
       id: 5,
@@ -153,8 +125,8 @@ export default function Home() {
       image: '/placeholder.jpg',
       tags: ['AI', 'React', 'API'],
       category: 'AI',
-      demo: '#',
-      github: '#'
+      demo: 'https://example.com/demo',
+      github: 'https://github.com/dharaneesh'
     },
     {
       id: 6,
@@ -163,8 +135,8 @@ export default function Home() {
       image: '/placeholder.jpg',
       tags: ['Full Stack', 'React', 'Analytics'],
       category: 'Full Stack',
-      demo: '#',
-      github: '#'
+      demo: 'https://example.com/demo',
+      github: 'https://github.com/dharaneesh'
     }
   ]
 
@@ -256,8 +228,8 @@ export default function Home() {
         initial="hidden"
         animate={controls}
         variants={{
-          hidden: { opacity: 0, y: 50 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+          hidden: { opacity: 0, y: 20 },
+          visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
         }}
         className={className}
       >
@@ -282,7 +254,7 @@ export default function Home() {
     <div className={`min-h-screen transition-colors duration-300 ${
       theme === 'dark' 
         ? 'bg-black text-white' 
-        : 'bg-gray-50 text-black'
+        : 'bg-slate-50 text-gray-900'
     }`}>
       {/* Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -295,9 +267,9 @@ export default function Home() {
             {/* Logo */}
             <motion.a
               href="#home"
-              className="text-2xl md:text-3xl font-bold text-orange-500 font-poppins"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="text-2xl md:text-3xl font-bold text-orange-500 font-sans"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               Dharaneesh C
             </motion.a>
@@ -310,9 +282,9 @@ export default function Home() {
                   href={item.href}
                   className="nav-link hover:text-orange-500 transition-colors duration-300"
                   whileHover={{ y: -2 }}
-                  initial={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                 >
                   {item.name}
                 </motion.a>
@@ -322,7 +294,7 @@ export default function Home() {
             {/* Right side items */}
             <div className="flex items-center space-x-4">
               <Button 
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 animate-pulse-glow"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300"
                 onClick={() => window.open('#contact', '_self')}
               >
                 Hire Me
@@ -332,13 +304,9 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:scale-110 transition-transform duration-300"
+                className="p-2 rounded-full hover:scale-105 transition-transform duration-300"
               >
-                {theme === 'dark' ? (
-                  <FaSun className="text-xl text-yellow-500" />
-                ) : (
-                  <FaMoon className="text-xl text-blue-600" />
-                )}
+                {theme === 'dark' ? '☀️' : '🌙'}
               </Button>
 
               {/* Mobile menu button */}
@@ -348,7 +316,7 @@ export default function Home() {
                 className="md:hidden p-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+                {mobileMenuOpen ? '✕' : '☰'}
               </Button>
             </div>
           </div>
@@ -379,18 +347,18 @@ export default function Home() {
       <section id="home" className={`min-h-screen flex items-center justify-center px-4 md:px-8 ${
         theme === 'dark' 
           ? 'bg-gradient-to-br from-black to-gray-900' 
-          : 'bg-gradient-to-br from-gray-50 to-white'
+          : 'bg-gradient-to-br from-slate-50 to-blue-50'
       }`}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <motion.div
             className="text-center md:text-left"
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
           >
             <motion.p
-              className="text-purple-500 text-sm md:text-base mb-4"
+              className="text-purple-500 text-sm md:text-base mb-4 font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -399,11 +367,10 @@ export default function Home() {
             </motion.p>
             
             <motion.h1
-              className="text-5xl md:text-7xl font-bold mb-6 font-poppins uppercase"
-              style={{ letterSpacing: '2px' }}
-              initial={{ opacity: 0, y: 30 }}
+              className="text-4xl md:text-6xl font-bold mb-6 font-sans leading-tight"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
             >
               <span className="bg-gradient-to-r from-orange-500 to-orange-400 text-transparent bg-clip-text">
                 Full Stack & AI Developer
@@ -411,28 +378,33 @@ export default function Home() {
             </motion.h1>
             
             <motion.p
-              className={`text-base md:text-lg mb-8 max-w-2xl ${
+              className={`text-base md:text-lg mb-8 max-w-2xl leading-relaxed ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.4 }}
             >
               Building innovative web solutions and AI-powered applications with modern technologies and creative problem-solving.
             </motion.p>
             
             <motion.div
               className="flex flex-wrap gap-4 justify-center md:justify-start mb-8"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
+              transition={{ delay: 0.5 }}
             >
-              <Button className="btn-primary">
-                <FaEye className="mr-2" />
+              <Button 
+                className="btn-primary"
+                onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              >
                 View Projects
               </Button>
-              <Button variant="outline" className="btn-outline">
-                <FaDownload className="mr-2" />
+              <Button 
+                variant="outline" 
+                className="btn-outline"
+                onClick={() => window.open('/resume.pdf', '_blank')}
+              >
                 Download Resume
               </Button>
               <Dialog>
@@ -456,16 +428,16 @@ export default function Home() {
           {/* Right Content - Profile Image */}
           <motion.div
             className="flex justify-center"
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
           >
             <motion.div
               className="relative"
-              whileHover={{ rotate: 3, scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-orange-500 animate-float">
+              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-orange-500">
                 <Image
                   src="/placeholder-user.jpg"
                   alt="Dharaneesh C"
@@ -474,9 +446,6 @@ export default function Home() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -top-4 -right-4 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center animate-bounce">
-                <FaRocket className="text-white text-xl" />
-              </div>
             </motion.div>
           </motion.div>
         </div>
@@ -484,29 +453,28 @@ export default function Home() {
         {/* Stats Cards */}
         <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4"
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 0.8 }}
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: FaRocket, label: 'Projects', value: stats.projects, color: 'text-blue-500' },
-              { icon: FaBriefcase, label: 'Years', value: stats.years, color: 'text-green-500' },
-              { icon: FaSmile, label: 'Clients', value: stats.clients, color: 'text-purple-500' },
-              { icon: FaTrophy, label: 'Certifications', value: stats.certifications, color: 'text-orange-500' }
+              { label: 'Projects', value: stats.projects, color: 'text-blue-500' },
+              { label: 'Years', value: stats.years, color: 'text-green-500' },
+              { label: 'Clients', value: stats.clients, color: 'text-purple-500' },
+              { label: 'Certifications', value: stats.certifications, color: 'text-orange-500' }
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
                 className={`card-professional p-4 text-center ${
                   theme === 'dark' ? 'bg-gray-800' : 'bg-white'
                 }`}
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.4 + index * 0.1 }}
-                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ delay: 0.9 + index * 0.05 }}
+                whileHover={{ scale: 1.02, y: -2 }}
               >
-                <stat.icon className={`text-2xl ${stat.color} mx-auto mb-2`} />
-                <div className="stat-counter animate-count-up">{stat.value}+</div>
+                <div className="stat-counter text-2xl font-bold mb-1">{stat.value}+</div>
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   {stat.label}
                 </p>
@@ -519,30 +487,30 @@ export default function Home() {
       {/* About Section */}
       <AnimatedSection>
         <section id="about" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+          theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12 underline decoration-orange-500"
-              initial={{ opacity: 0, y: 30 }}
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               About Me
             </motion.h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <motion.div
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.6 }}
               >
-                <p className={`text-base md:text-lg mb-6 ${
+                <p className={`text-base md:text-lg mb-6 leading-relaxed ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   I'm a passionate Full Stack and AI Developer with expertise in modern web technologies and artificial intelligence. I love creating innovative solutions that bridge the gap between complex technical challenges and user-friendly experiences.
                 </p>
-                <p className={`text-base md:text-lg mb-8 ${
+                <p className={`text-base md:text-lg mb-8 leading-relaxed ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   With a strong foundation in both frontend and backend development, I specialize in building scalable web applications and implementing AI-powered features that drive business value.
@@ -550,9 +518,9 @@ export default function Home() {
               </motion.div>
               
               <motion.div
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.6 }}
               >
                 <ul className="space-y-4">
                   {[
@@ -564,14 +532,14 @@ export default function Home() {
                   ].map((item, index) => (
                     <motion.li
                       key={item}
-                      className={`flex items-center ${
+                      className={`flex items-center text-base ${
                         theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                       }`}
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: 15 }}
                       whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                      transition={{ delay: index * 0.05 }}
                     >
-                      <FaRocket className="text-orange-500 mr-3" />
+                      <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
                       {item}
                     </motion.li>
                   ))}
@@ -590,9 +558,9 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <motion.h2
               className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               Skills
             </motion.h2>
@@ -602,18 +570,14 @@ export default function Home() {
                 <motion.div
                   key={skill.name}
                   className={`card-professional p-6 ${
-                    theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'
+                    theme === 'dark' ? 'bg-gray-800' : 'bg-slate-50'
                   }`}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.2 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
                 >
-                  <div className="flex items-center mb-4">
-                    <skill.icon 
-                      className="text-3xl mr-4" 
-                      style={{ color: skill.color }} 
-                    />
+                  <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-xl font-semibold">{skill.name}</h3>
                       <p className="text-orange-500 font-medium">{skill.level}%</p>
@@ -624,7 +588,7 @@ export default function Home() {
                       className="skill-progress"
                       initial={{ width: 0 }}
                       whileInView={{ width: `${skill.level}%` }}
-                      transition={{ duration: 2, delay: index * 0.3 }}
+                      transition={{ duration: 1.5, delay: index * 0.2 }}
                     />
                   </div>
                 </motion.div>
@@ -637,14 +601,14 @@ export default function Home() {
       {/* Projects Section */}
       <AnimatedSection>
         <section id="projects" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+          theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
         }`}>
           <div className="max-w-7xl mx-auto">
             <motion.h2
               className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-8"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               Projects
             </motion.h2>
@@ -652,9 +616,9 @@ export default function Home() {
             {/* Filter Buttons */}
             <motion.div
               className="flex flex-wrap justify-center gap-4 mb-12"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
               {['All', 'AI', 'Full Stack'].map((filter) => (
                 <Button
@@ -676,9 +640,9 @@ export default function Home() {
                 <motion.div
                   key={project.id}
                   className="project-card hover-lift"
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                   layout
                 >
                   <div className="relative overflow-hidden rounded-t-xl">
@@ -705,12 +669,18 @@ export default function Home() {
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" className="btn-primary">
-                        <FaExternalLinkAlt className="mr-2" />
+                      <Button 
+                        size="sm" 
+                        className="btn-primary"
+                        onClick={() => window.open(project.demo, '_blank')}
+                      >
                         Live Demo
                       </Button>
-                      <Button size="sm" variant="outline">
-                        <FaGithub className="mr-2" />
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.open(project.github, '_blank')}
+                      >
                         GitHub
                       </Button>
                     </div>
@@ -725,14 +695,14 @@ export default function Home() {
       {/* Internships Section */}
       <AnimatedSection>
         <section id="internships" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'
+          theme === 'dark' ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
               className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               Internships
             </motion.h2>
@@ -744,13 +714,13 @@ export default function Home() {
                   className={`card-professional p-6 hover-lift ${
                     theme === 'dark' ? 'bg-gray-700' : 'bg-white'
                   }`}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.2 }}
+                  transition={{ delay: index * 0.1 }}
                 >
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                     <div className="flex items-center mb-2 md:mb-0">
-                      <FaBuilding className="text-orange-500 text-xl mr-3" />
+                      <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
                       <div>
                         <h3 className="text-xl font-semibold">{internship.company}</h3>
                         <p className="text-orange-500 font-medium">{internship.role}</p>
@@ -770,7 +740,6 @@ export default function Home() {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button size="sm" className="btn-secondary">
-                        <FaCertificate className="mr-2" />
                         View Certificate
                       </Button>
                     </DialogTrigger>
@@ -795,14 +764,14 @@ export default function Home() {
       {/* Certifications Section */}
       <AnimatedSection>
         <section id="certifications" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+          theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
               className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               Certifications
             </motion.h2>
@@ -812,13 +781,15 @@ export default function Home() {
                 <motion.div
                   key={cert.id}
                   className="certificate-card hover-lift cursor-pointer"
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.2 }}
-                  whileHover={{ scale: 1.05, y: -10 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -5 }}
                 >
                   <div className="text-center mb-4">
-                    <FaCertificate className="text-4xl text-orange-500 mx-auto mb-4" />
+                    <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white text-xl font-bold">C</span>
+                    </div>
                     <h3 className="text-xl font-semibold mb-2">{cert.title}</h3>
                     <p className={`text-sm mb-2 ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
@@ -830,7 +801,6 @@ export default function Home() {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button className="w-full btn-primary">
-                        <FaEye className="mr-2" />
                         View Certificate
                       </Button>
                     </DialogTrigger>
@@ -860,9 +830,9 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <motion.h2
               className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               Blog Posts
             </motion.h2>
@@ -872,15 +842,15 @@ export default function Home() {
                 <motion.article
                   key={post.id}
                   className={`card-professional p-6 hover-lift ${
-                    theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'
+                    theme === 'dark' ? 'bg-gray-800' : 'bg-slate-50'
                   }`}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
                 >
                   <div className="flex items-center mb-3">
-                    <FaBlog className="text-orange-500 text-xl mr-3" />
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
                     <span className={`text-sm ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
@@ -893,7 +863,7 @@ export default function Home() {
                   }`}>
                     {post.excerpt}
                   </p>
-                  <Button size="sm" className="btn-primary animate-pulse">
+                  <Button size="sm" className="btn-primary">
                     Read More
                   </Button>
                 </motion.article>
@@ -906,14 +876,14 @@ export default function Home() {
       {/* AI Demo Section */}
       <AnimatedSection>
         <section id="demo" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+          theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
         }`}>
           <div className="max-w-4xl mx-auto text-center">
             <motion.h2
               className="text-3xl md:text-4xl font-bold text-orange-500 mb-8"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               Interactive AI Demo
             </motion.h2>
@@ -922,9 +892,9 @@ export default function Home() {
               className={`text-lg mb-8 ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.1 }}
             >
               Experience the power of AI through this interactive chatbot demo
             </motion.p>
@@ -932,14 +902,12 @@ export default function Home() {
             <Dialog open={showChatModal} onOpenChange={setShowChatModal}>
               <DialogTrigger asChild>
                 <Button size="lg" className="btn-primary text-lg px-8 py-4">
-                  <FaRobot className="mr-3 text-xl" />
                   Launch AI Demo
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md h-[80vh] flex flex-col">
                 <DialogHeader>
                   <DialogTitle className="flex items-center">
-                    <FaRobot className="mr-2 text-orange-500" />
                     AI Assistant Demo
                   </DialogTitle>
                 </DialogHeader>
@@ -947,7 +915,9 @@ export default function Home() {
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {chatMessages.length === 0 ? (
                       <div className="text-center text-gray-500">
-                        <FaRobot className="text-4xl mx-auto mb-4 text-orange-500" />
+                        <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span className="text-white font-bold">AI</span>
+                        </div>
                         <p>Hi! I'm an AI assistant. Ask me anything!</p>
                       </div>
                     ) : (
@@ -957,7 +927,7 @@ export default function Home() {
                           className={`flex ${
                             message.type === 'user' ? 'justify-end' : 'justify-start'
                           }`}
-                          initial={{ opacity: 0, x: message.type === 'user' ? 50 : -50 }}
+                          initial={{ opacity: 0, x: message.type === 'user' ? 30 : -30 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.3 }}
                         >
@@ -985,7 +955,6 @@ export default function Home() {
                         className="form-input"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') {
-                            // Handle chat message
                             if (chatInput.trim()) {
                               setChatMessages([
                                 ...chatMessages,
@@ -998,7 +967,7 @@ export default function Home() {
                         }}
                       />
                       <Button
-                        className="btn-primary animate-bounce"
+                        className="btn-primary"
                         onClick={() => {
                           if (chatInput.trim()) {
                             setChatMessages([
@@ -1010,7 +979,7 @@ export default function Home() {
                           }
                         }}
                       >
-                        <FaPaperPlane />
+                        Send
                       </Button>
                     </div>
                   </div>
@@ -1024,14 +993,14 @@ export default function Home() {
       {/* Contact Section */}
       <AnimatedSection>
         <section id="contact" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'
+          theme === 'dark' ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
               className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
             >
               Get in Touch
             </motion.h2>
@@ -1040,9 +1009,9 @@ export default function Home() {
               {/* Contact Form */}
               <motion.div
                 className="contact-form"
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.6 }}
               >
                 <form onSubmit={handleContactSubmit} className="space-y-6">
                   <div>
@@ -1075,8 +1044,7 @@ export default function Home() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="btn-primary w-full animate-pulse-glow">
-                    <FaPaperPlane className="mr-2" />
+                  <Button type="submit" className="btn-primary w-full">
                     Send Message
                   </Button>
                 </form>
@@ -1085,19 +1053,19 @@ export default function Home() {
               {/* Contact Information */}
               <motion.div
                 className="space-y-8"
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.6 }}
               >
                 <div>
                   <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
                   <div className="space-y-4">
                     <div className="flex items-center">
-                      <FaEnvelope className="text-orange-500 text-xl mr-4" />
+                      <div className="w-3 h-3 bg-orange-500 rounded-full mr-4"></div>
                       <span>dharaneeshc2006@gmail.com</span>
                     </div>
                     <div className="flex items-center">
-                      <FaPhone className="text-orange-500 text-xl mr-4" />
+                      <div className="w-3 h-3 bg-orange-500 rounded-full mr-4"></div>
                       <span>+91 XXXXX XXXXX</span>
                     </div>
                   </div>
@@ -1110,17 +1078,17 @@ export default function Home() {
                       variant="outline"
                       size="sm"
                       className="hover-glow"
-                      onClick={() => window.open('https://github.com', '_blank')}
+                      onClick={() => window.open('https://github.com/dharaneesh', '_blank')}
                     >
-                      <FaGithub className="text-xl" />
+                      GitHub
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       className="hover-glow"
-                      onClick={() => window.open('https://linkedin.com', '_blank')}
+                      onClick={() => window.open('https://linkedin.com/in/dharaneesh', '_blank')}
                     >
-                      <FaLinkedin className="text-xl text-blue-600" />
+                      LinkedIn
                     </Button>
                   </div>
                 </div>
@@ -1138,7 +1106,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <motion.p
               className="text-gray-400 mb-4 md:mb-0"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
             >
               © 2025 Dharaneesh C. All rights reserved.
@@ -1146,9 +1114,9 @@ export default function Home() {
             
             <motion.div
               className="flex items-center gap-6"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.1 }}
             >
               <div className="flex gap-4">
                 {navigation.slice(0, 4).map((item) => (
@@ -1172,15 +1140,15 @@ export default function Home() {
           showScrollTop ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={scrollToTop}
-        whileHover={{ scale: 1.1, y: -5 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.05, y: -2 }}
+        whileTap={{ scale: 0.95 }}
         animate={{ 
-          y: showScrollTop ? 0 : 100,
+          y: showScrollTop ? 0 : 50,
           opacity: showScrollTop ? 1 : 0 
         }}
         transition={{ duration: 0.3 }}
       >
-        <FaArrowUp className="text-xl" />
+        ↑
       </motion.button>
     </div>
   )

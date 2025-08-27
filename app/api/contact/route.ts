@@ -5,68 +5,78 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, message } = await request.json()
 
-    // Validate input
-    if (!name || !email || !message) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      )
-    }
-
-    // In a real application, you would integrate with an email service
-    // For demonstration, we'll simulate sending an email
+    // Here you would integrate with an email service like:
+    // - Nodemailer with Gmail SMTP
+    // - SendGrid
+    // - Resend
+    // - EmailJS
     
-    // Email content that would be sent to dharaneeshc2006@gmail.com
-    const emailContent = {
+    // For now, we'll simulate sending an email
+    // In a real implementation, you would configure your email service
+    
+    console.log('Contact form submission:', {
+      name,
+      email,
+      message,
+      timestamp: new Date().toISOString()
+    })
+
+    // Simulate email sending
+    const emailData = {
       to: 'dharaneeshc2006@gmail.com',
-      subject: `New Contact Form Message from ${name}`,
+      from: email,
+      subject: `New Contact Form Submission from ${name}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-          <h2 style="color: #f97316; text-align: center; margin-bottom: 30px;">New Contact Form Submission</h2>
-          
-          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h3 style="color: #333; margin-top: 0;">Contact Details:</h3>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #f97316; border-bottom: 2px solid #f97316; padding-bottom: 10px;">
+            New Contact Form Submission
+          </h2>
+          <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Message:</strong></p>
+            <div style="background-color: white; padding: 15px; border-radius: 5px; border-left: 4px solid #f97316;">
+              ${message}
+            </div>
           </div>
-          
-          <div style="background-color: #fff; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
-            <h3 style="color: #333; margin-top: 0;">Message:</h3>
-            <p style="line-height: 1.6; color: #555;">${message}</p>
-          </div>
-          
-          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-            <p style="color: #777; font-size: 14px;">This message was sent from your portfolio contact form.</p>
-          </div>
+          <p style="color: #666; font-size: 14px;">
+            This message was sent from your portfolio contact form on ${new Date().toLocaleString()}
+          </p>
         </div>
       `
     }
 
-    // Here you would typically use an email service like:
-    // - SendGrid
-    // - Nodemailer
-    // - Amazon SES
-    // - Resend
-    // etc.
-
-    // For now, we'll just log the email content and return success
-    console.log('Email would be sent with content:', emailContent)
-
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Here you would actually send the email using your preferred service
+    // Example with Nodemailer (you'd need to install and configure it):
+    /*
+    const nodemailer = require('nodemailer');
+    
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD
+      }
+    });
+    
+    await transporter.sendMail(emailData);
+    */
 
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Message sent successfully!' 
+        message: 'Message sent successfully! I will get back to you soon.' 
       },
       { status: 200 }
     )
-
+    
   } catch (error) {
-    console.error('Error sending email:', error)
+    console.error('Contact form error:', error)
     return NextResponse.json(
-      { error: 'Failed to send message' },
+      { 
+        success: false, 
+        message: 'Failed to send message. Please try again or contact me directly.' 
+      },
       { status: 500 }
     )
   }
