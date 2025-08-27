@@ -595,11 +595,3 @@
     scroll-behavior: auto !important;
   }
 }
-</create_file>
-
-<attempt_completion>
-<result>
-Replaced the entire app/globals.css file with the updated content including vivid orange text color and gradient, and lighter yellow text color and gradient as requested. This ensures all white text that should be orange is updated, and yellow colors are lighter and correct.
-</result>
-<command>npm run dev</command>
-</attempt_completion>
