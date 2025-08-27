@@ -1,1191 +1,1187 @@
 
-"use client"
+'use client'
 
-import type React from "react"
-import { useState, useEffect, useMemo } from "react"
-import {
-  Mail,
-  Download,
-  ExternalLink,
-  Menu,
-  X,
-  Phone,
-  MapPin,
-  Send,
-  ArrowUp,
-  Eye,
-  Calendar,
-  MessageSquare,
-  Brain,
-  Code,
-  Sparkles,
-  BookOpen,
-  Zap,
-  Sun,
-  Moon,
-  Filter,
-  ChevronDown,
-  Award,
-  Briefcase,
-  GraduationCap,
-  Star,
-  Users,
-  Laptop,
-  Target,
-  CheckCircle,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
-import Image from "next/image"
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, useInView, useAnimation } from 'framer-motion'
+import { 
+  FaSun, 
+  FaMoon, 
+  FaRocket, 
+  FaBriefcase, 
+  FaSmile, 
+  FaTrophy,
+  FaReact,
+  FaPython,
+  FaNodeJs,
+  FaDatabase,
+  FaGithub,
+  FaLinkedin,
+  FaExternalLinkAlt,
+  FaDownload,
+  FaEnvelope,
+  FaPhone,
+  FaBars,
+  FaTimes,
+  FaArrowUp,
+  FaCertificate,
+  FaBuilding,
+  FaBlog,
+  FaRobot,
+  FaPaperPlane,
+  FaEye
+} from 'react-icons/fa'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
+import Image from 'next/image'
 
-export default function Portfolio() {
-  const [activeSection, setActiveSection] = useState("home")
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
+export default function Home() {
+  const [theme, setTheme] = useState('dark')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeFilter, setActiveFilter] = useState('All')
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [projectFilter, setProjectFilter] = useState("All")
-  const [technologyFilters, setTechnologyFilters] = useState<string[]>([])
-  const [formSubmitted, setFormSubmitted] = useState(false)
-  const [chatMessage, setChatMessage] = useState("")
-  const [chatResponse, setChatResponse] = useState("")
-  const [showResumeModal, setShowResumeModal] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
-  const { toast } = useToast()
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' })
+  const [chatMessages, setChatMessages] = useState([])
+  const [chatInput, setChatInput] = useState('')
+  const [showChatModal, setShowChatModal] = useState(false)
+  const [selectedCertificate, setSelectedCertificate] = useState(null)
+  const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0 })
 
   useEffect(() => {
+    document.documentElement.className = theme
+    
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-      setShowScrollTop(window.scrollY > 500)
-
-      // Update active section based on scroll position
-      const sections = [
-        "home",
-        "about",
-        "skills",
-        "projects",
-        "certifications",
-        "demo",
-        "contact",
-      ]
-      const current = sections.find((section) => {
-        const element = document.getElementById(section)
-        if (element) {
-          const rect = element.getBoundingClientRect()
-          return rect.top <= 100 && rect.bottom >= 100
-        }
-        return false
-      })
-      if (current) setActiveSection(current)
+      setShowScrollTop(window.scrollY > 400)
     }
-
-    window.addEventListener("scroll", handleScroll)
-
-    // Enhanced Intersection Observer for animations
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate")
-          }
-        })
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px",
-      },
-    )
-
-    const elements = document.querySelectorAll(".fade-in")
-    elements.forEach((el) => observer.observe(el))
+    
+    window.addEventListener('scroll', handleScroll)
+    
+    // Animate stats counter
+    const timer = setTimeout(() => {
+      setStats({ projects: 15, years: 3, clients: 10, certifications: 8 })
+    }, 1000)
 
     return () => {
-      window.removeEventListener("scroll", handleScroll)
-      observer.disconnect()
+      window.removeEventListener('scroll', handleScroll)
+      clearTimeout(timer)
     }
-  }, [])
+  }, [theme])
 
-  // Apply theme to document
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [isDarkMode])
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
-    setIsMenuOpen(false)
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const downloadResume = () => {
-    const link = document.createElement("a")
-    link.href = "/resume.pdf"
-    link.download = "Dharaneesh_C_Resume.pdf"
-    link.click()
-
-    toast({
-      title: "Resume Downloaded!",
-      description: "Thank you for your interest. The resume has been downloaded.",
-    })
-  }
-
-  const viewResume = () => {
-    setShowResumeModal(true)
-    toast({
-      title: "Resume Opened!",
-      description: "Resume opened for viewing.",
-    })
-  }
-
-  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault()
-    setIsLoading(true)
-
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      message: formData.get("message") as string,
-    }
-
     try {
-      // Send email to dharaneeshc2006@gmail.com
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactForm)
       })
-
+      
       if (response.ok) {
-        setFormSubmitted(true)
-        toast({
-          title: "Message Sent Successfully!",
-          description: "Thank you for reaching out. I'll get back to you soon.",
-        })
-        ;(e.target as HTMLFormElement).reset()
+        alert('Message sent successfully!')
+        setContactForm({ name: '', email: '', message: '' })
       } else {
-        throw new Error("Failed to send message")
+        alert('Failed to send message. Please try again.')
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
+      alert('Error sending message. Please try again.')
     }
-  }
-
-  const handleChatSubmit = async () => {
-    if (!chatMessage.trim()) return
-
-    setChatResponse("Thinking...")
-
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "Hello! I'm Dharaneesh's AI assistant. I can help you learn more about his projects and skills!",
-        "That's a great question! Dharaneesh specializes in Full Stack Development and AI/ML solutions.",
-        "I'd be happy to help! You can explore his projects or contact him directly for collaboration.",
-        "Dharaneesh has experience with React, Python, Deep Learning, and modern web technologies.",
-      ]
-      setChatResponse(responses[Math.floor(Math.random() * responses.length)])
-    }, 1500)
   }
 
   const skills = [
-    { name: "React/Next.js", level: 95, color: "from-blue-400 to-blue-500", icon: Code },
-    { name: "TypeScript", level: 90, color: "from-blue-600 to-blue-700", icon: Code },
-    { name: "Node.js", level: 85, color: "from-green-400 to-green-500", icon: Zap },
-    { name: "Python", level: 90, color: "from-yellow-400 to-yellow-500", icon: Brain },
-    { name: "MongoDB", level: 85, color: "from-green-600 to-green-700", icon: Laptop },
-    { name: "Deep Learning", level: 80, color: "from-purple-400 to-purple-500", icon: Brain },
-    { name: "Machine Learning", level: 85, color: "from-pink-400 to-pink-500", icon: Target },
-    { name: "Flask/FastAPI", level: 80, color: "from-red-400 to-red-500", icon: Zap },
+    { name: 'React/Next.js', level: 95, icon: FaReact, color: '#61DAFB' },
+    { name: 'Python', level: 90, icon: FaPython, color: '#3776AB' },
+    { name: 'Node.js', level: 85, icon: FaNodeJs, color: '#339933' },
+    { name: 'Database', level: 88, icon: FaDatabase, color: '#336791' }
   ]
 
   const projects = [
     {
-      title: "Resume Analyzer",
-      category: "AI",
-      image: "AI resume analysis dashboard with charts",
-      description:
-        "AI-powered resume analysis tool using Deep Learning and NLP for intelligent resume scoring and feedback",
-      technologies: ["Python", "Deep Learning", "MongoDB", "React", "TensorFlow", "NLP"],
-      liveDemo: "#",
-      github: "https://github.com/Dharaneesh05/resume-frontend.git",
-      gradient: "from-purple-500 to-purple-600",
-      featured: true,
+      id: 1,
+      title: 'AI-Powered Analytics Dashboard',
+      description: 'A comprehensive dashboard with AI-driven insights and real-time data visualization.',
+      image: '/placeholder.jpg',
+      tags: ['AI', 'React', 'Python'],
+      category: 'AI',
+      demo: '#',
+      github: '#'
     },
     {
-      title: "E-Commerce Platform",
-      category: "Full Stack",
-      image: "modern ecommerce platform with shopping cart",
-      description: "Complete e-commerce solution with payment integration, inventory management, and admin dashboard",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe", "Express", "JWT"],
-      liveDemo: "#",
-      github: "#",
-      gradient: "from-blue-500 to-blue-600",
-      featured: true,
+      id: 2,
+      title: 'E-Commerce Platform',
+      description: 'Full-stack e-commerce solution with payment integration and inventory management.',
+      image: '/placeholder.jpg',
+      tags: ['Full Stack', 'React', 'Node.js'],
+      category: 'Full Stack',
+      demo: '#',
+      github: '#'
     },
     {
-      title: "AI Chat Application",
-      category: "Full Stack",
-      image: "AI chatbot interface with modern design",
-      description: "Real-time chat application with AI integration, message encryption, and file sharing capabilities",
-      technologies: ["React", "Node.js", "OpenAI", "Socket.io", "Redis", "PostgreSQL"],
-      liveDemo: "#",
-      github: "#",
-      gradient: "from-emerald-500 to-emerald-600",
-      featured: false,
+      id: 3,
+      title: 'Machine Learning Model Trainer',
+      description: 'Platform for training and deploying ML models with intuitive UI.',
+      image: '/placeholder.jpg',
+      tags: ['AI', 'Python', 'TensorFlow'],
+      category: 'AI',
+      demo: '#',
+      github: '#'
     },
     {
-      title: "Task Management App",
-      category: "Frontend",
-      image: "sleek task management dashboard",
-      description: "Productivity app with drag-and-drop functionality, team collaboration, and progress tracking",
-      technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Zustand"],
-      liveDemo: "#",
-      github: "#",
-      gradient: "from-indigo-500 to-indigo-600",
-      featured: false,
+      id: 4,
+      title: 'Task Management System',
+      description: 'Collaborative task management with real-time updates and team collaboration.',
+      image: '/placeholder.jpg',
+      tags: ['Full Stack', 'React', 'Socket.io'],
+      category: 'Full Stack',
+      demo: '#',
+      github: '#'
     },
     {
-      title: "Weather Analytics Dashboard",
-      category: "Full Stack",
-      image: "weather analytics dashboard with charts",
-      description: "Real-time weather data visualization with predictive analytics and location-based forecasting",
-      technologies: ["React", "Python", "FastAPI", "PostgreSQL", "Chart.js", "Docker"],
-      liveDemo: "#",
-      github: "#",
-      gradient: "from-cyan-500 to-cyan-600",
-      featured: true,
+      id: 5,
+      title: 'Weather Prediction App',
+      description: 'AI-powered weather prediction with interactive maps and forecasting.',
+      image: '/placeholder.jpg',
+      tags: ['AI', 'React', 'API'],
+      category: 'AI',
+      demo: '#',
+      github: '#'
     },
     {
-      title: "Machine Learning Model Trainer",
-      category: "AI",
-      image: "ML model training interface",
-      description:
-        "Web-based platform for training and deploying machine learning models with automated hyperparameter tuning",
-      technologies: ["Python", "Scikit-learn", "Flask", "TensorFlow", "Pandas", "NumPy"],
-      liveDemo: "#",
-      github: "#",
-      gradient: "from-pink-500 to-pink-600",
-      featured: false,
+      id: 6,
+      title: 'Social Media Dashboard',
+      description: 'Analytics dashboard for social media management and content scheduling.',
+      image: '/placeholder.jpg',
+      tags: ['Full Stack', 'React', 'Analytics'],
+      category: 'Full Stack',
+      demo: '#',
+      github: '#'
+    }
+  ]
+
+  const internships = [
+    {
+      id: 1,
+      company: 'Tech Innovators Inc.',
+      role: 'Full Stack Developer Intern',
+      duration: 'Jun 2023 - Aug 2023',
+      description: 'Developed web applications using React and Node.js, collaborated with senior developers on enterprise projects.',
+      certificate: '/certificates/internship1.pdf'
     },
+    {
+      id: 2,
+      company: 'AI Solutions Ltd.',
+      role: 'AI Developer Intern',
+      duration: 'Jan 2023 - Mar 2023',
+      description: 'Worked on machine learning projects, implemented AI models for data analysis and prediction.',
+      certificate: '/certificates/internship2.pdf'
+    }
   ]
 
   const certifications = [
     {
-      title: "MongoDB Associate Developer",
-      issuer: "MongoDB University",
-      date: "2025",
-      color: "from-green-400 to-green-500",
-      type: "certification",
-      icon: Award,
+      id: 1,
+      title: 'Full Stack Web Development',
+      issuer: 'FreeCodeCamp',
+      date: '2023',
+      certificate: '/certificates/fullstack.pdf'
     },
     {
-      title: "Oracle APEX Cloud Developer",
-      issuer: "Oracle",
-      date: "2025",
-      color: "from-orange-400 to-orange-500",
-      type: "certification",
-      icon: Award,
+      id: 2,
+      title: 'Machine Learning Specialization',
+      issuer: 'Stanford University',
+      date: '2023',
+      certificate: '/certificates/ml.pdf'
     },
     {
-      title: "Full Stack Developer Intern",
-      issuer: "Tech Solutions Inc.",
-      date: "2024",
-      color: "from-blue-400 to-blue-500",
-      type: "internship",
-      icon: Briefcase,
-    },
-    {
-      title: "AI/ML Research Intern",
-      issuer: "Data Science Labs",
-      date: "2024",
-      color: "from-purple-400 to-purple-500",
-      type: "internship",
-      icon: Briefcase,
-    },
+      id: 3,
+      title: 'React Developer Certification',
+      issuer: 'Meta',
+      date: '2022',
+      certificate: '/certificates/react.pdf'
+    }
   ]
 
-  // Enhanced filtering logic
-  const categories = ["All", "Full Stack", "AI", "Frontend"]
-  const allTechnologies = useMemo(() => {
-    const techSet = new Set<string>()
-    projects.forEach((project) => {
-      project.technologies.forEach((tech) => techSet.add(tech))
-    })
-    return Array.from(techSet).sort()
-  }, [])
-
-  const filteredProjects = useMemo(() => {
-    let filtered = projects
-
-    // Filter by category
-    if (projectFilter !== "All") {
-      filtered = filtered.filter((project) => project.category === projectFilter)
+  const blogPosts = [
+    {
+      id: 1,
+      title: 'Getting Started with Next.js 14',
+      excerpt: 'Learn the latest features and improvements in Next.js 14 for modern web development.',
+      date: '2024-01-15',
+      readTime: '5 min read'
+    },
+    {
+      id: 2,
+      title: 'AI in Web Development: The Future is Now',
+      excerpt: 'Exploring how artificial intelligence is transforming the web development landscape.',
+      date: '2024-01-10',
+      readTime: '8 min read'
+    },
+    {
+      id: 3,
+      title: 'Building Scalable APIs with Node.js',
+      excerpt: 'Best practices for creating robust and scalable backend APIs using Node.js.',
+      date: '2024-01-05',
+      readTime: '6 min read'
     }
+  ]
 
-    // Filter by technologies
-    if (technologyFilters.length > 0) {
-      filtered = filtered.filter((project) => technologyFilters.every((tech) => project.technologies.includes(tech)))
-    }
+  const filteredProjects = activeFilter === 'All' 
+    ? projects 
+    : projects.filter(project => project.category === activeFilter)
 
-    return filtered
-  }, [projectFilter, technologyFilters])
+  const AnimatedSection = ({ children, className = "" }) => {
+    const ref = useRef(null)
+    const isInView = useInView(ref, { once: true, threshold: 0.1 })
+    const controls = useAnimation()
 
-  const handleCategoryFilter = (category: string) => {
-    setProjectFilter(category)
-  }
+    useEffect(() => {
+      if (isInView) {
+        controls.start('visible')
+      }
+    }, [isInView, controls])
 
-  const handleTechnologyFilter = (technology: string) => {
-    setTechnologyFilters((prev) =>
-      prev.includes(technology) ? prev.filter((t) => t !== technology) : [...prev, technology],
+    return (
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={controls}
+        variants={{
+          hidden: { opacity: 0, y: 50 },
+          visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+        }}
+        className={className}
+      >
+        {children}
+      </motion.div>
     )
   }
 
-  const handleClearFilters = () => {
-    setProjectFilter("All")
-    setTechnologyFilters([])
-  }
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
-  }
+  const navigation = [
+    { name: 'Home', href: '#home' },
+    { name: 'About', href: '#about' },
+    { name: 'Skills', href: '#skills' },
+    { name: 'Projects', href: '#projects' },
+    { name: 'Internships', href: '#internships' },
+    { name: 'Certifications', href: '#certifications' },
+    { name: 'Blog', href: '#blog' },
+    { name: 'Demo', href: '#demo' },
+    { name: 'Contact', href: '#contact' }
+  ]
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      {/* Resume Modal */}
-      {showResumeModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in-up">
-          <div className="bg-background rounded-xl w-full max-w-4xl h-[90vh] relative animate-scale-in">
-            <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="text-xl font-bold">Resume - Dharaneesh C</h2>
-              <Button
-                onClick={() => setShowResumeModal(false)}
-                variant="ghost"
-                size="sm"
-                className="hover:bg-muted"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-            <div className="p-6 h-[calc(100%-80px)]">
-              <iframe
-                src="/resume.pdf"
-                className="w-full h-full border-0 rounded-lg"
-                title="Dharaneesh C Resume"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Scroll to Top Button */}
-      {showScrollTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center z-50 transition-all duration-300 hover:scale-110 shadow-lg animate-bounce-in hover-glow"
-          aria-label="Back to top"
-        >
-          <ArrowUp className="w-6 h-6 text-white" />
-        </button>
-      )}
-
-      {/* Navigation */}
-      <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-          isScrolled ? "bg-background/95 backdrop-blur-md shadow-lg border-b border-border" : "bg-background"
-        }`}
-      >
+    <div className={`min-h-screen transition-colors duration-300 ${
+      theme === 'dark' 
+        ? 'bg-black text-white' 
+        : 'bg-gray-50 text-black'
+    }`}>
+      {/* Navbar */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        theme === 'dark' ? 'bg-black/95' : 'bg-white/95'
+      } backdrop-blur-sm border-b ${
+        theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
-            <div className="text-2xl md:text-3xl font-bold animate-slide-in-left">
-              <button 
-                onClick={() => scrollToSection("home")}
-                className="text-orange-500 hover:text-orange-600 transition-colors duration-300"
-              >
-                Dharaneesh C
-              </button>
-            </div>
+            <motion.a
+              href="#home"
+              className="text-2xl md:text-3xl font-bold text-orange-500 font-poppins"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Dharaneesh C
+            </motion.a>
 
-            {/* Navigation Links */}
-            <div className="hidden md:flex space-x-8 animate-slide-in-top">
-              {["Home", "About", "Skills", "Projects", "Certifications", "Demo", "Contact"].map(
-                (item, index) => {
-                  const sectionId = item.toLowerCase()
-                  return (
-                    <button
-                      key={item}
-                      onClick={() => scrollToSection(sectionId)}
-                      className={`nav-link transition-all duration-300 font-medium hover:scale-105 stagger-${index + 1} animate-fade-in-down opacity-0 ${
-                        activeSection === sectionId ? "active" : ""
-                      }`}
-                    >
-                      {item}
-                    </button>
-                  )
-                },
-              )}
-            </div>
-
-            {/* Right Side */}
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => scrollToSection("contact")}
-                className="btn-primary hidden md:flex"
-              >
-                Hire Me
-              </Button>
-
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleDarkMode}
-                className="hidden md:flex w-10 h-10 rounded-full bg-muted hover:bg-muted/80 items-center justify-center transition-all duration-300 hover:scale-110"
-                aria-label="Toggle theme"
-              >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
-
-              {/* Mobile Menu Button */}
-              <button
-                className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors duration-300"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div
-          className={`md:hidden transition-all duration-500 overflow-hidden ${
-            isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="bg-background/95 backdrop-blur-md px-4 py-4 space-y-4 border-t border-border">
-            {["Home", "About", "Skills", "Projects", "Certifications", "Demo", "Contact"].map((item, index) => {
-              const sectionId = item.toLowerCase()
-              return (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(sectionId)}
-                  className="block w-full text-left py-2 font-medium hover:text-orange-500 transition-all duration-300 animate-slide-in-left"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {navigation.map((item, index) => (
+                <motion.a
+                  key={item.name}
+                  href={item.href}
+                  className="nav-link hover:text-orange-500 transition-colors duration-300"
+                  whileHover={{ y: -2 }}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
                 >
-                  {item}
-                </button>
-              )
-            })}
-            <div className="flex items-center space-x-4 pt-4 border-t border-border">
-              <Button
-                onClick={() => scrollToSection("contact")}
-                className="btn-primary"
+                  {item.name}
+                </motion.a>
+              ))}
+            </div>
+
+            {/* Right side items */}
+            <div className="flex items-center space-x-4">
+              <Button 
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 animate-pulse-glow"
+                onClick={() => window.open('#contact', '_self')}
               >
                 Hire Me
               </Button>
-              <button
-                onClick={toggleDarkMode}
-                className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-all duration-300"
-                aria-label="Toggle theme"
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                className="p-2 rounded-full hover:scale-110 transition-transform duration-300"
               >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+                {theme === 'dark' ? (
+                  <FaSun className="text-xl text-yellow-500" />
+                ) : (
+                  <FaMoon className="text-xl text-blue-600" />
+                )}
+              </Button>
+
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden p-2"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+              </Button>
             </div>
           </div>
+
+          {/* Mobile Navigation */}
+          <motion.div
+            className={`md:hidden overflow-hidden ${mobileMenuOpen ? 'max-h-screen' : 'max-h-0'}`}
+            animate={{ maxHeight: mobileMenuOpen ? 500 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="py-4 space-y-2">
+              {navigation.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="block py-2 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section
-        id="home"
-        className="min-h-screen flex items-center px-4 sm:px-6 lg:px-8 pt-20 bg-gradient-to-br from-background via-muted/20 to-background relative overflow-hidden"
-      >
-        <div className="max-w-7xl mx-auto w-full relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div className="space-y-8 fade-in">
-              <div className="space-y-6">
-                <div
-                  className="flex items-center space-x-2 text-sm md:text-base text-purple-500 animate-fade-in-up opacity-0"
-                  style={{ animationDelay: "0.2s" }}
-                >
-                  <Sparkles className="w-5 h-5 animate-pulse" />
-                  <span>Hi, I am Dharaneesh C</span>
-                </div>
-                <h1
-                  className="text-hero bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 cursor-pointer uppercase animate-fade-in-up opacity-0"
-                  style={{ animationDelay: "0.4s" }}
-                >
-                  Full Stack & AI Developer
-                </h1>
-                <p
-                  className="text-body text-muted-foreground leading-relaxed max-w-lg animate-fade-in-up opacity-0"
-                  style={{ animationDelay: "0.6s" }}
-                >
-                  Building innovative web solutions and AI-powered applications with modern technologies and creative
-                  problem-solving.
-                </p>
-              </div>
-
-              {/* CTA Buttons */}
-              <div
-                className="flex flex-col sm:flex-row gap-4 animate-fade-in-up opacity-0"
-                style={{ animationDelay: "0.8s" }}
-              >
-                <Button
-                  onClick={() => scrollToSection("projects")}
-                  className="btn-primary"
-                >
-                  <Eye className="w-5 h-5 mr-2" />
-                  View Projects
-                </Button>
-                <Button
-                  onClick={downloadResume}
-                  className="btn-outline"
-                >
-                  <Download className="w-5 h-5 mr-2" />
-                  Download Resume
-                </Button>
-                <Button
-                  onClick={viewResume}
-                  className="btn-secondary"
-                >
-                  <Eye className="w-5 h-5 mr-2" />
-                  View Resume
-                </Button>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 animate-fade-in-up opacity-0" style={{ animationDelay: "1s" }}>
-                {[
-                  { number: "10+", label: "Projects" },
-                  { number: "2+", label: "Years" },
-                  { number: "5+", label: "Clients" },
-                  { number: "4+", label: "Certifications" }
-                ].map((stat, index) => (
-                  <div key={index} className="text-center animate-count-up" style={{ animationDelay: `${1.2 + index * 0.1}s` }}>
-                    <div className="stat-counter text-2xl md:text-3xl font-bold">{stat.number}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Content - Profile Image */}
-            <div
-              className="flex justify-center lg:justify-end fade-in animate-fade-in-right opacity-0"
-              style={{ animationDelay: "0.8s" }}
+      <section id="home" className={`min-h-screen flex items-center justify-center px-4 md:px-8 ${
+        theme === 'dark' 
+          ? 'bg-gradient-to-br from-black to-gray-900' 
+          : 'bg-gradient-to-br from-gray-50 to-white'
+      }`}>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <motion.div
+            className="text-center md:text-left"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.p
+              className="text-purple-500 text-sm md:text-base mb-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              <div className="relative group">
-                <div className="w-80 h-80 md:w-96 md:h-96 relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full p-1 animate-morphing">
-                    <Image
-                      src="/placeholder.svg?height=400&width=400&text=Dharaneesh+C"
-                      alt="Dharaneesh C - Full Stack & AI Developer"
-                      width={400}
-                      height={400}
-                      className="w-full h-full object-cover rounded-full hover:rotate-3 transition-transform duration-500 hover-scale"
-                      priority
-                    />
-                  </div>
-                  <div className="absolute -z-10 inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-full blur-3xl animate-pulse-glow"></div>
-                </div>
+              Hi, I am Dharaneesh C
+            </motion.p>
+            
+            <motion.h1
+              className="text-5xl md:text-7xl font-bold mb-6 font-poppins uppercase"
+              style={{ letterSpacing: '2px' }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+              <span className="bg-gradient-to-r from-orange-500 to-orange-400 text-transparent bg-clip-text">
+                Full Stack & AI Developer
+              </span>
+            </motion.h1>
+            
+            <motion.p
+              className={`text-base md:text-lg mb-8 max-w-2xl ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              }`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              Building innovative web solutions and AI-powered applications with modern technologies and creative problem-solving.
+            </motion.p>
+            
+            <motion.div
+              className="flex flex-wrap gap-4 justify-center md:justify-start mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              <Button className="btn-primary">
+                <FaEye className="mr-2" />
+                View Projects
+              </Button>
+              <Button variant="outline" className="btn-outline">
+                <FaDownload className="mr-2" />
+                Download Resume
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="btn-secondary">View Resume</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl h-[80vh]">
+                  <DialogHeader>
+                    <DialogTitle>Resume - Dharaneesh C</DialogTitle>
+                  </DialogHeader>
+                  <iframe
+                    src="/resume.pdf"
+                    className="w-full h-full rounded-lg"
+                    title="Resume"
+                  />
+                </DialogContent>
+              </Dialog>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Content - Profile Image */}
+          <motion.div
+            className="flex justify-center"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            <motion.div
+              className="relative"
+              whileHover={{ rotate: 3, scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-orange-500 animate-float">
+                <Image
+                  src="/placeholder-user.jpg"
+                  alt="Dharaneesh C"
+                  width={320}
+                  height={320}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            </div>
-          </div>
+              <div className="absolute -top-4 -right-4 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center animate-bounce">
+                <FaRocket className="text-white text-xl" />
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
+
+        {/* Stats Cards */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: FaRocket, label: 'Projects', value: stats.projects, color: 'text-blue-500' },
+              { icon: FaBriefcase, label: 'Years', value: stats.years, color: 'text-green-500' },
+              { icon: FaSmile, label: 'Clients', value: stats.clients, color: 'text-purple-500' },
+              { icon: FaTrophy, label: 'Certifications', value: stats.certifications, color: 'text-orange-500' }
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                className={`card-professional p-4 text-center ${
+                  theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                }`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.4 + index * 0.1 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+              >
+                <stat.icon className={`text-2xl ${stat.color} mx-auto mb-2`} />
+                <div className="stat-counter animate-count-up">{stat.value}+</div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 px-4 md:px-8 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold text-orange-500 mb-4">About Me</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 fade-in animate-fade-in-left">
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Passionate Developer & AI Enthusiast</h3>
-              <p className="text-body leading-relaxed">
-                I'm Dharaneesh, a Full Stack Developer and AI/Data Science student at Kongu Engineering College,
-                specializing in web development and AI solutions using React, Python, and Deep Learning. I'm passionate
-                about creating innovative solutions that bridge the gap between technology and user experience.
-              </p>
-              <p className="text-body leading-relaxed">
-                When not coding, I explore machine learning models and contribute to open-source projects. I believe in
-                continuous learning and staying updated with the latest technologies to deliver cutting-edge solutions.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                {[
-                  { icon: Code, text: "Full Stack Development" },
-                  { icon: Brain, text: "AI & Machine Learning" },
-                  { icon: BookOpen, text: "Continuous Learning" },
-                  { icon: Users, text: "Team Collaboration" }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-background/50 hover:bg-background transition-colors duration-300 animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <item.icon className="w-5 h-5 text-orange-500 animate-pulse" />
-                    <span className="font-medium">{item.text}</span>
-                  </div>
-                ))}
-              </div>
+      <AnimatedSection>
+        <section id="about" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+        }`}>
+          <div className="max-w-6xl mx-auto">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12 underline decoration-orange-500"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              About Me
+            </motion.h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <p className={`text-base md:text-lg mb-6 ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  I'm a passionate Full Stack and AI Developer with expertise in modern web technologies and artificial intelligence. I love creating innovative solutions that bridge the gap between complex technical challenges and user-friendly experiences.
+                </p>
+                <p className={`text-base md:text-lg mb-8 ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  With a strong foundation in both frontend and backend development, I specialize in building scalable web applications and implementing AI-powered features that drive business value.
+                </p>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <ul className="space-y-4">
+                  {[
+                    'Full Stack Web Development',
+                    'AI/ML Model Development',
+                    'API Design & Integration',
+                    'Database Architecture',
+                    'Cloud Deployment'
+                  ].map((item, index) => (
+                    <motion.li
+                      key={item}
+                      className={`flex items-center ${
+                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      }`}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <FaRocket className="text-orange-500 mr-3" />
+                      {item}
+                    </motion.li>
+                  ))}
+                </ul>
+              </motion.div>
             </div>
-
-            <div className="fade-in animate-fade-in-right">
-              <Card className="card-professional hover-lift">
-                <CardContent className="p-0">
-                  <Image
-                    src="/placeholder.svg?height=500&width=400&text=About+Dharaneesh"
-                    alt="Dharaneesh C working on projects"
-                    width={400}
-                    height={500}
-                    className="w-full h-96 object-cover rounded-xl"
-                  />
-                </CardContent>
-              </Card>
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-4 md:px-8 bg-background">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-3xl font-bold text-orange-500 mb-4">Skills & Expertise</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
-            <p className="text-body text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Technologies and tools I use to bring ideas to life
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {skills.map((skill, index) => (
-              <Card
-                key={index}
-                className="card-professional hover-lift fade-in animate-fade-in-up opacity-0"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <skill.icon className="w-6 h-6 text-orange-500 mr-3 animate-pulse" />
-                    <h3 className="font-semibold text-lg">
-                      {skill.name}
-                    </h3>
-                  </div>
-                  <div className="skill-bar mb-3">
-                    <div
-                      className={`skill-progress bg-gradient-to-r ${skill.color} animate-skill-progress`}
-                      style={{ 
-                        width: `${skill.level}%`,
-                        animationDelay: `${index * 0.2}s`
-                      }}
-                    ></div>
-                  </div>
-                  <div className={`bg-gradient-to-r ${skill.color} bg-clip-text text-transparent text-sm font-semibold`}>
-                    {skill.level}% Proficiency
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="py-20 px-4 md:px-8 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-3xl font-bold text-orange-500 mb-4">Featured Projects</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
-            <p className="text-body text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Recent projects that showcase my skills and expertise
-            </p>
-          </div>
-
-          {/* Enhanced Project Filters */}
-          <div className="mb-12 space-y-6 fade-in">
-            {/* Category Filter */}
-            <div className="flex flex-wrap justify-center gap-3">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  onClick={() => handleCategoryFilter(category)}
-                  className={`filter-button ${projectFilter === category ? 'active' : ''}`}
+      <AnimatedSection>
+        <section id="skills" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-black' : 'bg-white'
+        }`}>
+          <div className="max-w-6xl mx-auto">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Skills
+            </motion.h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {skills.map((skill, index) => (
+                <motion.div
+                  key={skill.name}
+                  className={`card-professional p-6 ${
+                    theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'
+                  }`}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
                 >
-                  {category}
-                </Button>
+                  <div className="flex items-center mb-4">
+                    <skill.icon 
+                      className="text-3xl mr-4" 
+                      style={{ color: skill.color }} 
+                    />
+                    <div>
+                      <h3 className="text-xl font-semibold">{skill.name}</h3>
+                      <p className="text-orange-500 font-medium">{skill.level}%</p>
+                    </div>
+                  </div>
+                  <div className="skill-bar">
+                    <motion.div
+                      className="skill-progress"
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${skill.level}%` }}
+                      transition={{ duration: 2, delay: index * 0.3 }}
+                    />
+                  </div>
+                </motion.div>
               ))}
             </div>
-
-            {/* Technology Filter Toggle */}
-            <div className="text-center">
-              <Button
-                onClick={() => setShowFilters(!showFilters)}
-                variant="outline"
-                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                {showFilters ? "Hide" : "Show"} Technology Filters
-                <ChevronDown className={`w-4 h-4 ml-2 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
-
-            {/* Technology Filters */}
-            {showFilters && (
-              <Card className="card-professional max-w-4xl mx-auto animate-fade-in-up">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold">Filter by Technology:</h4>
-                      {technologyFilters.length > 0 && (
-                        <Button
-                          onClick={handleClearFilters}
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-500 hover:text-red-600"
-                        >
-                          <X className="w-4 h-4 mr-1" />
-                          Clear All
-                        </Button>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {allTechnologies.map((tech) => (
-                        <Badge
-                          key={tech}
-                          onClick={() => handleTechnologyFilter(tech)}
-                          className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-                            technologyFilters.includes(tech)
-                              ? "bg-orange-500 text-white shadow-lg"
-                              : "bg-muted text-muted-foreground hover:bg-orange-100 hover:text-orange-600"
-                          }`}
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Active Filters */}
-            {(projectFilter !== "All" || technologyFilters.length > 0) && (
-              <Card className="card-professional max-w-2xl mx-auto animate-fade-in-up">
-                <CardContent className="p-4">
-                  <div className="flex flex-wrap gap-2 items-center">
-                    <span className="text-sm font-medium text-muted-foreground">Active Filters:</span>
-                    {projectFilter !== "All" && (
-                      <Badge className="bg-orange-500 text-white">
-                        Category: {projectFilter}
-                      </Badge>
-                    )}
-                    {technologyFilters.map((tech) => (
-                      <Badge key={tech} className="bg-blue-500 text-white">
-                        {tech}
-                        <X
-                          className="w-3 h-3 ml-1 cursor-pointer hover:bg-white/20 rounded-full"
-                          onClick={() => handleTechnologyFilter(tech)}
-                        />
-                      </Badge>
-                    ))}
-                    <Button
-                      onClick={handleClearFilters}
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs"
-                    >
-                      Clear All
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
+        </section>
+      </AnimatedSection>
 
-          {/* Projects Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map((project, index) => (
-                <Card
-                  key={`${project.title}-${index}`}
-                  className={`project-card hover-lift fade-in animate-fade-in-up opacity-0 ${
-                    project.featured ? 'ring-2 ring-orange-500/20' : ''
+      {/* Projects Section */}
+      <AnimatedSection>
+        <section id="projects" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+        }`}>
+          <div className="max-w-7xl mx-auto">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Projects
+            </motion.h2>
+            
+            {/* Filter Buttons */}
+            <motion.div
+              className="flex flex-wrap justify-center gap-4 mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              {['All', 'AI', 'Full Stack'].map((filter) => (
+                <Button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={`filter-button ${
+                    activeFilter === filter ? 'active' : ''
                   }`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  variant={activeFilter === filter ? 'default' : 'outline'}
+                >
+                  {filter}
+                </Button>
+              ))}
+            </motion.div>
+            
+            {/* Projects Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project, index) => (
+                <motion.div
+                  key={project.id}
+                  className="project-card hover-lift"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  layout
                 >
                   <div className="relative overflow-hidden rounded-t-xl">
-                    {project.featured && (
-                      <div className="absolute top-4 left-4 z-10">
-                        <Badge className="bg-orange-500 text-white shadow-lg">
-                          <Star className="w-3 h-3 mr-1" />
-                          Featured
-                        </Badge>
-                      </div>
-                    )}
                     <Image
-                      src={`/placeholder.svg?height=250&width=400&text=${project.image}`}
+                      src={project.image}
                       alt={project.title}
                       width={400}
-                      height={250}
-                      className="project-image w-full h-48 object-cover"
+                      height={200}
+                      className="project-image w-full h-48 object-cover transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="absolute top-4 right-4">
-                      <Badge className={`bg-gradient-to-r ${project.gradient} text-white border-none shadow-lg`}>
-                        {project.category}
-                      </Badge>
-                    </div>
                   </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2 hover:text-orange-500 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 text-sm">
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                    <p className={`mb-4 ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {project.technologies.slice(0, 4).map((tech, idx) => (
-                        <Badge
-                          key={idx}
-                          variant="secondary"
-                          className="text-xs hover:bg-orange-100 hover:text-orange-600 transition-colors"
-                        >
-                          {tech}
+                      {project.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
                         </Badge>
                       ))}
-                      {project.technologies.length > 4 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{project.technologies.length - 4}
-                        </Badge>
-                      )}
                     </div>
-                    <div className="flex gap-3">
-                      <Button
-                        size="sm"
-                        className="btn-primary flex-1"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
+                    <div className="flex gap-2">
+                      <Button size="sm" className="btn-primary">
+                        <FaExternalLinkAlt className="mr-2" />
                         Live Demo
                       </Button>
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Code className="w-4 h-4 mr-2" />
-                        Code
+                      <Button size="sm" variant="outline">
+                        <FaGithub className="mr-2" />
+                        GitHub
                       </Button>
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12 animate-fade-in-up">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold mb-2">No projects found</h3>
-                <p className="text-muted-foreground mb-4">Try adjusting your filters to see more projects.</p>
-                <Button
-                  onClick={handleClearFilters}
-                  className="btn-outline"
-                >
-                  Clear All Filters
-                </Button>
-              </div>
-            )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
+
+      {/* Internships Section */}
+      <AnimatedSection>
+        <section id="internships" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'
+        }`}>
+          <div className="max-w-6xl mx-auto">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Internships
+            </motion.h2>
+            
+            <div className="space-y-6">
+              {internships.map((internship, index) => (
+                <motion.div
+                  key={internship.id}
+                  className={`card-professional p-6 hover-lift ${
+                    theme === 'dark' ? 'bg-gray-700' : 'bg-white'
+                  }`}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                    <div className="flex items-center mb-2 md:mb-0">
+                      <FaBuilding className="text-orange-500 text-xl mr-3" />
+                      <div>
+                        <h3 className="text-xl font-semibold">{internship.company}</h3>
+                        <p className="text-orange-500 font-medium">{internship.role}</p>
+                      </div>
+                    </div>
+                    <span className={`text-sm px-3 py-1 rounded-full ${
+                      theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
+                    }`}>
+                      {internship.duration}
+                    </span>
+                  </div>
+                  <p className={`mb-4 ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    {internship.description}
+                  </p>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="btn-secondary">
+                        <FaCertificate className="mr-2" />
+                        View Certificate
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl h-[80vh]">
+                      <DialogHeader>
+                        <DialogTitle>Internship Certificate - {internship.company}</DialogTitle>
+                      </DialogHeader>
+                      <iframe
+                        src={internship.certificate}
+                        className="w-full h-full rounded-lg"
+                        title={`Certificate - ${internship.company}`}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </AnimatedSection>
 
       {/* Certifications Section */}
-      <section id="certifications" className="py-20 px-4 md:px-8 bg-background">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-3xl font-bold text-orange-500 mb-4">Certifications & Experience</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
-            <p className="text-body text-muted-foreground mt-4 max-w-2xl mx-auto">Professional certifications, achievements, and internship experiences</p>
+      <AnimatedSection>
+        <section id="certifications" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+        }`}>
+          <div className="max-w-6xl mx-auto">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Certifications
+            </motion.h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {certifications.map((cert, index) => (
+                <motion.div
+                  key={cert.id}
+                  className="certificate-card hover-lift cursor-pointer"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  whileHover={{ scale: 1.05, y: -10 }}
+                >
+                  <div className="text-center mb-4">
+                    <FaCertificate className="text-4xl text-orange-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">{cert.title}</h3>
+                    <p className={`text-sm mb-2 ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      {cert.issuer}
+                    </p>
+                    <span className="text-orange-500 font-medium">{cert.date}</span>
+                  </div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="w-full btn-primary">
+                        <FaEye className="mr-2" />
+                        View Certificate
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl h-[80vh]">
+                      <DialogHeader>
+                        <DialogTitle>{cert.title} - {cert.issuer}</DialogTitle>
+                      </DialogHeader>
+                      <iframe
+                        src={cert.certificate}
+                        className="w-full h-full rounded-lg"
+                        title={`Certificate - ${cert.title}`}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </motion.div>
+              ))}
+            </div>
           </div>
+        </section>
+      </AnimatedSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {certifications.map((cert, index) => (
-              <Card
-                key={index}
-                className="certificate-card fade-in animate-fade-in-up opacity-0"
-                style={{ animationDelay: `${index * 0.2}s` }}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <div
-                      className={`w-16 h-16 bg-gradient-to-r ${cert.color} rounded-xl flex items-center justify-center text-2xl shadow-lg hover-scale`}
-                    >
-                      <cert.icon className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="text-xl font-bold hover:text-orange-500 transition-colors">
-                          {cert.title}
-                        </h3>
-                        <Badge 
-                          className={`${cert.type === 'certification' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'} hover:scale-105 transition-transform`}
+      {/* Blog Section */}
+      <AnimatedSection>
+        <section id="blog" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-black' : 'bg-white'
+        }`}>
+          <div className="max-w-6xl mx-auto">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Blog Posts
+            </motion.h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogPosts.map((post, index) => (
+                <motion.article
+                  key={post.id}
+                  className={`card-professional p-6 hover-lift ${
+                    theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'
+                  }`}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05, y: -5 }}
+                >
+                  <div className="flex items-center mb-3">
+                    <FaBlog className="text-orange-500 text-xl mr-3" />
+                    <span className={`text-sm ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      {post.date} • {post.readTime}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3">{post.title}</h3>
+                  <p className={`mb-4 ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
+                    {post.excerpt}
+                  </p>
+                  <Button size="sm" className="btn-primary animate-pulse">
+                    Read More
+                  </Button>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+      </AnimatedSection>
+
+      {/* AI Demo Section */}
+      <AnimatedSection>
+        <section id="demo" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'
+        }`}>
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-orange-500 mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Interactive AI Demo
+            </motion.h2>
+            
+            <motion.p
+              className={`text-lg mb-8 ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              }`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              Experience the power of AI through this interactive chatbot demo
+            </motion.p>
+            
+            <Dialog open={showChatModal} onOpenChange={setShowChatModal}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="btn-primary text-lg px-8 py-4">
+                  <FaRobot className="mr-3 text-xl" />
+                  Launch AI Demo
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md h-[80vh] flex flex-col">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center">
+                    <FaRobot className="mr-2 text-orange-500" />
+                    AI Assistant Demo
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="flex-1 flex flex-col">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {chatMessages.length === 0 ? (
+                      <div className="text-center text-gray-500">
+                        <FaRobot className="text-4xl mx-auto mb-4 text-orange-500" />
+                        <p>Hi! I'm an AI assistant. Ask me anything!</p>
+                      </div>
+                    ) : (
+                      chatMessages.map((message, index) => (
+                        <motion.div
+                          key={index}
+                          className={`flex ${
+                            message.type === 'user' ? 'justify-end' : 'justify-start'
+                          }`}
+                          initial={{ opacity: 0, x: message.type === 'user' ? 50 : -50 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.3 }}
                         >
-                          {cert.type === 'certification' ? 'Certification' : 'Internship'}
-                        </Badge>
-                      </div>
-                      <p className="text-muted-foreground mb-2 font-medium">
-                        {cert.issuer}
-                      </p>
-                      <div className="flex items-center text-muted-foreground text-sm">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        {cert.date}
-                      </div>
+                          <div
+                            className={`max-w-xs px-4 py-2 rounded-lg ${
+                              message.type === 'user'
+                                ? 'bg-orange-500 text-white'
+                                : theme === 'dark'
+                                ? 'bg-gray-700 text-white'
+                                : 'bg-gray-200 text-black'
+                            }`}
+                          >
+                            {message.content}
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
+                  </div>
+                  <div className="border-t p-4">
+                    <div className="flex gap-2">
+                      <Input
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        placeholder="Type your message..."
+                        className="form-input"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            // Handle chat message
+                            if (chatInput.trim()) {
+                              setChatMessages([
+                                ...chatMessages,
+                                { type: 'user', content: chatInput },
+                                { type: 'ai', content: 'Thanks for your message! This is a demo response.' }
+                              ])
+                              setChatInput('')
+                            }
+                          }
+                        }}
+                      />
+                      <Button
+                        className="btn-primary animate-bounce"
+                        onClick={() => {
+                          if (chatInput.trim()) {
+                            setChatMessages([
+                              ...chatMessages,
+                              { type: 'user', content: chatInput },
+                              { type: 'ai', content: 'Thanks for your message! This is a demo response.' }
+                            ])
+                            setChatInput('')
+                          }
+                        }}
+                      >
+                        <FaPaperPlane />
+                      </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
-        </div>
-      </section>
-
-      {/* Interactive AI Demo Section */}
-      <section id="demo" className="py-20 px-4 md:px-8 bg-muted/30">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-3xl font-bold text-orange-500 mb-4">Interactive AI Demo</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
-            <p className="text-body text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Try out my AI assistant! Ask questions about my projects, skills, or anything else.
-            </p>
-          </div>
-
-          <Card className="card-professional hover-lift fade-in animate-scale-in">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Brain className="w-6 h-6 mr-2 text-orange-500 animate-pulse" />
-                AI Assistant Demo
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Input
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  placeholder="Ask me anything about Dharaneesh's work..."
-                  className="form-input flex-1"
-                  onKeyPress={(e) => e.key === "Enter" && handleChatSubmit()}
-                />
-                <Button
-                  onClick={handleChatSubmit}
-                  className="btn-primary"
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Ask AI
-                </Button>
-              </div>
-
-              {chatResponse && (
-                <Card className="bg-muted border-border animate-fade-in-up">
-                  <CardContent className="p-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Brain className="w-4 h-4 text-white" />
-                      </div>
-                      <p className="text-foreground">{chatResponse}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 md:px-8 bg-background">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-3xl font-bold text-orange-500 mb-4">Get In Touch</h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-orange-400 mx-auto rounded-full animate-expand"></div>
-            <p className="text-body text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Ready to start your next project? Let's discuss how I can help bring your ideas to life.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Info */}
-            <div className="space-y-8 fade-in animate-fade-in-left">
-              <div>
-                <h3 className="text-2xl font-bold text-orange-500 mb-6">Let's create something amazing together</h3>
-                <p className="text-body leading-relaxed">
-                  I'm always interested in new opportunities and exciting projects. Whether you have a question or just
-                  want to say hi, I'll try my best to get back to you!
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                {[
-                  { icon: Mail, label: "Email", value: "dharaneeshc2006@gmail.com" },
-                  { icon: Phone, label: "Phone", value: "+91 (555) 123-4567" },
-                  { icon: MapPin, label: "Location", value: "Coimbatore, India" }
-                ].map((contact, index) => (
-                  <div key={index} className="flex items-center space-x-4 group animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center shadow-lg hover-scale">
-                      <contact.icon className="w-6 h-6 text-white" />
+      <AnimatedSection>
+        <section id="contact" className={`py-16 px-4 md:px-8 ${
+          theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'
+        }`}>
+          <div className="max-w-6xl mx-auto">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              Get in Touch
+            </motion.h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Contact Form */}
+              <motion.div
+                className="contact-form"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <form onSubmit={handleContactSubmit} className="space-y-6">
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="Your Name"
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Your Email"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Textarea
+                      placeholder="Your Message"
+                      rows={5}
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      className="form-input"
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="btn-primary w-full animate-pulse-glow">
+                    <FaPaperPlane className="mr-2" />
+                    Send Message
+                  </Button>
+                </form>
+              </motion.div>
+              
+              {/* Contact Information */}
+              <motion.div
+                className="space-y-8"
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <FaEnvelope className="text-orange-500 text-xl mr-4" />
+                      <span>dharaneeshc2006@gmail.com</span>
                     </div>
-                    <div>
-                      <div className="text-muted-foreground text-sm">{contact.label}</div>
-                      <div className="font-semibold group-hover:text-orange-500 transition-colors">
-                        {contact.value}
-                      </div>
+                    <div className="flex items-center">
+                      <FaPhone className="text-orange-500 text-xl mr-4" />
+                      <span>+91 XXXXX XXXXX</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact Form */}
-            <div className="fade-in animate-fade-in-right">
-              <Card className="contact-form hover-lift">
-                <CardContent className="p-8">
-                  {formSubmitted ? (
-                    <div className="text-center py-12 animate-fade-in-up">
-                      <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-in">
-                        <CheckCircle className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="text-2xl font-bold mb-2">Message Sent Successfully!</h3>
-                      <p className="text-muted-foreground">Thank you for reaching out. I'll get back to you soon.</p>
-                      <Button
-                        onClick={() => setFormSubmitted(false)}
-                        className="btn-outline mt-4"
-                      >
-                        Send Another Message
-                      </Button>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleContactSubmit} className="space-y-6">
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block font-semibold mb-2">Name</label>
-                          <Input
-                            name="name"
-                            required
-                            className="form-input"
-                            placeholder="Your name"
-                          />
-                        </div>
-                        <div>
-                          <label className="block font-semibold mb-2">Email</label>
-                          <Input
-                            name="email"
-                            type="email"
-                            required
-                            className="form-input"
-                            placeholder="your.email@example.com"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block font-semibold mb-2">Message</label>
-                        <Textarea
-                          name="message"
-                          required
-                          className="form-input min-h-[120px]"
-                          placeholder="Tell me about your project..."
-                        />
-                      </div>
-                      <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className="btn-primary w-full"
-                      >
-                        {isLoading ? (
-                          <div className="flex items-center">
-                            <div className="loading-spinner mr-2"></div>
-                            Sending...
-                          </div>
-                        ) : (
-                          <>
-                            <Send className="w-5 h-5 mr-2" />
-                            Send Message
-                          </>
-                        )}
-                      </Button>
-                    </form>
-                  )}
-                </CardContent>
-              </Card>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Follow Me</h3>
+                  <div className="flex gap-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="hover-glow"
+                      onClick={() => window.open('https://github.com', '_blank')}
+                    >
+                      <FaGithub className="text-xl" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="hover-glow"
+                      onClick={() => window.open('https://linkedin.com', '_blank')}
+                    >
+                      <FaLinkedin className="text-xl text-blue-600" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
       {/* Footer */}
-      <footer className="py-12 px-4 md:px-8 footer-gradient text-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-            {/* Brand */}
-            <div className="text-center md:text-left">
-              <h3 className="text-2xl font-bold mb-2">
-                <span className="text-orange-500">Dharaneesh C</span>
-              </h3>
-              <p className="text-gray-300">Full Stack & AI Developer</p>
-              <p className="text-gray-400 text-sm mt-2">Building the future, one line of code at a time.</p>
-            </div>
-
-            {/* Navigation */}
-            <div className="text-center">
-              <div className="flex flex-wrap justify-center gap-6">
-                {["Home", "About", "Projects", "Contact"].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => scrollToSection(item.toLowerCase())}
-                    className="text-gray-300 hover:text-orange-500 transition-colors duration-300 font-medium"
+      <footer className={`footer-gradient py-8 px-4 md:px-8 ${
+        theme === 'dark' ? 'bg-black' : 'bg-gray-900'
+      }`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <motion.p
+              className="text-gray-400 mb-4 md:mb-0"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+            >
+              © 2025 Dharaneesh C. All rights reserved.
+            </motion.p>
+            
+            <motion.div
+              className="flex items-center gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="flex gap-4">
+                {navigation.slice(0, 4).map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-400 hover:text-orange-500 transition-colors duration-300"
                   >
-                    {item}
-                  </button>
+                    {item.name}
+                  </a>
                 ))}
               </div>
-            </div>
-
-            {/* Back to Top */}
-            <div className="text-center md:text-right">
-              <Button
-                onClick={scrollToTop}
-                variant="outline"
-                className="border-gray-600 hover:bg-orange-500 hover:border-orange-500 text-white"
-              >
-                <ArrowUp className="w-4 h-4 mr-2" />
-                Back to Top
-              </Button>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-gray-400">© 2025 Dharaneesh C. All rights reserved. Crafted with passion and precision.</p>
+            </motion.div>
           </div>
         </div>
       </footer>
+
+      {/* Scroll to Top Button */}
+      <motion.button
+        className={`fixed bottom-8 right-8 z-40 p-3 rounded-full bg-orange-500 text-white shadow-lg hover:bg-orange-600 transition-all duration-300 ${
+          showScrollTop ? 'opacity-100' : 'opacity-0'
+        }`}
+        onClick={scrollToTop}
+        whileHover={{ scale: 1.1, y: -5 }}
+        whileTap={{ scale: 0.9 }}
+        animate={{ 
+          y: showScrollTop ? 0 : 100,
+          opacity: showScrollTop ? 1 : 0 
+        }}
+        transition={{ duration: 0.3 }}
+      >
+        <FaArrowUp className="text-xl" />
+      </motion.button>
     </div>
   )
 }
