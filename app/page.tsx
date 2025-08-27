@@ -26,41 +26,43 @@ export default function Home() {
   const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0 })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
+  const [showStartupPopup, setShowStartupPopup] = useState(false)
+  const [experienceFilter, setExperienceFilter] = useState('All')
   const [recentActivities] = useState([
     { 
-      action: 'Launched AI-Powered Portfolio Website', 
+      action: 'Pushed to resume-frontend', 
       time: '2 hours ago', 
-      type: 'project',
-      icon: '🚀',
-      description: 'Deployed new portfolio with advanced AI features and responsive design'
+      type: 'github',
+      platform: 'GitHub',
+      description: 'Added new AI model integration for better resume analysis'
     },
     { 
-      action: 'Completed Machine Learning Certification', 
+      action: 'Shared article', 
       time: '1 day ago', 
-      type: 'achievement',
-      icon: '🏆',
-      description: 'Advanced AI/ML certification from Stanford University completed with distinction'
+      type: 'linkedin',
+      platform: 'LinkedIn',
+      description: 'Deep Learning in Web Development: A Practical Guide'
     },
     { 
-      action: 'Client Project Delivered', 
+      action: 'Created new repository', 
       time: '3 days ago', 
-      type: 'client',
-      icon: '✅',
+      type: 'github',
+      platform: 'GitHub',
+      description: 'AI-powered task management system with React and Python'
+    },
+    { 
+      action: 'Project completed', 
+      time: '1 week ago', 
+      type: 'project',
+      platform: 'Work',
       description: 'Successfully delivered e-commerce platform with 99.9% uptime'
     },
     { 
-      action: 'Open Source Contribution', 
-      time: '1 week ago', 
-      type: 'github',
-      icon: '💻',
-      description: 'Contributed to React ecosystem with new animation library'
-    },
-    { 
-      action: 'Speaking at Tech Conference', 
+      action: 'New certification earned', 
       time: '2 weeks ago', 
-      type: 'event',
-      icon: '🎤',
-      description: 'Presented "Future of AI in Web Development" at TechCon 2024'
+      type: 'achievement',
+      platform: 'Learning',
+      description: 'Advanced AI/ML certification from Stanford University completed'
     }
   ])
   
@@ -95,9 +97,15 @@ export default function Home() {
       setStats({ projects: 15, years: 3, clients: 12, certifications: 8 })
     }, 1500)
 
+    // Show startup popup after 5 seconds
+    const popupTimer = setTimeout(() => {
+      setShowStartupPopup(true)
+    }, 5000)
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
       clearTimeout(timer)
+      clearTimeout(popupTimer)
     }
   }, [theme])
 
@@ -428,6 +436,13 @@ export default function Home() {
     return categoryMatch && techMatch
   })
 
+  const filteredExperience = experienceData.filter(item => {
+    if (experienceFilter === 'All') return true
+    if (experienceFilter === 'Internships') return item.type === 'internship'
+    if (experienceFilter === 'Certifications') return item.type === 'certification'
+    return true
+  })
+
   const handleTechFilter = (tech) => {
     setActiveTechFilter(prev => {
       const newFilter = prev.includes(tech) 
@@ -503,6 +518,44 @@ export default function Home() {
         : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
     }`}>
       <Toaster />
+
+      {/* Startup Popup */}
+      <Dialog open={showStartupPopup} onOpenChange={setShowStartupPopup}>
+        <DialogContent className="max-w-md gradient-card border border-orange-500/20">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold gradient-text">
+              Ready to work together?
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center space-y-6 py-4">
+            <p className="text-gray-300">
+              Let's discuss your next project and bring your ideas to life with cutting-edge technology!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                onClick={() => {
+                  setShowStartupPopup(false)
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+                  toast({
+                    title: "Let's connect!",
+                    description: "Scrolling to contact section",
+                  })
+                }}
+                className="gradient-primary text-white flex-1 hover-glow"
+              >
+                Contact Me
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowStartupPopup(false)}
+                className="flex-1 border-orange-500/30 text-orange-300 hover:bg-orange-500/10"
+              >
+                Maybe Later
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       {/* Enhanced Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -629,67 +682,24 @@ export default function Home() {
             >
               <motion.p
                 className="text-purple-500 text-lg md:text-xl mb-2 font-medium"
-                animate={{ 
-                  scale: [1, 1.05, 1],
-                  color: ['#a855f7', '#3b82f6', '#a855f7']
-                }}
-                transition={{ 
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
               >
                 Hi, I am
               </motion.p>
-              
-              {/* Floating particles animation */}
-              <motion.div 
-                className="absolute -top-4 -left-4 w-2 h-2 bg-orange-500 rounded-full"
-                animate={{
-                  y: [0, -10, 0],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              <motion.div 
-                className="absolute -top-2 right-8 w-1 h-1 bg-blue-500 rounded-full"
-                animate={{
-                  y: [0, -15, 0],
-                  opacity: [0.7, 1, 0.7]
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.5
-                }}
-              />
             </motion.div>
             
-            {/* Animated Name with Typewriter Effect */}
+            {/* Animated Name */}
             <motion.h1
               className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 font-sans leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
             >
-              <motion.span 
-                className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text"
-                animate={{ 
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-              >
+              <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
                 Dharaneesh C
-              </motion.span>
+              </span>
             </motion.h1>
 
             {/* Animated Subtitle */}
@@ -699,23 +709,9 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
             >
-              <motion.span
-                animate={{ 
-                  backgroundImage: [
-                    'linear-gradient(45deg, #f97316, #3b82f6)',
-                    'linear-gradient(45deg, #3b82f6, #8b5cf6)',
-                    'linear-gradient(45deg, #8b5cf6, #f97316)'
-                  ]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="bg-gradient-to-r from-orange-500 to-blue-500 text-transparent bg-clip-text"
-              >
+              <span className="bg-gradient-to-r from-orange-500 to-blue-500 text-transparent bg-clip-text">
                 Full Stack & AI Developer
-              </motion.span>
+              </span>
             </motion.h2>
             
             {/* Animated Description */}
@@ -730,7 +726,7 @@ export default function Home() {
               Building innovative web solutions and AI-powered applications with modern technologies and creative problem-solving.
             </motion.p>
             
-            {/* Enhanced Action Buttons with Icons */}
+            {/* Enhanced Action Buttons */}
             <motion.div
               className="flex flex-wrap gap-4 justify-center lg:justify-start mb-8"
               initial={{ opacity: 0, y: 20 }}
@@ -748,7 +744,6 @@ export default function Home() {
                     })
                   }}
                 >
-                  <span className="mr-2">🚀</span>
                   View Projects
                 </Button>
               </motion.div>
@@ -757,7 +752,6 @@ export default function Home() {
                 <DialogTrigger asChild>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button className="btn-secondary">
-                      <span className="mr-2">📄</span>
                       View Resume
                     </Button>
                   </motion.div>
@@ -789,7 +783,6 @@ export default function Home() {
                     })
                   }}
                 >
-                  <span className="mr-2">⬇️</span>
                   Download Resume
                 </Button>
               </motion.div>
@@ -818,7 +811,7 @@ export default function Home() {
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
                   </svg>
-                  <span className="text-gray-800 dark:text-white">GitHub</span>
+                  GitHub
                 </Button>
               </motion.div>
               
@@ -838,7 +831,7 @@ export default function Home() {
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                   </svg>
-                  <span className="text-blue-600">LinkedIn</span>
+                  LinkedIn
                 </Button>
               </motion.div>
             </motion.div>
@@ -851,10 +844,10 @@ export default function Home() {
               transition={{ delay: 1.4, duration: 0.6 }}
             >
               {[
-                { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600', icon: '🚀' },
-                { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600', icon: '⭐' },
-                { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600', icon: '😊' },
-                { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600', icon: '🏆' }
+                { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600' },
+                { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600' },
+                { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600' },
+                { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600' }
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -864,22 +857,7 @@ export default function Home() {
                   transition={{ delay: 1.6 + index * 0.1, duration: 0.5 }}
                   whileHover={{ scale: 1.05, y: -5 }}
                 >
-                  {/* Background Animation */}
-                  <motion.div
-                    className="absolute inset-0 bg-white/10"
-                    animate={{
-                      x: ['-100%', '100%'],
-                      opacity: [0, 0.5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: index * 0.5
-                    }}
-                  />
-                  
                   <div className="relative z-10">
-                    <div className="text-2xl mb-2">{stat.icon}</div>
                     <motion.div 
                       className="text-2xl font-bold mb-1"
                       initial={{ opacity: 0 }}
@@ -952,35 +930,6 @@ export default function Home() {
                   transition={{ duration: 3, repeat: Infinity }}
                 />
               </motion.div>
-
-              {/* Floating Elements */}
-              <motion.div
-                className="absolute top-4 right-4 w-4 h-4 bg-orange-500 rounded-full"
-                animate={{
-                  y: [0, -20, 0],
-                  opacity: [0.7, 1, 0.7]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              <motion.div
-                className="absolute bottom-8 left-8 w-6 h-6 bg-blue-500 rounded-full"
-                animate={{
-                  y: [0, -15, 0],
-                  x: [0, 10, 0],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1
-                }}
-              />
             </motion.div>
           </motion.div>
         </div>
@@ -1325,32 +1274,31 @@ export default function Home() {
               <div className="flex gap-4">
                 <Button
                   onClick={() => {
-                    document.querySelectorAll('.experience-item').forEach(el => el.style.display = 'block')
+                    setExperienceFilter('All')
                     toast({ title: "Showing All", description: "Displaying all experience and certifications" })
                   }}
-                  className="btn-secondary"
+                  className={`btn-secondary ${experienceFilter === 'All' ? 'active' : ''}`}
+                  variant={experienceFilter === 'All' ? 'default' : 'outline'}
                 >
                   All
                 </Button>
                 <Button
                   onClick={() => {
-                    document.querySelectorAll('.experience-item').forEach(el => {
-                      el.style.display = el.dataset.type === 'internship' ? 'block' : 'none'
-                    })
+                    setExperienceFilter('Internships')
                     toast({ title: "Internships", description: "Showing internship experience" })
                   }}
-                  variant="outline"
+                  className={experienceFilter === 'Internships' ? 'active' : ''}
+                  variant={experienceFilter === 'Internships' ? 'default' : 'outline'}
                 >
                   Internships
                 </Button>
                 <Button
                   onClick={() => {
-                    document.querySelectorAll('.experience-item').forEach(el => {
-                      el.style.display = el.dataset.type === 'certification' ? 'block' : 'none'
-                    })
+                    setExperienceFilter('Certifications')
                     toast({ title: "Certifications", description: "Showing certifications" })
                   }}
-                  variant="outline"
+                  className={experienceFilter === 'Certifications' ? 'active' : ''}
+                  variant={experienceFilter === 'Certifications' ? 'default' : 'outline'}
                 >
                   Certifications
                 </Button>
@@ -1358,13 +1306,12 @@ export default function Home() {
             </div>
 
             <div className="space-y-6">
-              {experienceData.map((item, index) => (
+              {filteredExperience.map((item, index) => (
                 <motion.div
                   key={item.id}
-                  className={`experience-item card-professional p-6 hover-lift ${
+                  className={`card-professional p-6 hover-lift ${
                     theme === 'dark' ? 'bg-gray-700' : 'bg-white'
                   }`}
-                  data-type={item.type}
                   initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -1422,14 +1369,12 @@ export default function Home() {
                           })
                         }}
                       >
-                        <span>📄</span>
                         View Certificate
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-5xl h-[90vh] p-0">
                       <DialogHeader className="p-6 pb-0">
                         <DialogTitle className="flex items-center gap-2">
-                          <span>{item.type === 'internship' ? '💼' : '🎓'}</span>
                           {item.type === 'internship' ? 'Internship' : 'Certification'} - {item.company}
                         </DialogTitle>
                       </DialogHeader>
@@ -1609,41 +1554,40 @@ export default function Home() {
               {recentActivities.map((activity, index) => (
                 <motion.div
                   key={index}
-                  className={`card-professional p-6 hover-lift ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-slate-50'
-                  }`}
+                  className="activity-item"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02, y: -2 }}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className={`text-2xl p-2 rounded-full ${
-                      activity.type === 'project' ? 'bg-blue-100 dark:bg-blue-900' :
-                      activity.type === 'achievement' ? 'bg-orange-100 dark:bg-orange-900' :
-                      activity.type === 'client' ? 'bg-green-100 dark:bg-green-900' :
-                      activity.type === 'github' ? 'bg-purple-100 dark:bg-purple-900' :
-                      'bg-pink-100 dark:bg-pink-900'
-                    }`}>
-                      {activity.icon}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <h3 className="font-semibold text-lg">{activity.action}</h3>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {activity.type}
-                          </Badge>
-                          <span className="text-sm text-gray-500">{activity.time}</span>
-                        </div>
+                  <div className={`activity-icon ${activity.type}`}>
+                    {activity.platform === 'GitHub' ? 'GH' : 
+                     activity.platform === 'LinkedIn' ? 'LI' : 
+                     activity.platform === 'Work' ? 'W' : 'L'}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <h3 className="font-semibold text-lg">{activity.action}</h3>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${
+                            activity.type === 'github' ? 'border-gray-400 text-gray-400' :
+                            activity.type === 'linkedin' ? 'border-blue-400 text-blue-400' :
+                            activity.type === 'project' ? 'border-green-400 text-green-400' :
+                            'border-orange-400 text-orange-400'
+                          }`}
+                        >
+                          {activity.platform}
+                        </Badge>
+                        <span className="text-sm text-gray-500">{activity.time}</span>
                       </div>
-                      <p className={`mt-2 text-sm ${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
-                        {activity.description}
-                      </p>
                     </div>
+                    <p className={`mt-2 text-sm ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      {activity.description}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -1782,7 +1726,7 @@ export default function Home() {
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
                       </svg>
-                      <span className="text-gray-800 dark:text-white">GitHub</span>
+                      GitHub
                     </Button>
                     <Button
                       variant="outline"
@@ -1798,22 +1742,7 @@ export default function Home() {
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                       </svg>
-                      <span className="text-blue-600">LinkedIn</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="hover-glow flex items-center gap-2"
-                      onClick={() => {
-                        const email = 'dharaneeshc2006@gmail.com'
-                        window.location.href = `mailto:${email}`
-                        toast({
-                          title: "Opening Email",
-                          description: "Your default email client will open",
-                        })
-                      }}
-                    >
-                      <span>📧</span>
-                      <span className="text-green-600">Email</span>
+                      LinkedIn
                     </Button>
                   </div>
                 </div>
@@ -1896,14 +1825,6 @@ export default function Home() {
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                   </svg>
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-green-500 transition-colors p-2"
-                  onClick={() => window.location.href = 'mailto:dharaneeshc2006@gmail.com'}
-                >
-                  <span className="text-lg">📧</span>
-                </Button>
               </motion.div>
             </div>
             
@@ -1937,19 +1858,15 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-6 text-blue-500">Contact</h4>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-2">
-                  <span>📧</span>
                   <span className="text-gray-400">dharaneeshc2006@gmail.com</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span>🌍</span>
                   <span className="text-gray-400">Available Worldwide</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span>💼</span>
                   <span className="text-gray-400">Open to Opportunities</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span>⚡</span>
                   <span className="text-gray-400">Quick Response</span>
                 </div>
               </div>
@@ -1974,9 +1891,7 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>Made with</span>
-                <span className="text-red-500 animate-pulse">❤️</span>
-                <span>in India</span>
+                <span>Made with ❤️ in India</span>
               </div>
             </div>
           </motion.div>
@@ -1997,7 +1912,7 @@ export default function Home() {
         }}
         transition={{ duration: 0.3 }}
       >
-        <span className="text-xl">↑</span>
+        ↑
       </motion.button>
     </div>
   )
