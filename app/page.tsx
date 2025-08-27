@@ -9,18 +9,24 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { useToast } from '@/hooks/use-toast'
+import { Toaster } from '@/components/ui/toaster'
 import Image from 'next/image'
 
 export default function Home() {
   const [theme, setTheme] = useState('dark')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState('All')
+  const [activeTechFilter, setActiveTechFilter] = useState([])
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' })
   const [chatMessages, setChatMessages] = useState([])
   const [chatInput, setChatInput] = useState('')
   const [showChatModal, setShowChatModal] = useState(false)
   const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0 })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  const { toast } = useToast()
 
   useEffect(() => {
     document.documentElement.className = theme
@@ -33,7 +39,7 @@ export default function Home() {
     
     // Animate stats counter
     const timer = setTimeout(() => {
-      setStats({ projects: 15, years: 3, clients: 10, certifications: 8 })
+      setStats({ projects: 15, years: 3, clients: 12, certifications: 8 })
     }, 1000)
 
     return () => {
@@ -43,15 +49,34 @@ export default function Home() {
   }, [theme])
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
+    const newTheme = theme === 'dark' ? 'light' : 'dark'
+    setTheme(newTheme)
+    toast({
+      title: `Switched to ${newTheme} mode`,
+      description: `You are now using ${newTheme} theme`,
+    })
   }
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    toast({
+      title: "Scrolled to top",
+      description: "Welcome back to the top of the page!",
+    })
   }
 
   const handleContactSubmit = async (e) => {
     e.preventDefault()
+    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+      toast({
+        title: "Please fill all fields",
+        description: "All fields are required to send a message",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsSubmitting(true)
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -60,156 +85,326 @@ export default function Home() {
       })
       
       if (response.ok) {
-        alert('Message sent successfully!')
+        toast({
+          title: "Message sent successfully! 🎉",
+          description: "Thank you for reaching out. I'll get back to you soon!",
+        })
         setContactForm({ name: '', email: '', message: '' })
       } else {
-        alert('Failed to send message. Please try again.')
+        throw new Error('Failed to send message')
       }
     } catch (error) {
-      alert('Error sending message. Please try again.')
+      toast({
+        title: "Failed to send message",
+        description: "Please try again or contact me directly at dharaneeshc2006@gmail.com",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
     }
+  }
+
+  const handleChatSubmit = () => {
+    if (!chatInput.trim()) return
+    
+    const userMessage = chatInput
+    setChatMessages(prev => [...prev, { type: 'user', content: userMessage }])
+    setChatInput('')
+    
+    // AI responses based on common questions
+    setTimeout(() => {
+      let aiResponse = "Thanks for your question! "
+      
+      if (userMessage.toLowerCase().includes('project')) {
+        aiResponse += "I have worked on 15+ projects including AI-powered applications, full-stack web apps, and machine learning models. Check out my Projects section for detailed information!"
+      } else if (userMessage.toLowerCase().includes('skill')) {
+        aiResponse += "I specialize in React/Next.js, Python, AI/ML, Node.js, and database technologies. I'm also experienced in cloud deployment and modern web development practices."
+      } else if (userMessage.toLowerCase().includes('contact') || userMessage.toLowerCase().includes('hire')) {
+        aiResponse += "I'm available for freelance projects and full-time opportunities. You can reach me through the contact form below or email me directly at dharaneeshc2006@gmail.com"
+      } else if (userMessage.toLowerCase().includes('experience')) {
+        aiResponse += "I have 3+ years of experience in full-stack development and AI/ML. I've completed internships at tech companies and worked on various client projects."
+      } else {
+        aiResponse += "That's an interesting question! Feel free to explore my portfolio to learn more about my work, or contact me directly for specific inquiries."
+      }
+      
+      setChatMessages(prev => [...prev, { type: 'ai', content: aiResponse }])
+    }, 1000)
+    
+    toast({
+      title: "Message sent to AI",
+      description: "AI is processing your question...",
+    })
   }
 
   const skills = [
     { name: 'React/Next.js', level: 95, color: '#61DAFB' },
     { name: 'Python', level: 90, color: '#3776AB' },
+    { name: 'AI/Machine Learning', level: 88, color: '#FF6B6B' },
     { name: 'Node.js', level: 85, color: '#339933' },
-    { name: 'Database', level: 88, color: '#336791' }
+    { name: 'Database Design', level: 87, color: '#336791' },
+    { name: 'Cloud Platforms', level: 82, color: '#4285F4' }
   ]
 
   const projects = [
     {
       id: 1,
       title: 'AI-Powered Analytics Dashboard',
-      description: 'A comprehensive dashboard with AI-driven insights and real-time data visualization.',
+      description: 'A comprehensive dashboard with AI-driven insights, real-time data visualization, and predictive analytics for business intelligence.',
       image: '/placeholder.jpg',
-      tags: ['AI', 'React', 'Python'],
+      tags: ['AI', 'React', 'Python', 'TensorFlow', 'Dashboard'],
       category: 'AI',
-      demo: 'https://example.com/demo',
-      github: 'https://github.com/dharaneesh'
+      demo: 'https://example.com/analytics-demo',
+      github: 'https://github.com/dharaneesh/ai-analytics'
     },
     {
       id: 2,
       title: 'E-Commerce Platform',
-      description: 'Full-stack e-commerce solution with payment integration and inventory management.',
+      description: 'Full-stack e-commerce solution with payment integration, inventory management, and admin dashboard.',
       image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Node.js'],
+      tags: ['Full Stack', 'React', 'Node.js', 'MongoDB', 'Stripe'],
       category: 'Full Stack',
-      demo: 'https://example.com/demo',
-      github: 'https://github.com/dharaneesh'
+      demo: 'https://example.com/ecommerce-demo',
+      github: 'https://github.com/dharaneesh/ecommerce'
     },
     {
       id: 3,
-      title: 'Machine Learning Model Trainer',
-      description: 'Platform for training and deploying ML models with intuitive UI.',
+      title: 'Smart Chatbot System',
+      description: 'AI-powered chatbot with natural language processing and machine learning capabilities.',
       image: '/placeholder.jpg',
-      tags: ['AI', 'Python', 'TensorFlow'],
+      tags: ['AI', 'Python', 'NLP', 'Flask', 'Machine Learning'],
       category: 'AI',
-      demo: 'https://example.com/demo',
-      github: 'https://github.com/dharaneesh'
+      demo: 'https://example.com/chatbot-demo',
+      github: 'https://github.com/dharaneesh/smart-chatbot'
     },
     {
       id: 4,
       title: 'Task Management System',
-      description: 'Collaborative task management with real-time updates and team collaboration.',
+      description: 'Collaborative task management with real-time updates, team collaboration, and project tracking.',
       image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Socket.io'],
+      tags: ['Full Stack', 'React', 'Socket.io', 'Express', 'PostgreSQL'],
       category: 'Full Stack',
-      demo: 'https://example.com/demo',
-      github: 'https://github.com/dharaneesh'
+      demo: 'https://example.com/taskmanager-demo',
+      github: 'https://github.com/dharaneesh/task-manager'
     },
     {
       id: 5,
       title: 'Weather Prediction App',
-      description: 'AI-powered weather prediction with interactive maps and forecasting.',
+      description: 'AI-powered weather prediction with interactive maps, forecasting, and climate analysis.',
       image: '/placeholder.jpg',
-      tags: ['AI', 'React', 'API'],
+      tags: ['AI', 'React', 'API', 'Machine Learning', 'Weather'],
       category: 'AI',
-      demo: 'https://example.com/demo',
-      github: 'https://github.com/dharaneesh'
+      demo: 'https://example.com/weather-demo',
+      github: 'https://github.com/dharaneesh/weather-ai'
     },
     {
       id: 6,
       title: 'Social Media Dashboard',
-      description: 'Analytics dashboard for social media management and content scheduling.',
+      description: 'Analytics dashboard for social media management, content scheduling, and engagement tracking.',
       image: '/placeholder.jpg',
-      tags: ['Full Stack', 'React', 'Analytics'],
+      tags: ['Full Stack', 'React', 'Analytics', 'API', 'Dashboard'],
       category: 'Full Stack',
-      demo: 'https://example.com/demo',
-      github: 'https://github.com/dharaneesh'
+      demo: 'https://example.com/social-demo',
+      github: 'https://github.com/dharaneesh/social-dashboard'
+    },
+    {
+      id: 7,
+      title: 'Image Recognition System',
+      description: 'Deep learning model for image classification and object detection with web interface.',
+      image: '/placeholder.jpg',
+      tags: ['AI', 'Python', 'TensorFlow', 'Computer Vision', 'Deep Learning'],
+      category: 'AI',
+      demo: 'https://example.com/image-recognition-demo',
+      github: 'https://github.com/dharaneesh/image-recognition'
+    },
+    {
+      id: 8,
+      title: 'Real Estate Platform',
+      description: 'Full-stack real estate platform with property listings, search filters, and virtual tours.',
+      image: '/placeholder.jpg',
+      tags: ['Full Stack', 'React', 'Node.js', 'MongoDB', 'Maps API'],
+      category: 'Full Stack',
+      demo: 'https://example.com/realestate-demo',
+      github: 'https://github.com/dharaneesh/real-estate'
+    },
+    {
+      id: 9,
+      title: 'Stock Price Predictor',
+      description: 'Machine learning model for stock price prediction with interactive charts and analysis.',
+      image: '/placeholder.jpg',
+      tags: ['AI', 'Python', 'Machine Learning', 'Financial', 'Data Science'],
+      category: 'AI',
+      demo: 'https://example.com/stock-demo',
+      github: 'https://github.com/dharaneesh/stock-predictor'
+    },
+    {
+      id: 10,
+      title: 'Learning Management System',
+      description: 'Educational platform with course management, video streaming, and progress tracking.',
+      image: '/placeholder.jpg',
+      tags: ['Full Stack', 'React', 'Node.js', 'Video Streaming', 'Education'],
+      category: 'Full Stack',
+      demo: 'https://example.com/lms-demo',
+      github: 'https://github.com/dharaneesh/lms'
+    },
+    {
+      id: 11,
+      title: 'Healthcare Management System',
+      description: 'Digital healthcare platform with appointment scheduling, patient records, and telemedicine.',
+      image: '/placeholder.jpg',
+      tags: ['Full Stack', 'React', 'Node.js', 'Healthcare', 'Database'],
+      category: 'Full Stack',
+      demo: 'https://example.com/healthcare-demo',
+      github: 'https://github.com/dharaneesh/healthcare'
+    },
+    {
+      id: 12,
+      title: 'Smart Home IoT System',
+      description: 'IoT-based smart home automation with mobile app and AI-powered energy optimization.',
+      image: '/placeholder.jpg',
+      tags: ['IoT', 'React Native', 'Python', 'AI', 'Automation'],
+      category: 'IoT',
+      demo: 'https://example.com/smarthome-demo',
+      github: 'https://github.com/dharaneesh/smart-home'
+    },
+    {
+      id: 13,
+      title: 'Blockchain Voting System',
+      description: 'Decentralized voting platform using blockchain technology for secure and transparent elections.',
+      image: '/placeholder.jpg',
+      tags: ['Blockchain', 'React', 'Web3', 'Smart Contracts', 'Security'],
+      category: 'Blockchain',
+      demo: 'https://example.com/voting-demo',
+      github: 'https://github.com/dharaneesh/blockchain-voting'
+    },
+    {
+      id: 14,
+      title: 'Music Streaming Platform',
+      description: 'Full-featured music streaming app with playlists, recommendations, and social features.',
+      image: '/placeholder.jpg',
+      tags: ['Full Stack', 'React', 'Node.js', 'Audio Streaming', 'Social'],
+      category: 'Full Stack',
+      demo: 'https://example.com/music-demo',
+      github: 'https://github.com/dharaneesh/music-platform'
+    },
+    {
+      id: 15,
+      title: 'Virtual Reality Training',
+      description: 'VR-based training platform for professional development with immersive learning experiences.',
+      image: '/placeholder.jpg',
+      tags: ['VR', 'Unity', 'C#', 'Education', 'Immersive'],
+      category: 'VR',
+      demo: 'https://example.com/vr-demo',
+      github: 'https://github.com/dharaneesh/vr-training'
     }
   ]
 
-  const internships = [
+  const experienceData = [
     {
       id: 1,
       company: 'Tech Innovators Inc.',
       role: 'Full Stack Developer Intern',
       duration: 'Jun 2023 - Aug 2023',
-      description: 'Developed web applications using React and Node.js, collaborated with senior developers on enterprise projects.',
-      certificate: '/certificates/internship1.pdf'
+      type: 'internship',
+      description: 'Developed web applications using React and Node.js, collaborated with senior developers on enterprise projects, and implemented RESTful APIs.',
+      certificate: '/certificates/internship1.pdf',
+      skills: ['React', 'Node.js', 'MongoDB', 'API Development']
     },
     {
       id: 2,
       company: 'AI Solutions Ltd.',
       role: 'AI Developer Intern',
       duration: 'Jan 2023 - Mar 2023',
-      description: 'Worked on machine learning projects, implemented AI models for data analysis and prediction.',
-      certificate: '/certificates/internship2.pdf'
-    }
-  ]
-
-  const certifications = [
-    {
-      id: 1,
-      title: 'Full Stack Web Development',
-      issuer: 'FreeCodeCamp',
-      date: '2023',
-      certificate: '/certificates/fullstack.pdf'
-    },
-    {
-      id: 2,
-      title: 'Machine Learning Specialization',
-      issuer: 'Stanford University',
-      date: '2023',
-      certificate: '/certificates/ml.pdf'
+      type: 'internship',
+      description: 'Worked on machine learning projects, implemented AI models for data analysis and prediction, and contributed to research initiatives.',
+      certificate: '/certificates/internship2.pdf',
+      skills: ['Python', 'TensorFlow', 'Machine Learning', 'Data Analysis']
     },
     {
       id: 3,
-      title: 'React Developer Certification',
-      issuer: 'Meta',
-      date: '2022',
-      certificate: '/certificates/react.pdf'
+      company: 'FreeCodeCamp',
+      role: 'Full Stack Web Development',
+      duration: '2023',
+      type: 'certification',
+      description: 'Comprehensive certification covering HTML, CSS, JavaScript, React, Node.js, and database technologies.',
+      certificate: '/certificates/fullstack.pdf',
+      skills: ['HTML', 'CSS', 'JavaScript', 'React', 'Node.js']
+    },
+    {
+      id: 4,
+      company: 'Stanford University',
+      role: 'Machine Learning Specialization',
+      duration: '2023',
+      type: 'certification',
+      description: 'Advanced machine learning concepts including supervised and unsupervised learning, neural networks, and deep learning.',
+      certificate: '/certificates/ml.pdf',
+      skills: ['Machine Learning', 'Python', 'Neural Networks', 'Deep Learning']
+    },
+    {
+      id: 5,
+      company: 'Meta',
+      role: 'React Developer Certification',
+      duration: '2022',
+      type: 'certification',
+      description: 'Professional certification in React development covering hooks, state management, and advanced React patterns.',
+      certificate: '/certificates/react.pdf',
+      skills: ['React', 'JavaScript', 'State Management', 'Hooks']
+    },
+    {
+      id: 6,
+      company: 'Google Cloud',
+      role: 'Cloud Architect Certification',
+      duration: '2023',
+      type: 'certification',
+      description: 'Professional certification in Google Cloud Platform covering architecture, deployment, and cloud security.',
+      certificate: '/certificates/gcp.pdf',
+      skills: ['Google Cloud', 'Cloud Architecture', 'DevOps', 'Security']
     }
   ]
 
-  const blogPosts = [
-    {
-      id: 1,
-      title: 'Getting Started with Next.js 14',
-      excerpt: 'Learn the latest features and improvements in Next.js 14 for modern web development.',
-      date: '2024-01-15',
-      readTime: '5 min read'
-    },
-    {
-      id: 2,
-      title: 'AI in Web Development: The Future is Now',
-      excerpt: 'Exploring how artificial intelligence is transforming the web development landscape.',
-      date: '2024-01-10',
-      readTime: '8 min read'
-    },
-    {
-      id: 3,
-      title: 'Building Scalable APIs with Node.js',
-      excerpt: 'Best practices for creating robust and scalable backend APIs using Node.js.',
-      date: '2024-01-05',
-      readTime: '6 min read'
-    }
+  const technologies = [
+    'React', 'Python', 'Node.js', 'AI', 'Machine Learning', 'MongoDB', 'PostgreSQL', 
+    'TensorFlow', 'Flask', 'Express', 'Socket.io', 'API', 'Dashboard', 'Blockchain', 
+    'IoT', 'VR', 'Unity', 'C#', 'Web3', 'Smart Contracts'
   ]
 
-  const filteredProjects = activeFilter === 'All' 
-    ? projects 
-    : projects.filter(project => project.category === activeFilter)
+  const categories = ['All', 'AI', 'Full Stack', 'IoT', 'Blockchain', 'VR']
+
+  const filteredProjects = projects.filter(project => {
+    const categoryMatch = activeFilter === 'All' || project.category === activeFilter
+    const techMatch = activeTechFilter.length === 0 || activeTechFilter.some(tech => project.tags.includes(tech))
+    return categoryMatch && techMatch
+  })
+
+  const handleTechFilter = (tech) => {
+    setActiveTechFilter(prev => {
+      const newFilter = prev.includes(tech) 
+        ? prev.filter(t => t !== tech)
+        : [...prev, tech]
+      
+      toast({
+        title: prev.includes(tech) ? "Filter removed" : "Filter applied",
+        description: `${tech} ${prev.includes(tech) ? 'removed from' : 'added to'} filters`,
+      })
+      
+      return newFilter
+    })
+  }
+
+  const clearFilters = () => {
+    setActiveFilter('All')
+    setActiveTechFilter([])
+    toast({
+      title: "Filters cleared",
+      description: "Showing all projects",
+    })
+  }
+
+  const handleProjectAction = (action, title) => {
+    toast({
+      title: `${action} ${title}`,
+      description: action === 'Opened' ? "Opening in new tab..." : "Redirecting to GitHub...",
+    })
+  }
 
   const AnimatedSection = ({ children, className = "" }) => {
     const ref = useRef(null)
@@ -243,35 +438,36 @@ export default function Home() {
     { name: 'About', href: '#about' },
     { name: 'Skills', href: '#skills' },
     { name: 'Projects', href: '#projects' },
-    { name: 'Internships', href: '#internships' },
-    { name: 'Certifications', href: '#certifications' },
-    { name: 'Blog', href: '#blog' },
-    { name: 'Demo', href: '#demo' },
+    { name: 'Experience', href: '#experience' },
+    { name: 'AI Demo', href: '#demo' },
     { name: 'Contact', href: '#contact' }
   ]
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
       theme === 'dark' 
-        ? 'bg-black text-white' 
-        : 'bg-slate-50 text-gray-900'
+        ? 'bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white' 
+        : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
     }`}>
-      {/* Navbar */}
+      <Toaster />
+      
+      {/* Enhanced Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        theme === 'dark' ? 'bg-black/95' : 'bg-white/95'
-      } backdrop-blur-sm border-b ${
-        theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+        theme === 'dark' 
+          ? 'bg-black/90 backdrop-blur-md border-b border-gray-800' 
+          : 'bg-white/90 backdrop-blur-md border-b border-gray-200'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            {/* Logo */}
             <motion.a
               href="#home"
-              className="text-2xl md:text-3xl font-bold text-orange-500 font-sans"
+              className="text-3xl md:text-4xl font-bold font-sans"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              Dharaneesh C
+              <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
+                Dharaneesh C
+              </span>
             </motion.a>
 
             {/* Desktop Navigation */}
@@ -294,8 +490,14 @@ export default function Home() {
             {/* Right side items */}
             <div className="flex items-center space-x-4">
               <Button 
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-all duration-300"
-                onClick={() => window.open('#contact', '_self')}
+                className="btn-primary"
+                onClick={() => {
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+                  toast({
+                    title: "Let's connect!",
+                    description: "Scrolling to contact section",
+                  })
+                }}
               >
                 Hire Me
               </Button>
@@ -332,7 +534,9 @@ export default function Home() {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="block py-2 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                  className={`block py-2 px-4 rounded-lg transition-colors duration-200 ${
+                    theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}
@@ -343,11 +547,11 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section */}
       <section id="home" className={`min-h-screen flex items-center justify-center px-4 md:px-8 ${
         theme === 'dark' 
-          ? 'bg-gradient-to-br from-black to-gray-900' 
-          : 'bg-gradient-to-br from-slate-50 to-blue-50'
+          ? 'bg-gradient-to-br from-black via-gray-900 to-indigo-900' 
+          : 'bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50'
       }`}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
@@ -358,32 +562,41 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <motion.p
-              className="text-purple-500 text-sm md:text-base mb-4 font-medium"
+              className="text-purple-500 text-lg md:text-xl mb-4 font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              Hi, I am Dharaneesh C
+              Hi, I am
             </motion.p>
             
             <motion.h1
-              className="text-4xl md:text-6xl font-bold mb-6 font-sans leading-tight"
+              className="text-5xl md:text-7xl font-bold mb-4 font-sans leading-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              <span className="bg-gradient-to-r from-orange-500 to-orange-400 text-transparent bg-clip-text">
-                Full Stack & AI Developer
+              <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
+                Dharaneesh C
               </span>
             </motion.h1>
+
+            <motion.h2
+              className="text-2xl md:text-3xl font-semibold mb-6 text-gray-600 dark:text-gray-300"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              Full Stack & AI Developer
+            </motion.h2>
             
             <motion.p
-              className={`text-base md:text-lg mb-8 max-w-2xl leading-relaxed ${
+              className={`text-lg md:text-xl mb-8 max-w-2xl leading-relaxed ${
                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.5 }}
             >
               Building innovative web solutions and AI-powered applications with modern technologies and creative problem-solving.
             </motion.p>
@@ -392,24 +605,26 @@ export default function Home() {
               className="flex flex-wrap gap-4 justify-center md:justify-start mb-8"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.6 }}
             >
               <Button 
                 className="btn-primary"
-                onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
+                  toast({
+                    title: "Viewing Projects",
+                    description: "Check out my latest work!",
+                  })
+                }}
               >
                 View Projects
               </Button>
-              <Button 
-                variant="outline" 
-                className="btn-outline"
-                onClick={() => window.open('/resume.pdf', '_blank')}
-              >
-                Download Resume
-              </Button>
+              
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="btn-secondary">View Resume</Button>
+                  <Button className="btn-secondary">
+                    View Resume
+                  </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl h-[80vh]">
                   <DialogHeader>
@@ -422,6 +637,60 @@ export default function Home() {
                   />
                 </DialogContent>
               </Dialog>
+
+              <Button 
+                variant="outline" 
+                className="btn-outline"
+                onClick={() => {
+                  const link = document.createElement('a')
+                  link.href = '/resume.pdf'
+                  link.download = 'Dharaneesh_Resume.pdf'
+                  link.click()
+                  toast({
+                    title: "Resume Downloaded",
+                    description: "Thank you for your interest!",
+                  })
+                }}
+              >
+                Download Resume
+              </Button>
+            </motion.div>
+
+            {/* Social Links */}
+            <motion.div
+              className="flex gap-4 justify-center md:justify-start"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="hover-glow"
+                onClick={() => {
+                  window.open('https://github.com/dharaneesh', '_blank')
+                  toast({
+                    title: "Opening GitHub",
+                    description: "Check out my code repositories",
+                  })
+                }}
+              >
+                <span className="text-gray-800 dark:text-white">GitHub</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="hover-glow"
+                onClick={() => {
+                  window.open('https://linkedin.com/in/dharaneesh', '_blank')
+                  toast({
+                    title: "Opening LinkedIn",
+                    description: "Let's connect professionally",
+                  })
+                }}
+              >
+                <span className="text-blue-600">LinkedIn</span>
+              </Button>
             </motion.div>
           </motion.div>
 
@@ -433,11 +702,11 @@ export default function Home() {
             transition={{ delay: 0.4, duration: 0.6 }}
           >
             <motion.div
-              className="relative"
+              className="relative animate-float"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-orange-500">
+              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-gradient-to-r from-orange-500 via-purple-500 to-blue-500 shadow-2xl">
                 <Image
                   src="/placeholder-user.jpg"
                   alt="Dharaneesh C"
@@ -450,7 +719,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Enhanced Stats Cards */}
         <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4"
           initial={{ opacity: 0, y: 30 }}
@@ -459,25 +728,22 @@ export default function Home() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Projects', value: stats.projects, color: 'text-blue-500' },
-              { label: 'Years', value: stats.years, color: 'text-green-500' },
-              { label: 'Clients', value: stats.clients, color: 'text-purple-500' },
-              { label: 'Certifications', value: stats.certifications, color: 'text-orange-500' }
+              { label: 'Projects', value: stats.projects, color: 'from-blue-500 to-blue-600', icon: '🚀' },
+              { label: 'Years Experience', value: stats.years, color: 'from-green-500 to-green-600', icon: '⭐' },
+              { label: 'Happy Clients', value: stats.clients, color: 'from-purple-500 to-purple-600', icon: '😊' },
+              { label: 'Certifications', value: stats.certifications, color: 'from-orange-500 to-orange-600', icon: '🏆' }
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
-                className={`card-professional p-4 text-center ${
-                  theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                }`}
+                className={`card-professional p-4 text-center bg-gradient-to-r ${stat.color} text-white`}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.9 + index * 0.05 }}
                 whileHover={{ scale: 1.02, y: -2 }}
               >
-                <div className="stat-counter text-2xl font-bold mb-1">{stat.value}+</div>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {stat.label}
-                </p>
+                <div className="text-2xl mb-2">{stat.icon}</div>
+                <div className="text-2xl font-bold mb-1">{stat.value}+</div>
+                <p className="text-sm opacity-90">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -491,12 +757,14 @@ export default function Home() {
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              className="text-4xl md:text-5xl font-bold text-center mb-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              About Me
+              <span className="bg-gradient-to-r from-orange-500 to-purple-500 text-transparent bg-clip-text">
+                About Me
+              </span>
             </motion.h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -505,12 +773,12 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <p className={`text-base md:text-lg mb-6 leading-relaxed ${
+                <p className={`text-lg md:text-xl mb-6 leading-relaxed ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   I'm a passionate Full Stack and AI Developer with expertise in modern web technologies and artificial intelligence. I love creating innovative solutions that bridge the gap between complex technical challenges and user-friendly experiences.
                 </p>
-                <p className={`text-base md:text-lg mb-8 leading-relaxed ${
+                <p className={`text-lg md:text-xl mb-8 leading-relaxed ${
                   theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   With a strong foundation in both frontend and backend development, I specialize in building scalable web applications and implementing AI-powered features that drive business value.
@@ -524,23 +792,23 @@ export default function Home() {
               >
                 <ul className="space-y-4">
                   {[
-                    'Full Stack Web Development',
-                    'AI/ML Model Development',
-                    'API Design & Integration',
-                    'Database Architecture',
-                    'Cloud Deployment'
+                    { text: 'Full Stack Web Development', icon: '🚀' },
+                    { text: 'AI/ML Model Development', icon: '🤖' },
+                    { text: 'API Design & Integration', icon: '🔗' },
+                    { text: 'Database Architecture', icon: '🗄️' },
+                    { text: 'Cloud Deployment', icon: '☁️' }
                   ].map((item, index) => (
                     <motion.li
-                      key={item}
-                      className={`flex items-center text-base ${
+                      key={item.text}
+                      className={`flex items-center text-lg ${
                         theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                       }`}
                       initial={{ opacity: 0, x: 15 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                      {item}
+                      <span className="text-2xl mr-3">{item.icon}</span>
+                      {item.text}
                     </motion.li>
                   ))}
                 </ul>
@@ -557,12 +825,14 @@ export default function Home() {
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              className="text-4xl md:text-5xl font-bold text-center mb-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Skills
+              <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
+                Skills & Expertise
+              </span>
             </motion.h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -598,52 +868,119 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Projects Section */}
+      {/* Enhanced Projects Section */}
       <AnimatedSection>
         <section id="projects" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
         }`}>
           <div className="max-w-7xl mx-auto">
             <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-8"
+              className="text-4xl md:text-5xl font-bold text-center mb-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Projects
+              <span className="bg-gradient-to-r from-orange-500 to-pink-500 text-transparent bg-clip-text">
+                Featured Projects
+              </span>
             </motion.h2>
-            
-            {/* Filter Buttons */}
-            <motion.div
-              className="flex flex-wrap justify-center gap-4 mb-12"
+
+            <motion.p
+              className={`text-center text-lg mb-12 ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              }`}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              {['All', 'AI', 'Full Stack'].map((filter) => (
-                <Button
-                  key={filter}
-                  onClick={() => setActiveFilter(filter)}
-                  className={`filter-button ${
-                    activeFilter === filter ? 'active' : ''
-                  }`}
-                  variant={activeFilter === filter ? 'default' : 'outline'}
-                >
-                  {filter}
-                </Button>
-              ))}
-            </motion.div>
+              Explore my collection of {projects.length} innovative projects spanning AI, Full Stack, IoT, Blockchain, and VR
+            </motion.p>
             
+            {/* Enhanced Filter Section */}
+            <motion.div
+              className="space-y-6 mb-12"
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              {/* Category Filters */}
+              <div className="flex flex-wrap justify-center gap-3">
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    onClick={() => {
+                      setActiveFilter(category)
+                      toast({
+                        title: `Filter: ${category}`,
+                        description: `Showing ${category === 'All' ? 'all' : category} projects`,
+                      })
+                    }}
+                    className={`filter-button ${activeFilter === category ? 'active' : ''}`}
+                    variant={activeFilter === category ? 'default' : 'outline'}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Technology Filters */}
+              <div className="text-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mb-4"
+                  onClick={() => {
+                    const techSection = document.getElementById('tech-filters')
+                    if (techSection) {
+                      techSection.style.display = techSection.style.display === 'none' ? 'block' : 'none'
+                    }
+                  }}
+                >
+                  🔧 Technology Filters
+                </Button>
+                
+                <div id="tech-filters" style={{ display: 'none' }} className="space-y-4">
+                  <div className="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
+                    {technologies.map((tech) => (
+                      <Badge
+                        key={tech}
+                        onClick={() => handleTechFilter(tech)}
+                        className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
+                          activeTechFilter.includes(tech)
+                            ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-purple-100 dark:hover:bg-purple-900'
+                        }`}
+                      >
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  {(activeFilter !== 'All' || activeTechFilter.length > 0) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearFilters}
+                      className="text-red-500 hover:text-red-600"
+                    >
+                      Clear All Filters
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+
             {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProjects.map((project, index) => (
                 <motion.div
                   key={project.id}
                   className="project-card hover-lift"
                   initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   layout
+                  whileHover={{ scale: 1.02, y: -5 }}
                 >
                   <div className="relative overflow-hidden rounded-t-xl">
                     <Image
@@ -651,106 +988,214 @@ export default function Home() {
                       alt={project.title}
                       width={400}
                       height={200}
-                      className="project-image w-full h-48 object-cover transition-transform duration-300"
+                      className="project-image w-full h-48 object-cover"
                     />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-gradient-to-r from-orange-500 to-pink-500 text-white">
+                        {project.category}
+                      </Badge>
+                    </div>
                   </div>
+                  
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                    <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                      {project.title}
+                    </h3>
                     <p className={`mb-4 ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {project.description}
                     </p>
+                    
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">
+                      {project.tags.map((tag, tagIndex) => (
+                        <Badge 
+                          key={tag} 
+                          variant="secondary"
+                          className={`${
+                            tagIndex % 3 === 0 ? 'bg-blue-100 text-blue-800' :
+                            tagIndex % 3 === 1 ? 'bg-green-100 text-green-800' :
+                            'bg-purple-100 text-purple-800'
+                          }`}
+                        >
                           {tag}
                         </Badge>
                       ))}
                     </div>
+                    
                     <div className="flex gap-2">
                       <Button 
                         size="sm" 
-                        className="btn-primary"
-                        onClick={() => window.open(project.demo, '_blank')}
+                        className="btn-primary flex-1"
+                        onClick={() => {
+                          window.open(project.demo, '_blank')
+                          handleProjectAction('Opened', project.title)
+                        }}
                       >
-                        Live Demo
+                        🚀 Live Demo
                       </Button>
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => window.open(project.github, '_blank')}
+                        className="flex-1"
+                        onClick={() => {
+                          window.open(project.github, '_blank')
+                          handleProjectAction('Viewed', project.title)
+                        }}
                       >
-                        GitHub
+                        📱 GitHub
                       </Button>
                     </div>
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
+
+            {filteredProjects.length === 0 && (
+              <motion.div
+                className="text-center py-12"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <p className="text-xl text-gray-500 mb-4">No projects found with current filters</p>
+                <Button onClick={clearFilters} className="btn-primary">
+                  Clear Filters
+                </Button>
+              </motion.div>
+            )}
           </div>
         </section>
       </AnimatedSection>
 
-      {/* Internships Section */}
+      {/* Combined Experience Section (Internships + Certifications) */}
       <AnimatedSection>
-        <section id="internships" className={`py-16 px-4 md:px-8 ${
+        <section id="experience" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              className="text-4xl md:text-5xl font-bold text-center mb-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Internships
+              <span className="bg-gradient-to-r from-teal-500 to-blue-500 text-transparent bg-clip-text">
+                Experience & Certifications
+              </span>
             </motion.h2>
             
+            {/* Filter Buttons */}
+            <div className="flex justify-center mb-8">
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => {
+                    document.querySelectorAll('.experience-item').forEach(el => el.style.display = 'block')
+                    toast({ title: "Showing All", description: "Displaying all experience and certifications" })
+                  }}
+                  className="btn-secondary"
+                >
+                  All
+                </Button>
+                <Button
+                  onClick={() => {
+                    document.querySelectorAll('.experience-item').forEach(el => {
+                      el.style.display = el.dataset.type === 'internship' ? 'block' : 'none'
+                    })
+                    toast({ title: "Internships", description: "Showing internship experience" })
+                  }}
+                  variant="outline"
+                >
+                  Internships
+                </Button>
+                <Button
+                  onClick={() => {
+                    document.querySelectorAll('.experience-item').forEach(el => {
+                      el.style.display = el.dataset.type === 'certification' ? 'block' : 'none'
+                    })
+                    toast({ title: "Certifications", description: "Showing certifications" })
+                  }}
+                  variant="outline"
+                >
+                  Certifications
+                </Button>
+              </div>
+            </div>
+
             <div className="space-y-6">
-              {internships.map((internship, index) => (
+              {experienceData.map((item, index) => (
                 <motion.div
-                  key={internship.id}
-                  className={`card-professional p-6 hover-lift ${
+                  key={item.id}
+                  className={`experience-item card-professional p-6 hover-lift ${
                     theme === 'dark' ? 'bg-gray-700' : 'bg-white'
                   }`}
+                  data-type={item.type}
                   initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                     <div className="flex items-center mb-2 md:mb-0">
-                      <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                      <div className={`w-4 h-4 rounded-full mr-4 ${
+                        item.type === 'internship' ? 'bg-blue-500' : 'bg-orange-500'
+                      }`}></div>
                       <div>
-                        <h3 className="text-xl font-semibold">{internship.company}</h3>
-                        <p className="text-orange-500 font-medium">{internship.role}</p>
+                        <h3 className="text-xl font-semibold">{item.company}</h3>
+                        <p className="text-lg font-medium text-orange-500">{item.role}</p>
                       </div>
                     </div>
-                    <span className={`text-sm px-3 py-1 rounded-full ${
-                      theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
-                    }`}>
-                      {internship.duration}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <Badge className={
+                        item.type === 'internship' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-orange-100 text-orange-800'
+                      }>
+                        {item.type === 'internship' ? '💼 Internship' : '🎓 Certificate'}
+                      </Badge>
+                      <span className={`text-sm px-3 py-1 rounded-full ${
+                        theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'
+                      }`}>
+                        {item.duration}
+                      </span>
+                    </div>
                   </div>
+                  
                   <p className={`mb-4 ${
                     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                   }`}>
-                    {internship.description}
+                    {item.description}
                   </p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {item.skills.map((skill) => (
+                      <Badge key={skill} variant="outline" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                  
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button size="sm" className="btn-secondary">
-                        View Certificate
+                      <Button 
+                        size="sm" 
+                        className="btn-accent"
+                        onClick={() => {
+                          toast({
+                            title: "Opening Certificate",
+                            description: `Viewing ${item.type} certificate for ${item.company}`,
+                          })
+                        }}
+                      >
+                        📜 View Certificate
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl h-[80vh]">
                       <DialogHeader>
-                        <DialogTitle>Internship Certificate - {internship.company}</DialogTitle>
+                        <DialogTitle>{item.type === 'internship' ? 'Internship' : 'Certification'} - {item.company}</DialogTitle>
                       </DialogHeader>
                       <iframe
-                        src={internship.certificate}
+                        src={item.certificate}
                         className="w-full h-full rounded-lg"
-                        title={`Certificate - ${internship.company}`}
+                        title={`Certificate - ${item.company}`}
                       />
                     </DialogContent>
                   </Dialog>
@@ -761,131 +1206,21 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Certifications Section */}
-      <AnimatedSection>
-        <section id="certifications" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
-        }`}>
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              Certifications
-            </motion.h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {certifications.map((cert, index) => (
-                <motion.div
-                  key={cert.id}
-                  className="certificate-card hover-lift cursor-pointer"
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02, y: -5 }}
-                >
-                  <div className="text-center mb-4">
-                    <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <span className="text-white text-xl font-bold">C</span>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">{cert.title}</h3>
-                    <p className={`text-sm mb-2 ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {cert.issuer}
-                    </p>
-                    <span className="text-orange-500 font-medium">{cert.date}</span>
-                  </div>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full btn-primary">
-                        View Certificate
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl h-[80vh]">
-                      <DialogHeader>
-                        <DialogTitle>{cert.title} - {cert.issuer}</DialogTitle>
-                      </DialogHeader>
-                      <iframe
-                        src={cert.certificate}
-                        className="w-full h-full rounded-lg"
-                        title={`Certificate - ${cert.title}`}
-                      />
-                    </DialogContent>
-                  </Dialog>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </AnimatedSection>
-
-      {/* Blog Section */}
-      <AnimatedSection>
-        <section id="blog" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-black' : 'bg-white'
-        }`}>
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              Blog Posts
-            </motion.h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {blogPosts.map((post, index) => (
-                <motion.article
-                  key={post.id}
-                  className={`card-professional p-6 hover-lift ${
-                    theme === 'dark' ? 'bg-gray-800' : 'bg-slate-50'
-                  }`}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.02, y: -2 }}
-                >
-                  <div className="flex items-center mb-3">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
-                    <span className={`text-sm ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {post.date} • {post.readTime}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{post.title}</h3>
-                  <p className={`mb-4 ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    {post.excerpt}
-                  </p>
-                  <Button size="sm" className="btn-primary">
-                    Read More
-                  </Button>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </section>
-      </AnimatedSection>
-
-      {/* AI Demo Section */}
+      {/* Enhanced AI Demo Section */}
       <AnimatedSection>
         <section id="demo" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-900' : 'bg-blue-50'
         }`}>
           <div className="max-w-4xl mx-auto text-center">
             <motion.h2
-              className="text-3xl md:text-4xl font-bold text-orange-500 mb-8"
+              className="text-4xl md:text-5xl font-bold mb-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Interactive AI Demo
+              <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+                AI Assistant Demo
+              </span>
             </motion.h2>
             
             <motion.p
@@ -896,29 +1231,45 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              Experience the power of AI through this interactive chatbot demo
+              Experience my AI assistant that can answer questions about my projects, skills, and experience
             </motion.p>
             
             <Dialog open={showChatModal} onOpenChange={setShowChatModal}>
               <DialogTrigger asChild>
-                <Button size="lg" className="btn-primary text-lg px-8 py-4">
-                  Launch AI Demo
+                <Button 
+                  size="lg" 
+                  className="btn-primary text-lg px-8 py-4"
+                  onClick={() => {
+                    toast({
+                      title: "Launching AI Demo",
+                      description: "Get ready to chat with my AI assistant!",
+                    })
+                  }}
+                >
+                  🤖 Launch AI Assistant
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md h-[80vh] flex flex-col">
                 <DialogHeader>
-                  <DialogTitle className="flex items-center">
-                    AI Assistant Demo
+                  <DialogTitle className="flex items-center text-blue-500">
+                    🤖 AI Assistant - Ask me anything!
                   </DialogTitle>
                 </DialogHeader>
                 <div className="flex-1 flex flex-col">
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     {chatMessages.length === 0 ? (
                       <div className="text-center text-gray-500">
-                        <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-white font-bold">AI</span>
+                        <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span className="text-white text-2xl">🤖</span>
                         </div>
-                        <p>Hi! I'm an AI assistant. Ask me anything!</p>
+                        <p className="text-lg font-medium mb-2">Hi! I'm Dharaneesh's AI Assistant</p>
+                        <p className="text-sm">Ask me about:</p>
+                        <div className="flex flex-wrap gap-2 mt-2 justify-center">
+                          <Badge className="bg-blue-100 text-blue-800">Projects</Badge>
+                          <Badge className="bg-green-100 text-green-800">Skills</Badge>
+                          <Badge className="bg-purple-100 text-purple-800">Experience</Badge>
+                          <Badge className="bg-orange-100 text-orange-800">Contact</Badge>
+                        </div>
                       </div>
                     ) : (
                       chatMessages.map((message, index) => (
@@ -932,55 +1283,59 @@ export default function Home() {
                           transition={{ duration: 0.3 }}
                         >
                           <div
-                            className={`max-w-xs px-4 py-2 rounded-lg ${
+                            className={`max-w-xs px-4 py-3 rounded-lg shadow-md ${
                               message.type === 'user'
-                                ? 'bg-orange-500 text-white'
+                                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
                                 : theme === 'dark'
-                                ? 'bg-gray-700 text-white'
-                                : 'bg-gray-200 text-black'
+                                ? 'bg-gray-700 text-white border border-gray-600'
+                                : 'bg-white text-gray-800 border border-gray-200'
                             }`}
                           >
-                            {message.content}
+                            <p className="text-sm leading-relaxed">{message.content}</p>
                           </div>
                         </motion.div>
                       ))
                     )}
                   </div>
+                  
                   <div className="border-t p-4">
                     <div className="flex gap-2">
                       <Input
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
-                        placeholder="Type your message..."
-                        className="form-input"
+                        placeholder="Ask about my projects, skills, experience..."
+                        className="form-input flex-1"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') {
-                            if (chatInput.trim()) {
-                              setChatMessages([
-                                ...chatMessages,
-                                { type: 'user', content: chatInput },
-                                { type: 'ai', content: 'Thanks for your message! This is a demo response.' }
-                              ])
-                              setChatInput('')
-                            }
+                            handleChatSubmit()
                           }
                         }}
                       />
                       <Button
-                        className="btn-primary"
-                        onClick={() => {
-                          if (chatInput.trim()) {
-                            setChatMessages([
-                              ...chatMessages,
-                              { type: 'user', content: chatInput },
-                              { type: 'ai', content: 'Thanks for your message! This is a demo response.' }
-                            ])
-                            setChatInput('')
-                          }
-                        }}
+                        className="btn-primary px-4"
+                        onClick={handleChatSubmit}
+                        disabled={!chatInput.trim()}
                       >
                         Send
                       </Button>
+                    </div>
+                    
+                    {/* Quick question buttons */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {['Tell me about your projects', 'What are your skills?', 'How can I hire you?'].map((question) => (
+                        <Button
+                          key={question}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => {
+                            setChatInput(question)
+                            setTimeout(handleChatSubmit, 100)
+                          }}
+                        >
+                          {question}
+                        </Button>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -990,29 +1345,34 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Contact Section */}
+      {/* Enhanced Contact Section */}
       <AnimatedSection>
         <section id="contact" className={`py-16 px-4 md:px-8 ${
           theme === 'dark' ? 'bg-gray-800' : 'bg-slate-100'
         }`}>
           <div className="max-w-6xl mx-auto">
             <motion.h2
-              className="text-3xl md:text-4xl font-bold text-center text-orange-500 mb-12"
+              className="text-4xl md:text-5xl font-bold text-center mb-12"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Get in Touch
+              <span className="bg-gradient-to-r from-green-500 to-teal-500 text-transparent bg-clip-text">
+                Get in Touch
+              </span>
             </motion.h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Contact Form */}
               <motion.div
-                className="contact-form"
+                className={`card-professional p-8 ${
+                  theme === 'dark' ? 'bg-gray-700' : 'bg-white'
+                }`}
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
               >
+                <h3 className="text-2xl font-semibold mb-6">Send me a message</h3>
                 <form onSubmit={handleContactSubmit} className="space-y-6">
                   <div>
                     <Input
@@ -1044,8 +1404,12 @@ export default function Home() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="btn-primary w-full">
-                    Send Message
+                  <Button 
+                    type="submit" 
+                    className="btn-primary w-full" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? '📤 Sending...' : '📨 Send Message'}
                   </Button>
                 </form>
               </motion.div>
@@ -1058,39 +1422,84 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
+                  <h3 className="text-2xl font-semibold mb-6">Contact Information</h3>
                   <div className="space-y-4">
                     <div className="flex items-center">
-                      <div className="w-3 h-3 bg-orange-500 rounded-full mr-4"></div>
-                      <span>dharaneeshc2006@gmail.com</span>
+                      <div className="w-4 h-4 bg-green-500 rounded-full mr-4"></div>
+                      <span className="text-lg">📧 dharaneeshc2006@gmail.com</span>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-3 h-3 bg-orange-500 rounded-full mr-4"></div>
-                      <span>+91 XXXXX XXXXX</span>
+                      <div className="w-4 h-4 bg-blue-500 rounded-full mr-4"></div>
+                      <span className="text-lg">📱 +91 XXXXX XXXXX</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-4 h-4 bg-purple-500 rounded-full mr-4"></div>
+                      <span className="text-lg">📍 Available for Remote Work</span>
                     </div>
                   </div>
                 </div>
                 
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Follow Me</h3>
-                  <div className="flex gap-4">
+                  <h3 className="text-2xl font-semibold mb-6">Connect with Me</h3>
+                  <div className="flex flex-wrap gap-4">
                     <Button
                       variant="outline"
-                      size="sm"
-                      className="hover-glow"
-                      onClick={() => window.open('https://github.com/dharaneesh', '_blank')}
+                      className="hover-glow flex items-center gap-2"
+                      onClick={() => {
+                        window.open('https://github.com/dharaneesh', '_blank')
+                        toast({
+                          title: "Opening GitHub",
+                          description: "Explore my code repositories",
+                        })
+                      }}
                     >
-                      GitHub
+                      <span className="text-gray-800 dark:text-white">🔗 GitHub</span>
                     </Button>
                     <Button
                       variant="outline"
-                      size="sm"
-                      className="hover-glow"
-                      onClick={() => window.open('https://linkedin.com/in/dharaneesh', '_blank')}
+                      className="hover-glow flex items-center gap-2"
+                      onClick={() => {
+                        window.open('https://linkedin.com/in/dharaneesh', '_blank')
+                        toast({
+                          title: "Opening LinkedIn",
+                          description: "Let's connect professionally",
+                        })
+                      }}
                     >
-                      LinkedIn
+                      <span className="text-blue-600">💼 LinkedIn</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="hover-glow flex items-center gap-2"
+                      onClick={() => {
+                        const email = 'dharaneeshc2006@gmail.com'
+                        window.location.href = `mailto:${email}`
+                        toast({
+                          title: "Opening Email",
+                          description: "Your default email client will open",
+                        })
+                      }}
+                    >
+                      <span className="text-green-600">✉️ Email</span>
                     </Button>
                   </div>
+                </div>
+
+                <div className="mt-8 p-6 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl text-white">
+                  <h4 className="text-xl font-semibold mb-2">🚀 Ready to Start Your Project?</h4>
+                  <p className="mb-4">Let's discuss how I can help bring your ideas to life with cutting-edge technology and creative solutions.</p>
+                  <Button 
+                    className="bg-white text-orange-500 hover:bg-gray-100"
+                    onClick={() => {
+                      document.querySelector('input[placeholder="Your Name"]')?.focus()
+                      toast({
+                        title: "Let's get started!",
+                        description: "Fill out the form to begin our conversation",
+                      })
+                    }}
+                  >
+                    Start Conversation
+                  </Button>
                 </div>
               </motion.div>
             </div>
@@ -1098,57 +1507,103 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* Footer */}
-      <footer className={`footer-gradient py-8 px-4 md:px-8 ${
-        theme === 'dark' ? 'bg-black' : 'bg-gray-900'
-      }`}>
+      {/* Enhanced Footer */}
+      <footer className={`py-12 px-4 md:px-8 ${
+        theme === 'dark' 
+          ? 'bg-gradient-to-r from-gray-900 via-black to-gray-800' 
+          : 'bg-gradient-to-r from-gray-800 to-gray-900'
+      } text-white`}>
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-orange-500 to-purple-500 text-transparent bg-clip-text">
+                Dharaneesh C
+              </h3>
+              <p className="text-gray-300 mb-4">
+                Full Stack & AI Developer passionate about creating innovative solutions
+              </p>
+              <div className="flex gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-orange-500"
+                  onClick={() => window.open('https://github.com/dharaneesh', '_blank')}
+                >
+                  GitHub
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-blue-500"
+                  onClick={() => window.open('https://linkedin.com/in/dharaneesh', '_blank')}
+                >
+                  LinkedIn
+                </Button>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                {navigation.map((item) => (
+                  <li key={item.name}>
+                    <a
+                      href={item.href}
+                      className="text-gray-400 hover:text-orange-500 transition-colors duration-300"
+                    >
+                      {item.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Contact</h4>
+              <div className="space-y-2 text-gray-400">
+                <p>📧 dharaneeshc2006@gmail.com</p>
+                <p>🌐 Available for Remote Work</p>
+                <p>🚀 Open to New Opportunities</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
             <motion.p
               className="text-gray-400 mb-4 md:mb-0"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
             >
-              © 2025 Dharaneesh C. All rights reserved.
+              © 2025 Dharaneesh C. All rights reserved. Built with ❤️ and ☕
             </motion.p>
             
-            <motion.div
-              className="flex items-center gap-6"
+            <motion.p
+              className="text-gray-500 text-sm"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="flex gap-4">
-                {navigation.slice(0, 4).map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-gray-400 hover:text-orange-500 transition-colors duration-300"
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </motion.div>
+              Crafted with React, Next.js & Tailwind CSS
+            </motion.p>
           </div>
         </div>
       </footer>
 
       {/* Scroll to Top Button */}
       <motion.button
-        className={`fixed bottom-8 right-8 z-40 p-3 rounded-full bg-orange-500 text-white shadow-lg hover:bg-orange-600 transition-all duration-300 ${
+        className={`fixed bottom-8 right-8 z-40 p-4 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 ${
           showScrollTop ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={scrollToTop}
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.1, y: -3 }}
+        whileTap={{ scale: 0.9 }}
         animate={{ 
           y: showScrollTop ? 0 : 50,
           opacity: showScrollTop ? 1 : 0 
         }}
         transition={{ duration: 0.3 }}
       >
-        ↑
+        <span className="text-xl">↑</span>
       </motion.button>
     </div>
   )
