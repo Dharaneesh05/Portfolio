@@ -88,3 +88,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix image aspect ratio warnings by maintaining auto width or height */
+.project-image,
+.project-image img,
+img[src$="placeholder.png"],
+img[src$="port.png"],
+img[src$="SmartFit.png"],
+img[src$="House.png"],
+img[src$="Cricket.png"],
+img[src$="Movie.png"] {
+  width: auto !important;
+  height: auto !important;
+}

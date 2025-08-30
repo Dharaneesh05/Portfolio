@@ -16,7 +16,6 @@ export const metadata: Metadata = {
     "Professional portfolio of Dharaneesh C, a Full Stack Developer and AI/Data Science student specializing in web development and AI solutions using React, Python, and Deep Learning.",
   keywords: "Full Stack Developer, AI Developer, React, Python, Deep Learning, Web Development, Dharaneesh C",
   authors: [{ name: "Dharaneesh C" }],
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
   openGraph: {
     title: "Dharaneesh Portfolio",
@@ -24,6 +23,11 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
+}
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 }
 
 export default function RootLayout({

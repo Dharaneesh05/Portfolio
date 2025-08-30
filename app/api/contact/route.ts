@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import emailjs from '@emailjs/browser'
+import { Resend } from 'resend'
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,15 +31,23 @@ export async function POST(request: NextRequest) {
     console.log(`Time: ${new Date().toISOString()}`)
     console.log('==========================================')
 
-    // Here you would integrate with an email service:
-    /*
-    Example with Resend:
+    // Check if Resend API key is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY environment variable is not set')
+      return NextResponse.json({
+        success: false,
+        message: 'Email service is not configured. Please contact me directly at dharaneeshc2006@gmail.com'
+      }, { status: 500 })
+    }
 
-    import { Resend } from 'resend'
+    // Integrate with Resend email service
     const resend = new Resend(process.env.RESEND_API_KEY)
 
-    await resend.emails.send({
-      from: 'contact@yoursite.com',
+    // Use a verified domain email address for 'from' field
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    
+    const emailResponse = await resend.emails.send({
+      from: fromEmail,
       to: 'dharaneeshc2006@gmail.com',
       subject: `New Contact Form Message from ${name}`,
       html: `
@@ -47,39 +55,15 @@ export async function POST(request: NextRequest) {
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `
+        <p>${message.replace(/\n/g, '<br>')}</p>
+        <p><strong>Time:</strong> ${new Date().toISOString()}</p>
+      `,
+      replyTo: email
     })
-    */
-
-    // Example with EmailJS (client-side integration):
-    /*
-    You can also use EmailJS from the frontend:
-    1. Install: npm install @emailjs/browser
-    2. Import: import emailjs from '@emailjs/browser'
-    3. Send: emailjs.send('service_id', 'template_id', templateParams, 'public_key')
-    */
-
-    // For demonstration, simulate email sending
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // In production, you should also save to a database
-    // Example with a simple JSON file or database:
-    /*
-    const fs = require('fs')
-    const contactData = {
-      id: Date.now(),
-      name,
-      email,
-      message,
-      timestamp: new Date().toISOString()
-    }
-
-    // Save to file (for development only)
-    const contacts = JSON.parse(fs.readFileSync('contacts.json', 'utf8') || '[]')
-    contacts.push(contactData)
-    fs.writeFileSync('contacts.json', JSON.stringify(contacts, null, 2))
-    */
+     
+    // Log successful submission
+    console.log('Contact form submission processed successfully')
+    console.log('Email response:', emailResponse)
 
     return NextResponse.json({
       success: true,
@@ -87,6 +71,10 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Contact form error:', error)
+    // More detailed error logging
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack)
+    }
     return NextResponse.json({
       success: false,
       message: 'There was an error sending your message. Please try again or contact me directly at dharaneeshc2006@gmail.com'

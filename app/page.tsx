@@ -1,4 +1,4 @@
-
+  
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -13,29 +13,65 @@ import { useToast } from '@/hooks/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 import Image from 'next/image'
 
+// Define types for our state
+type ContactForm = {
+  name: string
+  email: string
+  message: string
+}
+
+type ChatMessage = {
+  type: 'user' | 'ai'
+  content: string
+}
+
+type Stats = {
+  projects: number
+  years: number
+  clients: number
+  certifications: number
+  intern: number
+  leetcode: number
+}
+
+type ExperienceItem = {
+  id: number
+  company: string
+  role: string
+  duration: string
+  type: string
+  description: string
+  certificate: string
+  skills: string[]
+}
+
 export default function Home() {
   const [theme, setTheme] = useState('dark')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState('All')
-  const [activeTechFilter, setActiveTechFilter] = useState([])
+  const [activeTechFilter, setActiveTechFilter] = useState<string[]>([])
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' })
-  const [chatMessages, setChatMessages] = useState([])
+  const [contactForm, setContactForm] = useState<ContactForm>({ name: '', email: '', message: '' })
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
   const [showChatModal, setShowChatModal] = useState(false)
-  const [stats, setStats] = useState({ projects: 0, years: 0, clients: 0, certifications: 0, intern: 0, leetcode: 0 })
+  const [stats, setStats] = useState<Stats>({ projects: 0, years: 0, clients: 0, certifications: 0, intern: 0, leetcode: 0 })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [showStartupPopup, setShowStartupPopup] = useState(false)
+  const contactFormRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
-    // Check if the user has already seen the startup popup
-    const hasSeenPopup = localStorage.getItem('hasSeenPopup')
+    // Check if the user has already seen the startup popup in this session
+    const hasSeenPopup = sessionStorage.getItem('hasSeenPopup')
     if (!hasSeenPopup) {
       setShowStartupPopup(true)
-      localStorage.setItem('hasSeenPopup', 'true')
+      sessionStorage.setItem('hasSeenPopup', 'true')
     }
   }, [])
+
+  // Removed Tab key handler to allow default browser behavior
+  // This fixes typing issues in the contact form
 
   const [experienceFilter, setExperienceFilter] = useState('All')
   const [recentActivities] = useState([
@@ -86,8 +122,9 @@ export default function Home() {
     
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400)
-      
-      // Update active section based on scroll position with improved logic
+    }
+
+    const updateActiveSection = () => {
       const sections = ['home', 'about', 'skills', 'projects', 'experience', 'demo', 'contact']
       const currentSection = sections.find(section => {
         const element = document.getElementById(section)
@@ -103,29 +140,27 @@ export default function Home() {
       }
     }
     
-    // Throttle scroll events for better performance
-    let ticking = false
-    const throttledHandleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleScroll()
-          ticking = false
-        })
-        ticking = true
+    // Optimized scroll handling with requestAnimationFrame
+    let animationFrameId: number
+    const optimizedHandleScroll = () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
       }
+      animationFrameId = requestAnimationFrame(() => {
+        handleScroll()
+        updateActiveSection()
+      })
     }
     
-    window.addEventListener('scroll', throttledHandleScroll, { passive: true })
+    window.addEventListener('scroll', optimizedHandleScroll, { passive: true })
     
     // Animate stats counter with stagger effect
     const timer = setTimeout(() => {
       setStats({ projects: 5, years: 3, clients: 10, certifications: 3, intern: 2, leetcode: 250 })
     }, 1500)
 
-    // Remove the old timer for showing the startup popup
-
     return () => {
-      window.removeEventListener('scroll', throttledHandleScroll)
+      window.removeEventListener('scroll', optimizedHandleScroll)
       clearTimeout(timer)
     }
   }, [theme, activeSection])
@@ -147,7 +182,7 @@ export default function Home() {
     })
   }
 
-  const handleContactSubmit = async (e) => {
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
     // Enhanced validation
@@ -231,11 +266,11 @@ export default function Home() {
       } else {
         throw new Error(result.message || 'Failed to send message')
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Contact form error:', error)
       toast({
         title: "Failed to send message",
-        description: error.message || "Please try again or contact me directly at dharaneeshc2006@gmail.com",
+        description: (error as Error).message || "Please try again or contact me directly at dharaneeshc2006@gmail.com",
         variant: "destructive",
       })
     } finally {
@@ -278,10 +313,10 @@ export default function Home() {
         aiResponse = "You can explore my code repositories on GitHub: github.com/Dharaneesh05\n\nMy GitHub includes:\n• Complete project source code\n• AI/ML implementations\n• Web development projects\n• Open-source contributions\n• Learning resources and experiments"
       }
       else if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-        aiResponse = "Hello! 👋 I'm Dharaneesh's AI assistant. I'm here to help you learn more about his skills, projects, and experience. Feel free to ask me anything about his work or how you can collaborate with him!"
+        aiResponse = "Hello! I'm Dharaneesh's AI assistant. I'm here to help you learn more about his skills, projects, and experience. Feel free to ask me anything about his work or how you can collaborate with him!"
       }
       else if (lowerMessage.includes('thank') || lowerMessage.includes('thanks')) {
-        aiResponse = "You're welcome! 😊 I'm glad I could help. If you have any more questions about Dharaneesh's work or if you'd like to discuss potential opportunities, feel free to ask!"
+        aiResponse = "You're welcome! I'm glad I could help. If you have any more questions about Dharaneesh's work or if you'd like to discuss potential opportunities, feel free to ask!"
       }
       else {
         aiResponse = "That's an interesting question! While I'm specifically designed to discuss Dharaneesh's professional background, skills, and projects, I'd be happy to help with any related topics. You might want to ask about:\n\n• His technical skills and expertise\n• Previous projects and case studies\n• Professional experience and education\n• How to contact or collaborate with him\n• Viewing his portfolio and GitHub repositories"
@@ -312,7 +347,7 @@ export default function Home() {
       id: 1,
       title: 'Resume Analyzer & Builder',
       description: 'A comprehensive dashboard leveraging AI for resume analysis and building, featuring real-time data visualization, predictive analytics, job suggestions based on user profiles, and integrated job search functionality. Utilizes MongoDB for storing user data and analytics, providing actionable insights for career advancement and business intelligence.',
-      image: 'placeholder.png',
+      image: '/placeholder.png',
       tags: ['AI', 'React', 'Python', 'TensorFlow','MongoDB','Dashboard'],
       category: 'AI',
       demo: 'https://resume-frontend3.vercel.app/',
@@ -322,7 +357,7 @@ export default function Home() {
       id: 2,
       title: 'Personal Portfolio',
       description: 'A full-stack personal portfolio website showcasing projects and skills, with an integrated AI-powered chatbot for interactive user queries. Includes features like dynamic content rendering, theme switching, and seamless navigation, demonstrating expertise in building responsive and engaging web applications.',
-      image: 'port.png',
+      image: '/port.png',
       tags: ['Full Stack', 'React', 'Node.js', 'MongoDB', 'Stripe'],
       category: 'Full Stack',
       demo: 'https://port2-ochre.vercel.app/',
@@ -332,12 +367,42 @@ export default function Home() {
       id: 3,
       title: 'SmartFit',
       description: 'An AI-powered chatbot designed to reduce online shopping returns due to loose or tight fits in clothes and footwear. Employs natural language processing for user queries, YOLO for object detection, OpenCV for image processing, and MediaPipe for body measurement analysis, providing personalized recommendations to improve fit accuracy and reduce returns by up to 30%.',
-      image: 'SmartFit.png',
+      image: '/SmartFit.png',
       tags: ['AI', 'Python', 'NLP', 'Flask', 'Machine Learning','YOLO','OpenCV','MediaPipe'],
       category: 'AI',
       demo: 'https://smartfitdeploy2-1.onrender.com/',
       github: 'https://github.com/Dharaneesh05/smartfitdeploy2.git'
-    }
+    },
+    {
+  id: 4,
+  title: 'Virtual Home Recommender',
+  description: 'An AI-driven platform for 3D house design planning, featuring exterior and interior visualizations using Blender. Integrates Geopy for real-location mapping to recommend houses based on user preferences, offering personalized design suggestions and interactive 3D models.',
+  image: '/House.png',
+  tags: ['AI', 'Blender', 'Geopy', 'Python', '3D Design'],
+  category: 'AI',
+  demo: 'https://virtualhome.vercel.app/',
+  github: 'https://github.com/Dharaneesh05/3D-House-Design-Recommendation-System'
+},
+{
+  id: 5,
+  title: 'Player Performance Analyzer',
+  description: 'A full-stack application analyzing player performance in Test cricket using the Duckworth-Lewis (DL) method. Features real-time statistics, predictive analytics, and interactive visualizations to assess player impact, built with a responsive UI and robust backend.',
+  image: '/Cricket.png',
+  tags: ['Full Stack', 'React', 'Node.js', 'MongoDB', 'DL'],
+  category: 'Full Stack',
+  demo: 'https://playeranalyzer.vercel.app/',
+  github: 'https://github.com/Dharaneesh05/player-performance-analyzer.git'
+},
+{
+  id: 6,
+  title: 'Movie Recommendation System',
+  description: 'A full-stack platform offering personalized movie recommendations across multiple languages and 10 genres, tailored to user mood. Utilizes AI for content analysis, supports multilingual interfaces, and provides mood-based suggestions with an intuitive UI.',
+  image: '/Movie.png',
+  tags: ['Full Stack', 'React', 'Node.js', 'AI', 'Multilingual'],
+  category: 'Full Stack',
+  demo: 'https://movierecommend.vercel.app/',
+  github: 'https://github.com/Dharaneesh05/Movie-Recommendation-System-'
+}
   ]
 
   const experienceData = [
@@ -413,7 +478,7 @@ export default function Home() {
     return true
   })
 
-  const handleTechFilter = (tech) => {
+  const handleTechFilter = (tech: string) => {
     setActiveTechFilter(prev => {
       const newFilter = prev.includes(tech) 
         ? prev.filter(t => t !== tech)
@@ -437,16 +502,16 @@ export default function Home() {
     })
   }
 
-  const handleProjectAction = (action, title) => {
+  const handleProjectAction = (action: string, title: string) => {
     toast({
       title: `${action} ${title}`,
       description: action === 'Opened' ? "Opening in new tab..." : "Redirecting to GitHub...",
     })
   }
 
-  const AnimatedSection = ({ children, className = "" }) => {
+  const AnimatedSection = React.memo(({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
     const ref = useRef(null)
-    const isInView = useInView(ref, { once: true, threshold: 0.1 })
+    const isInView = useInView(ref, { once: true, amount: 0.1 })
     const controls = useAnimation()
 
     useEffect(() => {
@@ -469,7 +534,7 @@ export default function Home() {
         {children}
       </motion.div>
     )
-  }
+  })
 
   const navigation = [
     { name: 'Home', href: '#home' },
@@ -491,14 +556,14 @@ export default function Home() {
 
       {/* Startup Popup */}
       <Dialog open={showStartupPopup} onOpenChange={setShowStartupPopup}>
-        <DialogContent className="max-w-md gradient-card border border-orange-500/20">
+<DialogContent className="max-w-md gradient-card border border-orange-500/20" aria-describedby="startup-popup-description" style={{ zIndex: 1050 }}>
           <DialogHeader>
             <DialogTitle className="text-center text-xl font-bold gradient-text">
               Ready to work together?
             </DialogTitle>
           </DialogHeader>
           <div className="text-center space-y-6 py-4">
-            <p className="text-gray-300">
+            <p id="startup-popup-description" className="text-gray-300">
               Let's discuss your next project and bring your ideas to life with cutting-edge technology!
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -549,7 +614,7 @@ export default function Home() {
               }}
             >
               <span className="bg-gradient-to-r from-orange-500 via-purple-500 to-blue-500 text-transparent bg-clip-text">
-                Dharaneesh C
+                Portvia
               </span>
             </motion.a>
 
@@ -648,6 +713,7 @@ export default function Home() {
               maxHeight: mobileMenuOpen ? 500 : 0,
               opacity: mobileMenuOpen ? 1 : 0
             }}
+            initial={{ maxHeight: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
           >
             <div className="py-4 space-y-2">
@@ -697,7 +763,7 @@ export default function Home() {
                     }, 300)
                   }}
                 >
-                  <span className="mr-2">💼</span>
+                  <span className="mr-2"></span>
                   Hire Me
                 </Button>
               </motion.div>
@@ -803,10 +869,13 @@ export default function Home() {
                     </Button>
                   </motion.div>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl h-[80vh]">
+                <DialogContent className="max-w-4xl h-[80vh]" aria-describedby="resume-viewer-description">
                   <DialogHeader>
                     <DialogTitle>Resume - Dharaneesh C</DialogTitle>
                   </DialogHeader>
+                  <p id="resume-viewer-description" className="sr-only">
+                    This dialog displays the resume of Dharaneesh C in PDF format.
+                  </p>
                   <iframe
                     src="/resume.pdf"
                     className="w-full h-full rounded-lg"
@@ -823,7 +892,9 @@ export default function Home() {
                     const link = document.createElement('a')
                     link.href = '/resume.pdf'
                     link.download = 'Dharaneesh_Resume.pdf'
+                    document.body.appendChild(link)
                     link.click()
+                    document.body.removeChild(link)
                     toast({
                       title: "Resume Downloaded",
                       description: "Thank you for your interest!",
@@ -947,7 +1018,7 @@ export default function Home() {
               
               {/* Profile Image Container */}
               <motion.div
-                className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-gradient-to-r from-orange-500 via-purple-500 to-blue-500 shadow-2xl"
+                className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-gradient-to-r from-orange-500 via-purple-500 to-blue-500 shadow-2xl flex items-center justify-center"
                 animate={{ 
                   y: [0, -10, 0],
                   boxShadow: [
@@ -962,13 +1033,23 @@ export default function Home() {
                   ease: "easeInOut"
                 }}
               >
-                <Image
-                  src="/placeholder-user.jpg"
-                  alt="Dharaneesh C"
-                  width={320}
-                  height={320}
-                  className="w-full h-full object-cover"
-                />
+              <Image
+                src="/placeholder-user.jpg"
+                alt="Dharaneesh C"
+                width={500}
+                height={500}
+                className="min-w-full min-h-full rounded-full"
+                priority
+                style={{ 
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  transform: 'scale(1.2)',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  translate: '-50% -50%'
+                }}
+              />
                 
                 {/* Overlay Effect */}
                 <motion.div
@@ -1419,12 +1500,15 @@ export default function Home() {
                         View Certificate
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-5xl h-[90vh] p-0">
+                    <DialogContent className="max-w-5xl h-[90vh] p-0" aria-describedby="certificate-viewer-description">
                       <DialogHeader className="p-6 pb-0">
                         <DialogTitle className="flex items-center gap-2">
                           {item.type === 'internship' ? 'Internship' : 'Certification'} - {item.company}
                         </DialogTitle>
                       </DialogHeader>
+                      <p id="certificate-viewer-description" className="sr-only">
+                        This dialog displays the certificate for {item.company}.
+                      </p>
                       <div className="flex-1 p-6 pt-0">
                         <iframe
                           src={item.certificate}
@@ -1484,7 +1568,7 @@ export default function Home() {
                   Launch AI Assistant
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md h-[80vh] flex flex-col">
+              <DialogContent className="max-w-md h-[80vh] flex flex-col z-50" aria-describedby="ai-demo-description" style={{ zIndex: 1050 }}>
                 <DialogHeader className={`pb-4 border-b ${
                   theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
                 }`}>
@@ -1500,6 +1584,9 @@ export default function Home() {
                     </div>
                   </DialogTitle>
                 </DialogHeader>
+                <p id="ai-demo-description" className="sr-only">
+                  This dialog contains an AI assistant that answers questions about Dharaneesh's projects, skills, and experience.
+                </p>
                 <div className="flex-1 flex flex-col">
                   <div className={`flex-1 overflow-y-auto p-4 space-y-4 rounded-lg custom-scrollbar ${
                     theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50/80'
@@ -1511,20 +1598,20 @@ export default function Home() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <motion.div 
-                          className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
-                          animate={{ 
-                            scale: [1, 1.05, 1],
-                            boxShadow: [
-                              '0 10px 30px rgba(59, 130, 246, 0.3)',
-                              '0 15px 40px rgba(139, 92, 246, 0.4)',
-                              '0 10px 30px rgba(59, 130, 246, 0.3)'
-                            ]
-                          }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          <span className="text-white text-2xl font-bold">AI</span>
-                        </motion.div>
+              <motion.div
+                className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  boxShadow: [
+                    '0 10px 30px rgba(59, 130, 246, 0.3)',
+                    '0 15px 40px rgba(139, 92, 246, 0.4)',
+                    '0 10px 30px rgba(59, 130, 246, 0.3)'
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <span className="text-white text-2xl font-bold flex items-center justify-center w-full h-full">AI</span>
+              </motion.div>
                         <motion.p 
                           className="text-lg font-semibold mb-3"
                           initial={{ opacity: 0 }}
@@ -1557,38 +1644,49 @@ export default function Home() {
                       </motion.div>
                     ) : (
                       <>
-                        {chatMessages.map((message, index) => (
-                          <motion.div
-                            key={index}
-                            className={`flex ${
-                              message.type === 'user' ? 'justify-end' : 'justify-start'
-                            }`}
-                            initial={{ opacity: 0, x: message.type === 'user' ? 30 : -30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.4, delay: index * 0.1 }}
-                          >
-                            <div className={`flex items-start gap-2 max-w-[80%] ${
-                              message.type === 'user' ? 'flex-row-reverse' : 'flex-row'
-                            }`}>
-                              {message.type === 'ai' && (
-                                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                  <span className="text-white text-xs font-bold">AI</span>
-                                </div>
-                              )}
-                              <div
-                                className={`px-4 py-3 rounded-2xl shadow-md backdrop-blur-sm ${
-                                  message.type === 'user'
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
-                                    : theme === 'dark'
-                                    ? 'bg-gray-700/80 text-white border border-gray-600/50'
-                                    : 'bg-white/90 text-gray-800 border border-gray-200/50 shadow-sm'
-                                }`}
-                              >
-                                <p className="text-sm leading-relaxed">{message.content}</p>
-                              </div>
-                            </div>
-                          </motion.div>
-                        ))}
+{chatMessages.map((message, index) => (
+  <motion.div
+    key={index}
+    className={`flex ${
+      message.type === 'user' ? 'justify-end' : 'justify-start'
+    }`}
+    initial={{ opacity: 0, x: message.type === 'user' ? 30 : -30 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.4, delay: index * 0.1 }}
+  >
+    <div className={`flex items-center gap-2 max-w-[80%] ${
+      message.type === 'user' ? 'flex-row-reverse' : 'flex-row'
+    }`}>
+{message.type === 'user' && (
+  <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 bg-gradient-to-r from-blue-500 to-purple-500">
+    <img
+      src="/placeholder-user.jpg"
+      alt="User Icon"
+      className="w-full h-full object-cover"
+      draggable={false}
+    />
+  </div>
+)}
+      {message.type === 'ai' && (
+        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <span className="text-white text-xs font-bold">AI</span>
+        </div>
+      )}
+      <div
+        className={`px-4 py-3 rounded-2xl shadow-md backdrop-blur-sm ${
+          message.type === 'user'
+            ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
+            : theme === 'dark'
+            ? 'bg-gray-700/80 text-white border border-gray-600/50'
+            : 'bg-white/90 text-gray-800 border border-gray-200/50 shadow-sm'
+        }`}
+        style={{ maxWidth: '80%', overflowWrap: 'break-word', wordBreak: 'break-word' }}
+      >
+        <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
+      </div>
+    </div>
+  </motion.div>
+))}
                         {/* Typing indicator when AI is responding */}
                         {chatMessages.length > 0 && chatMessages[chatMessages.length - 1].type === 'user' && (
                           <motion.div
@@ -1786,158 +1884,193 @@ export default function Home() {
       </AnimatedSection>
 
       {/* Contact Section */}
-      <AnimatedSection>
-        <section id="contact" className={`py-16 px-4 md:px-8 ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-slate-100'
-        }`}>
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              className="text-4xl md:text-5xl font-bold text-center mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="bg-gradient-to-r from-green-500 to-teal-500 text-transparent bg-clip-text">
-                Get in Touch
-              </span>
-            </motion.h2>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Contact Form */}
-              <motion.div
-                className={`card-professional p-8 ${
-                  theme === 'dark' ? 'bg-gray-700' : 'bg-white'
-                }`}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <h3 className="text-2xl font-semibold mb-6">Send me a message</h3>
-                <form onSubmit={handleContactSubmit} className="space-y-6">
-                  <div>
-                    <Input
-                      type="text"
-                      placeholder="Your Name"
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                      className="form-input"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="email"
-                      placeholder="Your Email"
-                      value={contactForm.email}
-                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      className="form-input"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Textarea
-                      placeholder="Your Message"
-                      rows={5}
-                      value={contactForm.message}
-                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                      className="form-input"
-                      required
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="btn-primary w-full" 
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
-                  </Button>
-                </form>
-              </motion.div>
-              
-              {/* Contact Information */}
-              <motion.div
-                className="space-y-8"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <div>
-                  <h3 className="text-2xl font-semibold mb-6">Contact Information</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-green-500 rounded-full mr-4"></div>
-                      <span className="text-lg">dharaneeshc2006@gmail.com</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-blue-500 rounded-full mr-4"></div>
-                      <span className="text-lg">+91 9345450445</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 bg-purple-500 rounded-full mr-4"></div>
-                      <span className="text-lg">Available for Remote Work</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-2xl font-semibold mb-6">Connect with Me</h3>
-                  <div className="flex flex-wrap gap-4">
-                    <Button
-                      variant="outline"
-                      className="hover-glow flex items-center gap-2"
-                      onClick={() => {
-                        window.open('https://github.com/dharaneesh', '_blank')
-                        toast({
-                          title: "Opening GitHub",
-                          description: "Explore my code repositories",
-                        })
-                      }}
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                      </svg>
-                      GitHub
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="hover-glow flex items-center gap-2"
-                      onClick={() => {
-                        window.open('https://linkedin.com/in/dharaneesh', '_blank')
-                        toast({
-                          title: "Opening LinkedIn",
-                          description: "Let's connect professionally",
-                        })
-                      }}
-                    >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                      </svg>
-                      LinkedIn
-                    </Button>
-                  </div>
-                </div>
+<AnimatedSection>
+  <section
+    id="contact"
+    className={`py-16 px-4 md:px-8 ${
+      theme === "dark" ? "bg-gray-900" : "bg-slate-100"
+    }`}
+  >
+    <div className="max-w-6xl mx-auto">
+      <motion.h2
+        className="text-4xl md:text-5xl font-bold text-center mb-12"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}   // ✅ prevents re-mount & auto-scroll
+        transition={{ duration: 0.5 }}
+      >
+        <span className="bg-gradient-to-r from-green-500 to-teal-500 text-transparent bg-clip-text">
+          Get in Touch
+        </span>
+      </motion.h2>
 
-                <div className="mt-8 p-6 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl text-white">
-                  <h4 className="text-xl font-semibold mb-2">Ready to Start Your Project?</h4>
-                  <p className="mb-4">Let's discuss how I can help bring your ideas to life with cutting-edge technology and creative solutions.</p>
-                  <Button 
-                    className="bg-white text-orange-500 hover:bg-gray-100"
-                    onClick={() => {
-                      document.querySelector('input[placeholder="Your Name"]')?.focus()
-                      toast({
-                        title: "Let's get started!",
-                        description: "Fill out the form to begin our conversation",
-                      })
-                    }}
-                  >
-                    Start Conversation
-                  </Button>
-                </div>
-              </motion.div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Contact Form */}
+        <motion.div
+          className={`card-professional p-8 ${
+            theme === "dark" ? "bg-gray-700" : "bg-white"
+          }`}
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}   // ✅ animate once
+          transition={{ duration: 0.6 }}
+        >
+          <h3 className="text-2xl font-semibold mb-6">Send me a message</h3>
+          <form
+            ref={contactFormRef}
+            onSubmit={(e) => {
+              e.preventDefault(); // ✅ stops page jumping
+              handleContactSubmit(e);
+            }}
+            className="space-y-6"
+          >
+            <div>
+              <Input
+                type="text"
+                placeholder="Your Name"
+                value={contactForm.name}
+                onChange={(e) =>
+                  setContactForm({ ...contactForm, name: e.target.value })
+                }
+                className="form-input"
+                required
+              />
+            </div>
+            <div>
+              <Input
+                type="email"
+                placeholder="Your Email"
+                value={contactForm.email}
+                onChange={(e) =>
+                  setContactForm({ ...contactForm, email: e.target.value })
+                }
+                className="form-input"
+                required
+              />
+            </div>
+            <div>
+              <Textarea
+                placeholder="Your Message"
+                rows={5}
+                value={contactForm.message}
+                onChange={(e) =>
+                  setContactForm({ ...contactForm, message: e.target.value })
+                }
+                className="form-input"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="btn-primary w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Sending..." : "Send Message"}
+            </Button>
+          </form>
+        </motion.div>
+
+        {/* Contact Information */}
+        <motion.div
+          className="space-y-8"
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}   // ✅ prevents reset while typing
+          transition={{ duration: 0.6 }}
+        >
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">Contact Information</h3>
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-green-500 rounded-full mr-4"></div>
+                <span className="text-lg">dharaneeshc2006@gmail.com</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-blue-500 rounded-full mr-4"></div>
+                <span className="text-lg">+91 9345450445</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-purple-500 rounded-full mr-4"></div>
+                <span className="text-lg">Available for Remote Work</span>
+              </div>
             </div>
           </div>
-        </section>
-      </AnimatedSection>
+
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">Connect with Me</h3>
+            <div className="flex flex-wrap gap-4">
+              <Button
+                variant="outline"
+                className="hover-glow flex items-center gap-2"
+                onClick={() => {
+                  window.open("https://github.com/Dharaneesh05", "_blank");
+                  toast({
+                    title: "Opening GitHub",
+                    description: "Explore my code repositories",
+                  });
+                }}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+                </svg>
+                GitHub
+              </Button>
+              <Button
+                variant="outline"
+                className="hover-glow flex items-center gap-2"
+                onClick={() => {
+                  window.open(
+                    "https://www.linkedin.com/in/dharaneesh-c/",
+                    "_blank"
+                  );
+                  toast({
+                    title: "Opening LinkedIn",
+                    description: "Let's connect professionally",
+                  });
+                }}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+                LinkedIn
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-8 p-6 bg-gradient-to-r from-orange-500 to-pink-500 rounded-xl text-white">
+            <h4 className="text-xl font-semibold mb-2">
+              Ready to Start Your Project?
+            </h4>
+            <p className="mb-4">
+              Let's discuss how I can help bring your ideas to life with
+              cutting-edge technology and creative solutions.
+            </p>
+            <Button
+              className="bg-white text-orange-500 hover:bg-gray-100"
+              onClick={() => {
+                toast({
+                  title: "Let's get started!",
+                  description: "Fill out the form to begin our conversation",
+                });
+              }}
+            >
+              Start Conversation
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  </section>
+</AnimatedSection>
+
 
       {/* Enhanced Footer */}
       <footer className={`relative py-20 px-4 md:px-8 overflow-hidden ${
@@ -2171,7 +2304,7 @@ export default function Home() {
                   className="flex items-center gap-2 hover:text-orange-500 transition-colors cursor-pointer"
                   whileHover={{ scale: 1.05 }}
                 >
-                  <span className="animate-pulse">🇮🇳</span>
+                  <span className="animate-pulse"></span>
                   Developed by Dharaneesh
                 </motion.span>
                 <motion.span 
@@ -2179,7 +2312,7 @@ export default function Home() {
                   whileHover={{ scale: 1.05 }}
                 >
                   <span className="animate-bounce"></span>
-                  Hosted on vercel
+                  Hosted on vercel and render
                 </motion.span>
               </div>
             </div>

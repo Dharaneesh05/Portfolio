@@ -592,3 +592,18 @@ a {
 .popup-enter {
   animation: popupSlideIn 0.3s ease-out forwards;
 }
+
+/* Fix image aspect ratio warnings */
+img {
+  max-width: 100%;
+  height: auto !important;
+  width: auto !important;
+  display: block;
+}
+
+/* Ensure Next.js Image component maintains aspect ratio */
+.next-image-wrapper img {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain;
+}
