@@ -138,6 +138,44 @@ const RADIUS = 420;
 const TOTAL_PROJECTS = PROJECTS.length;
 const ANGLE_STEP = (2 * Math.PI) / TOTAL_PROJECTS;
 
+const OrbitalProjectItem = ({ project, index, rotation, activeIndex, goToIndex, setShowModal }: any) => {
+  const baseAngle = index * ANGLE_STEP;
+
+  // Dramatic 3D Positioning & Depth Perception
+  const x = useTransform(rotation, (r: number) => Math.sin(baseAngle + r) * RADIUS);
+  const z = useTransform(rotation, (r: number) => Math.cos(baseAngle + r) * RADIUS);
+  
+  // Map Depth to Scale (Center is huge 1.1x, back is tiny 0.35x)
+  const scale = useTransform(z, [-RADIUS, 0, RADIUS], [0.35, 0.7, 1.1]);
+  
+  // Map Depth to Opacity (Back is heavily faded, side is dim, front is fully solid)
+  const opacity = useTransform(z, [-RADIUS, 0, RADIUS], [0.15, 0.5, 1]);
+  
+  // Map Depth to Blur (Back is blurry, front is razor sharp)
+  const blurFilter = useTransform(z, [-RADIUS, 0, RADIUS], ["blur(12px)", "blur(4px)", "blur(0px)"]);
+  
+  // Strong 3D angling
+  const rotateY = useTransform(rotation, (r: number) => Math.sin(baseAngle + r) * 25);
+  const zIndex = useTransform(scale, (s: number) => Math.floor(s * 100));
+
+  const isCenter = activeIndex === index;
+
+  return (
+    <OrbitalProjectCard
+      project={project}
+      position={{ x, z, scale, opacity, rotateY, zIndex, filter: blurFilter }}
+      isActive={isCenter}
+      onClick={() => {
+        if (isCenter) {
+          setShowModal(true);
+        } else {
+          goToIndex(index);
+        }
+      }}
+    />
+  );
+};
+
 export const Encryption = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -265,44 +303,17 @@ export const Encryption = () => {
             onDragEnd={handleDragEnd}
             className="relative w-full h-[400px] flex items-center justify-center perspective-[1000px] cursor-grab active:cursor-grabbing z-50 touch-pan-y"
           >
-            {PROJECTS.map((project, index) => {
-              const baseAngle = index * ANGLE_STEP;
-
-              // Dramatic 3D Positioning & Depth Perception
-              const x = useTransform(rotation, (r) => Math.sin(baseAngle + r) * RADIUS);
-              const z = useTransform(rotation, (r) => Math.cos(baseAngle + r) * RADIUS);
-              
-              // Map Depth to Scale (Center is huge 1.1x, back is tiny 0.35x)
-              const scale = useTransform(z, [-RADIUS, 0, RADIUS], [0.35, 0.7, 1.1]);
-              
-              // Map Depth to Opacity (Back is heavily faded, side is dim, front is fully solid)
-              const opacity = useTransform(z, [-RADIUS, 0, RADIUS], [0.15, 0.5, 1]);
-              
-              // Map Depth to Blur (Back is blurry, front is razor sharp)
-              const blurFilter = useTransform(z, [-RADIUS, 0, RADIUS], ["blur(12px)", "blur(4px)", "blur(0px)"]);
-              
-              // Strong 3D angling
-              const rotateY = useTransform(rotation, (r) => Math.sin(baseAngle + r) * 25);
-              const zIndex = useTransform(scale, (s) => Math.floor(s * 100));
-
-              const isCenter = activeIndex === index;
-
-              return (
-                <OrbitalProjectCard
-                  key={project.id}
-                  project={project}
-                  position={{ x, z, scale, opacity, rotateY, zIndex, filter: blurFilter }}
-                  isActive={isCenter}
-                  onClick={() => {
-                    if (isCenter) {
-                      setShowModal(true);
-                    } else {
-                      goToIndex(index);
-                    }
-                  }}
-                />
-              );
-            })}
+            {PROJECTS.map((project, index) => (
+              <OrbitalProjectItem
+                key={project.id}
+                project={project}
+                index={index}
+                rotation={rotation}
+                activeIndex={activeIndex}
+                goToIndex={goToIndex}
+                setShowModal={setShowModal}
+              />
+            ))}
           </motion.div>
 
           {/* Right Arrow */}
