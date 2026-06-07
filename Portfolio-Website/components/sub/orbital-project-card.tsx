@@ -21,6 +21,7 @@ type OrbitalProjectCardProps = {
     opacity: MotionValue<number>;
     rotateY: MotionValue<number>;
     zIndex: MotionValue<number>;
+    filter: MotionValue<string>;
   };
   isActive: boolean;
   onClick: () => void;
@@ -42,6 +43,7 @@ export const OrbitalProjectCard = ({
         opacity: position.opacity,
         rotateY: position.rotateY,
         zIndex: isActive ? 60 : position.zIndex,
+        filter: position.filter,
         transformStyle: "preserve-3d",
       }}
       className="absolute cursor-pointer"
