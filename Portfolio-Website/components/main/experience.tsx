@@ -32,6 +32,15 @@ export const Experience = () => {
       setActiveItem(null);
     };
 
+    const handleCardClick = () => {
+      if (isActive) {
+        setActiveItem(null);
+      } else {
+        setActiveItem({ id: item.id, type });
+        setHoveredId(null);
+      }
+    };
+
     return (
       <motion.div
         layout
