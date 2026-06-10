@@ -57,7 +57,7 @@ function scrollToSection(href: string) {
 
 export const Navbar = () => {
   return (
-    <header className="w-full h-[65px] fixed top-0 z-50 flex items-center justify-center px-2 md:px-10">
+    <header className="w-full h-[65px] fixed top-0 z-[999] flex items-center justify-center px-1 md:px-10">
 
       {/* Desktop */}
       <nav aria-label="Main Navigation" className="hidden md:flex navbar-glass items-center gap-0 px-2 py-1.5">
@@ -74,7 +74,7 @@ export const Navbar = () => {
       </nav>
 
       {/* Mobile */}
-      <nav aria-label="Mobile Navigation" className="flex md:hidden navbar-glass items-center gap-0 px-2 py-1.5">
+      <nav aria-label="Mobile Navigation" className="flex md:hidden navbar-glass items-center gap-0 px-1 py-1">
         {NAV_LINKS.map((link) => (
           <button
             key={link.title}

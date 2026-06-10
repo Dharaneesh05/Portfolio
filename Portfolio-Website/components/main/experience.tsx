@@ -44,8 +44,8 @@ export const Experience = () => {
     return (
       <motion.div
         layout
-        transition={{ type: "spring", stiffness: 220, damping: 32 }}
-        className={`w-full relative rounded-2xl bg-[#18181B]/80 backdrop-blur-md p-5 sm:p-6 cursor-pointer overflow-hidden border ${
+        transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+        className={`w-full relative rounded-2xl bg-[#18181B]/80 backdrop-blur-md p-4 sm:p-5 cursor-pointer overflow-hidden border ${
           isActive
             ? "border-[#3F3F46] shadow-[0_8px_30px_rgba(0,0,0,0.5)] z-20"
             : isHovered
@@ -94,26 +94,10 @@ export const Experience = () => {
                   )}
                 </div>
 
-                <div className="flex flex-col items-end shrink-0 gap-3">
+                <div className="flex items-start shrink-0">
                   <span className="text-xs text-[#FAFAFA] bg-[#27272A] border border-[#3F3F46] px-3 py-1.5 rounded-full whitespace-nowrap font-medium tracking-wide">
                     {item.date}
                   </span>
-                  <motion.div
-                    className={`hidden sm:flex items-center justify-center w-9 h-9 rounded-full transition-all duration-400 ${
-                      isHovered
-                        ? "bg-[#FAFAFA] text-[#09090B]"
-                        : "bg-transparent border border-[#3F3F46] text-[#A1A1AA]"
-                    }`}
-                    aria-hidden="true"
-                  >
-                    <motion.div
-                      initial={false}
-                      animate={{ rotate: isHovered ? 135 : 0 }}
-                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      {isHovered ? <HiMinus className="text-lg" /> : <HiPlus className="text-lg" />}
-                    </motion.div>
-                  </motion.div>
                 </div>
               </div>
 
@@ -178,7 +162,7 @@ export const Experience = () => {
                       e.stopPropagation();
                       window.open(item.certificateUrl, "_blank");
                     }}
-                    className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center justify-center w-10 h-10 rounded-full bg-[#18181B]/80 backdrop-blur-md border border-[#3F3F46] text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-[#3F3F46] hover:scale-110 transition-all z-30 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+                    className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center justify-center w-10 h-10 rounded-full bg-[#18181B]/80 backdrop-blur-md border border-[#3F3F46] text-[#A1A1AA] z-30 shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
                     title="Open in new tab"
                     aria-label={`Open ${item.title} proof in new tab`}
                   >
@@ -210,7 +194,7 @@ export const Experience = () => {
   return (
     <section
       id="experience"
-      className="relative w-full min-h-screen flex flex-col items-center justify-start py-20 px-4 sm:px-5 overflow-hidden scroll-mt-[65px]"
+      className="relative w-full min-h-[calc(100vh-65px)] flex flex-col items-center justify-center py-6 px-4 sm:px-5 mt-[65px] scroll-mt-[65px]"
     >
       {/* Section Heading */}
       <motion.div
@@ -218,22 +202,22 @@ export const Experience = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#FAFAFA] text-center mb-12 sm:mb-16 z-10 tracking-tight"
+        className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#FAFAFA] text-center mb-4 sm:mb-6 z-10 tracking-tight"
       >
         Experience
       </motion.div>
 
       {/* Two Column Grid */}
-      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 z-10">
+      <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 z-10">
         {/* Left Column: Certifications */}
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="flex flex-col gap-4 sm:gap-5"
+          className="flex flex-col gap-3"
         >
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1">
             <h3 className="text-xl sm:text-2xl font-bold text-[#FAFAFA]">
               Certifications
             </h3>
@@ -249,9 +233,9 @@ export const Experience = () => {
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true }}
-          className="flex flex-col gap-4 sm:gap-5"
+          className="flex flex-col gap-3"
         >
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1">
             <h3 className="text-xl sm:text-2xl font-bold text-[#FAFAFA]">
               Achievements
             </h3>

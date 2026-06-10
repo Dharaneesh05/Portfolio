@@ -95,11 +95,11 @@ export const Skills = () => {
   return (
     <section
       id="skills"
-      className="relative w-full min-h-[calc(100vh-65px)] pt-6 pb-10 scroll-mt-[65px]"
+      className="relative w-full min-h-[calc(100vh-65px)] flex flex-col justify-center py-10 mt-[65px] scroll-mt-[65px]"
       // overflow-visible so tooltips near the top edge are not clipped
       style={{ overflow: "visible" }}
     >
-      <div className="relative mx-auto max-w-5xl px-4 sm:px-5 md:px-6 pt-4">
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-5 md:px-6">
         <div className="w-full flex flex-col">
 
           {/* ── Heading ─────────────────────────────────────────────── */}

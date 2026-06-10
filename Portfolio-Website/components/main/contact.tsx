@@ -101,30 +101,25 @@ export const Contact = () => {
           style={{ marginBottom: "32px" }}
         >
           {/* Primary — Send Email (matches Hero "View Resume") */}
-          <motion.a
+          <a
             href="mailto:cdharaneesh05@gmail.com"
             aria-label="Send an email to cdharaneesh05@gmail.com"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="inline-flex items-center justify-center gap-2 py-3 px-8 button-primary rounded-lg font-semibold text-sm tracking-wide min-w-[160px] cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 py-3 px-8 bg-[#FAFAFA] text-[#09090B] rounded-lg font-semibold text-sm tracking-wide min-w-[160px] cursor-pointer"
             style={{ textDecoration: "none" }}
           >
             <HiOutlineMail className="text-lg" />
             Send Email
-          </motion.a>
+          </a>
 
           {/* Secondary — Schedule a Meeting (matches Hero "Get In Touch") */}
-          <motion.button
+          <button
             onClick={handleScheduleMeeting}
             aria-label="Schedule a meeting via Calendly"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="inline-flex items-center justify-center gap-2 py-3 px-8 text-center text-[#FAFAFA] cursor-pointer rounded-lg font-semibold text-sm tracking-wide border border-[#3F3F46] hover:border-[#52525B] hover:bg-white/[0.03] transition-all duration-200 min-w-[160px] bg-transparent"
+            className="inline-flex items-center justify-center gap-2 py-3 px-8 text-center text-[#FAFAFA] cursor-pointer rounded-lg font-semibold text-sm tracking-wide border border-[#3F3F46] min-w-[160px] bg-transparent"
           >
             <RxCalendar className="text-lg" />
             Schedule a Meeting
-          </motion.button>
+          </button>
         </motion.div>
 
         {/* 5 ▸ Social Icons */}
@@ -140,7 +135,7 @@ export const Contact = () => {
           {[
             { icon: FaGithub,              link: "https://github.com/dharaneesh05",          title: "GitHub"   },
             { icon: FaLinkedinIn,          link: "https://www.linkedin.com/in/dharaneesh-c", title: "LinkedIn" },
-            { icon: SiLeetcode,            link: "https://leetcode.com/u/Dharaneesh05/",     title: "LeetCode" },
+            { icon: SiLeetcode,            link: "https://leetcode.com/u/DharaneeshC/",     title: "LeetCode" },
             { icon: HiOutlineDocumentText, link: "/resume.pdf",                              title: "Resume"   },
           ].map((social, index) => (
             <motion.a

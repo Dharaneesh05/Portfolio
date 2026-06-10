@@ -33,7 +33,7 @@ export const About = () => {
   return (
     <section
       ref={ref}
-      className="relative w-full min-h-[calc(100vh-65px)] pt-[115px] pb-8 md:pb-10 overflow-hidden scroll-mt-[65px]"
+      className="relative w-full min-h-[calc(100vh-65px)] flex flex-col justify-center py-2 md:py-4 overflow-hidden scroll-mt-[65px]"
       id="about-me"
     >
       <div className="relative mx-auto max-w-5xl px-5 md:px-6">
@@ -42,13 +42,13 @@ export const About = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-extrabold text-[#FAFAFA] text-center mb-4 md:mb-5"
+          className="text-3xl md:text-4xl font-extrabold text-[#FAFAFA] text-center mb-2 md:mb-3"
         >
           About Me
         </motion.h2>
 
         <motion.div
-          className="flex flex-col gap-4 md:gap-5"
+          className="flex flex-col gap-3 md:gap-4"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={{
@@ -68,9 +68,9 @@ export const About = () => {
               }}
               className="relative w-full"
             >
-              <div className="relative bg-[#09090B]/80 backdrop-blur-md border border-[#3F3F46] rounded-xl px-5 md:px-6 pt-3 md:pt-4 pb-4 md:pb-5 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+              <div className="relative bg-[#09090B]/80 backdrop-blur-md border border-[#3F3F46] rounded-xl px-5 md:px-6 pt-2 md:pt-3 pb-3 md:pb-4 overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
                 {/* Terminal header */}
-                <div className="flex items-center gap-2 mb-3 md:mb-4 pb-2 md:pb-3 border-b border-[#3F3F46]/50" aria-hidden="true">
+                <div className="flex items-center gap-2 mb-2 md:mb-3 pb-1 md:pb-2 border-b border-[#3F3F46]/50" aria-hidden="true">
                   <div className="flex gap-2">
                     <div className="w-3.5 h-3.5 rounded-full bg-[#EF4444]/80 border border-white/10" />
                     <div className="w-3.5 h-3.5 rounded-full bg-[#F59E0B]/80 border border-white/10" />
@@ -82,7 +82,7 @@ export const About = () => {
                 </div>
 
                 {/* Code lines */}
-                <div className="font-mono font-semibold" style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.05rem)", textAlign: "justify", textAlignLast: "left" }}>
+                <div className="font-mono font-semibold" style={{ fontSize: "clamp(0.82rem, 1.5vw, 1.05rem)", textAlign: "left" }}>
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : { opacity: 0 }}
@@ -116,12 +116,12 @@ export const About = () => {
                 transition: { delay: 0.7, duration: 0.5 },
               },
             }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 w-full"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 w-full"
           >
             {[
               {
                 label: "GitHub",
-                sub: "Showcasing full-stack development, AI projects, and open-source contributions.",
+                sub: "Showcasing full-stack development, projects, and open-source contributions.",
                 href: "https://github.com/Dharaneesh05",
                 Icon: RxGithubLogo,
                 stats: "Projects • Innovation • Development",
@@ -152,7 +152,7 @@ export const About = () => {
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               >
-                <div className="border border-[#3F3F46] bg-[#18181B] p-3 md:p-4 rounded-xl cursor-pointer relative overflow-hidden flex flex-col flex-1 transition-all duration-300 group-hover:border-[#52525B] shadow-sm">
+                <div className="border border-[#3F3F46] bg-[#18181B] p-2.5 md:p-3.5 rounded-xl cursor-pointer relative overflow-hidden flex flex-col flex-1 transition-all duration-300 group-hover:border-[#52525B] shadow-sm">
                   
                   {/* Subtle silver light sweep animation on hover */}
                   <div className="sweep-layer absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.08)] to-transparent -translate-x-[150%] pointer-events-none" />

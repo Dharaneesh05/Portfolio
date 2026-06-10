@@ -35,7 +35,7 @@ function ProjectModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 py-8">
+      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 pt-[85px] pb-8">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -52,7 +52,7 @@ function ProjectModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.98 }}
           transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
-          className="relative w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[50%] max-w-2xl max-h-[550px] lg:max-h-[600px] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-[201] overflow-hidden flex flex-col"
+          className="relative w-[95%] sm:w-[85%] md:w-[70%] lg:w-[50%] xl:w-[45%] max-w-xl max-h-[500px] lg:max-h-[550px] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-[201] overflow-hidden flex flex-col"
           style={{
             background: "#18181B",
             border: "1px solid #3F3F46",
@@ -69,7 +69,7 @@ function ProjectModal({
           </button>
 
           {/* Image with top-left alignment and bottom fade */}
-          <div className="relative w-full h-[140px] sm:h-[160px] md:h-[180px] lg:h-[220px] overflow-hidden shrink-0">
+          <div className="relative w-full h-[120px] sm:h-[140px] md:h-[160px] lg:h-[180px] overflow-hidden shrink-0">
             <Image
               src={project.image}
               alt={project.title}
@@ -81,7 +81,7 @@ function ProjectModal({
           </div>
 
           {/* Compact Body Content */}
-          <div className="p-4 md:p-6 space-y-4 flex flex-col flex-1">
+          <div className="p-4 md:p-5 space-y-3 flex flex-col flex-1">
             <div>
               <h2 className="text-xl md:text-2xl font-extrabold text-[#FAFAFA] tracking-tight mb-2 leading-none">
                 {project.title}

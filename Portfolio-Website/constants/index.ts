@@ -448,17 +448,17 @@ export const CERTIFICATIONS = [
 export const ACHIEVEMENTS = [
   {
     id: 1,
-    title: "TechnoFest – FirstPrize(POC)",
-    category: "AI / ML Category",
-    description: "Developed practical experience in model logic, data flow, and translating user requirements into scalable AI-driven solutions.",
+    title: "TechnoFest – First Prize",
+    category: "Proof of Concept",
+    description: "Awarded First Prize for developing an innovative AI-based proof of concept with practical real-world applications.",
     date: "Aug 2025",
     certificateUrl: "/POC.pdf",
   },
   {
     id: 2,
     title: "BYTS Hackathon – Best Implementation",
-    category: "",
-    description: "Recognized for strong technical execution, system design, and real-world feasibility.",
+    category: "Hackathon Achievement",
+    description: "Recognized for presenting an innovative AI solution with strong technical execution and real-world impact.",
     date: "Apr 2025",
     certificateUrl: "/Byts.pdf",
   },
